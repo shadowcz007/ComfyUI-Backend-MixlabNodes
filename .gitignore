@@ -1,0 +1,4 @@
+.DS_Store
+python_embeded
+**/__pycache__/
+ComfyUI\custom_nodes\comfyui_controlnet_aux\ckpts

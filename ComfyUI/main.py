@@ -20,16 +20,16 @@ comfyui_path = "ComfyUI" # 替换为你要判断和去掉的路径
 for path in sys.path:
     file_name = os.path.basename(path)
     if comfyui_path ==file_name:
-        print(f"{path} 包含 ComfyUI 路径")
+        # print(f"{path} 包含 ComfyUI 路径")
         sys.path.remove(path)
-    else:
-        print(f"{path} 不包含 ComfyUI 路径")
+    # else:
+    #     print(f"{path} 不包含 ComfyUI 路径")
 
 # 添加当前的ComfyUI路径
 current_directory = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, current_directory)
 
-print('###新路径',sys.path)
+# print('###新路径',sys.path)
 
 
 def execute_prestartup_script():

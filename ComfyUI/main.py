@@ -6,6 +6,32 @@ import importlib.util
 import folder_paths
 import time
 
+
+# 去除
+del folder_paths.folder_names_and_paths["custom_nodes"]
+# 把引用的本地库的路径改为当前目录下 ，以下代码贴至 main.py 修改
+
+import sys
+import os
+
+# 去掉环境里的comfyUI路径
+comfyui_path = "ComfyUI" # 替换为你要判断和去掉的路径
+
+for path in sys.path:
+    file_name = os.path.basename(path)
+    if comfyui_path ==file_name:
+        print(f"{path} 包含 ComfyUI 路径")
+        sys.path.remove(path)
+    else:
+        print(f"{path} 不包含 ComfyUI 路径")
+
+# 添加当前的ComfyUI路径
+current_directory = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, current_directory)
+
+print('###新路径',sys.path)
+
+
 def execute_prestartup_script():
     def execute_script(script_path):
         module_name = os.path.splitext(script_path)[0]
@@ -43,7 +69,7 @@ def execute_prestartup_script():
             print("{:6.1f} seconds{}:".format(n[0], import_message), n[1])
         print()
 
-execute_prestartup_script()
+# execute_prestartup_script()
 
 
 # Main code
@@ -182,9 +208,7 @@ def load_extra_path_config(yaml_path):
                 full_path = y
                 if base_path is not None:
                     full_path = os.path.join(base_path, full_path)
-                print("Adding extra search path", x, full_path)
                 folder_paths.add_model_folder_path(x, full_path)
-
 
 if __name__ == "__main__":
     if args.temp_directory:
@@ -205,7 +229,6 @@ if __name__ == "__main__":
     if args.extra_model_paths_config:
         for config_path in itertools.chain(*args.extra_model_paths_config):
             load_extra_path_config(config_path)
-
     init_custom_nodes()
 
     cuda_malloc_warning()

@@ -217,6 +217,8 @@ if __name__ == "__main__":
         folder_paths.set_temp_directory(temp_dir)
     cleanup_temp()
 
+    # TODO 清理 output和input目录
+
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     server = server.PromptServer(loop)

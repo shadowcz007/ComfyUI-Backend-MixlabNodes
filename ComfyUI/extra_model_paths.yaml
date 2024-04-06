@@ -26,15 +26,24 @@
 comfyui:
     base_path: C:\Users\38957\Documents\ai-lab\ComfyUI_windows_portable\ComfyUI
     checkpoints: models/checkpoints/
-    clip: models/clip/
-    clip_vision: models/clip_vision/
-    configs: models/configs/
-    controlnet: models/controlnet/
-    embeddings: models/embeddings/
     loras: models/loras/
-    upscale_models: models/upscale_models/
     vae: models/vae/
-    # custom_nodes: custom_nodes
+    clip: models/clip/
+    unet: models/unet/
+    clip_vision: models/clip_vision/
+    style_models: models/style_models/
+    embeddings: models/embeddings/
+    diffusers: models/diffusers/
+    vae_approx: models/vae_approx/
+    controlnet: models/controlnet/
+    gligen: models/gligen/
+    upscale_models: models/upscale_models/
+    hypernetworks: models/hypernetworks/
+    photomaker: models/photomaker/
+    classifiers: models/classifiers/
+    configs: models/configs/
+    controlnet_ckpts: models/controlnet_ckpts/
+
 
 other_ui:
    base_path: ./

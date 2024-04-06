@@ -2,7 +2,7 @@
 # ###############################################################################################
 # This path is for custom pressesor models base folder. default is "./ckpts"
 # you can also use absolute paths like: "/root/ComfyUI/custom_nodes/comfyui_controlnet_aux/ckpts" or "D:\\ComfyUI\\custom_nodes\\comfyui_controlnet_aux\\ckpts"
-annotator_ckpts_path: "C:\Users\38957\Documents\ai-lab\ComfyUI_windows_portable\ComfyUI\models\controlnet_ckpts"
+annotator_ckpts_path: models\controlnet_ckpts
 # ###############################################################################################
 # This path is for downloading temporary files.
 # You SHOULD use absolute path for this like"D:\\temp", DO NOT use relative paths. Empty for default.

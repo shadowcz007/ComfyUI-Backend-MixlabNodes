@@ -43,6 +43,7 @@ comfyui:
     classifiers: models/classifiers/
     configs: models/configs/
     controlnet_ckpts: models/controlnet_ckpts/
+    prompt_generator: models/prompt_generator/
 
 
 other_ui:

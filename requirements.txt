@@ -10,6 +10,7 @@ transformers>=4.36.0
 zhipuai
 lark-parser
 imageio-ffmpeg
+rembg[gpu]
 
 importlib_metadata
 huggingface_hub

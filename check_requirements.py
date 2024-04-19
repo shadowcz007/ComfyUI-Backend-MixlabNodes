@@ -17,7 +17,7 @@ def split_version(line):
         package, operator, version = matches[0]
         return package, operator, version
     else:
-        return None,None,None
+        return line.strip(),None,'-'
     
 
 # 指定目录
@@ -38,9 +38,6 @@ for file in requirements_files:
         for line in f:
             package, _operator, package_version=split_version(line)
 
-            if package==None:
-                package=line.strip()
-                # 
             status=""
 
             if package:
@@ -48,22 +45,25 @@ for file in requirements_files:
                 if not package in target_package:
                     target_package[package]={}
 
-                if package_version==None:
-                    package_version='-'
                 target_package[package][package_version]=basename
 
 for package,vs in target_package.items():
-    status='' 
+    status=''
+    basename=",".join(vs.values())
     try:   
         has_package_version = version(package)
         if has_package_version in vs:
             status='OK'
         else:
-            status=f'requirements:{",".join(vs.keys())}_installed:{has_package_version}'
+            if ",".join(vs.keys())=='-':
+                status='OK'
+            else:
+                status=f'requirements:{",".join(vs.keys())}_installed:{has_package_version}'
+            
     except PackageNotFoundError:
         status='Not found'
 
-    if status=='Not found':
+    if status!='OK':
         print('\033[91m')
-    print(basename,package,status)
-    print("\033[0m")
+        print(basename,'#',package,status)
+        print("\033[0m")

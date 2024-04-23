@@ -30,6 +30,7 @@ ftfy
 addict
 yacs
 trimesh[easy]
+ultralytics
 
 # insightface
 # onnxruntime

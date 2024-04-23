@@ -1,7 +1,18 @@
 @echo off
 
-set "requirements_txt=%~dp0\requirements.txt"
-set "python_exec=.\python_embeded\python.exe"
+
+setlocal enabledelayedexpansion
+set "file=.\config\python_path.txt"
+set "python_exec="
+for /f "usebackq delims=" %%i in ("%file%") do (
+set "python_exec=!python_exec! %%i"
+)
+echo %python_exec%
+
+
+
+set "requirements_txt=%~dp0\config\requirements.txt"
+@REM set "python_exec=.\python_embeded\python.exe"
 
 echo Installing ComfyUI's Mixlab Nodes..
 

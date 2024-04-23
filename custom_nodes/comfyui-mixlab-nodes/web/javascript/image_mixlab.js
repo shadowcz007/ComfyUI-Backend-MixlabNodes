@@ -1,7 +1,39 @@
 import { app } from '../../../scripts/app.js'
 import { api } from '../../../scripts/api.js'
-import { ComfyWidgets } from '../../../scripts/widgets.js'
+// import { ComfyWidgets } from '../../../scripts/widgets.js'
 import { $el } from '../../../scripts/ui.js'
+import { applyTextReplacements } from '../../../scripts/utils.js'
+
+function loadImageToCanvas (base64Image) {
+  var img = new Image()
+  var canvas = document.createElement('canvas')
+  var ctx = canvas.getContext('2d')
+  return new Promise((res, rej) => {
+    img.onload = function () {
+      // 等比例缩放图片
+      var width = img.width
+      var height = img.height
+      var max_width = 1024
+      if (width > max_width) {
+        height *= max_width / width
+        width = max_width
+      }
+
+      // 设置canvas尺寸
+      canvas.width = width
+      canvas.height = height
+
+      // 在canvas上绘制图片
+      ctx.drawImage(img, 0, 0, width, height)
+
+      // 将canvas转换为base64图片数据
+      var canvasData = canvas.toDataURL()
+      res(canvasData) //  canvas转换后的base64图片数据
+    }
+
+    img.src = base64Image
+  })
+}
 
 async function uploadImage (blob, fileType = '.svg', filename) {
   // const blob = await (await fetch(src)).blob();
@@ -712,7 +744,9 @@ app.registerExtension({
           const file = e.target.files[0]
           const reader = new FileReader()
           reader.onload = async event => {
-            const base64 = event.target.result
+            let base64 = event.target.result
+            //压缩图片，控制1024以内
+            base64 = await loadImageToCanvas(base64)
             // console.log(base64)
             if (!imagesWidget.value) imagesWidget.value = { base64: [] }
             imagesWidget.value.base64.push(base64)
@@ -763,6 +797,33 @@ app.registerExtension({
         }
 
         this.serialize_widgets = true //需要保存参数
+      }
+    }
+
+    if (nodeData.name === 'SaveImageAndMetadata_') {
+      const onNodeCreated = nodeType.prototype.onNodeCreated
+      // /web/extensions/core/saveImageExtraOutput.js
+      nodeType.prototype.onNodeCreated = function () {
+        const r = onNodeCreated
+          ? onNodeCreated.apply(this, arguments)
+          : undefined
+        const widget = this.widgets.find(w => w.name === 'filename_prefix')
+        widget.serializeValue = () => {
+          return applyTextReplacements(app, widget.value)
+        }
+
+        return r
+      }
+
+      const onExecuted = nodeType.prototype.onExecuted
+      nodeType.prototype.onExecuted = function (message) {
+        onExecuted?.apply(this, arguments)
+        console.log('##onExecuted', this, message)
+        //TODO 是否 保存base64
+        if (message.base64) {
+          if (Array.isArray(message.base64)) {
+          }
+        }
       }
     }
   },

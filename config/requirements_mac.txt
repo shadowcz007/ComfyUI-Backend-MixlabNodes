@@ -1,0 +1,42 @@
+torch==2.1.2 
+torchvision==0.16.2
+
+torchsde
+aiohttp
+
+numpy
+pyOpenSSL
+watchdog
+opencv-python-headless
+matplotlib
+openai
+simple-lama-inpainting
+clip-interrogator==0.6.0
+transformers>=4.36.0
+zhipuai
+lark-parser
+imageio-ffmpeg
+rembg
+
+importlib_metadata
+huggingface_hub
+scipy
+filelock
+Pillow
+einops
+pyyaml
+scikit-image
+python-dateutil
+mediapipe
+svglib
+fvcore
+yapf
+omegaconf
+ftfy
+addict
+yacs
+trimesh[easy]
+
+# insightface
+# onnxruntime
+# onnxruntime-gpu

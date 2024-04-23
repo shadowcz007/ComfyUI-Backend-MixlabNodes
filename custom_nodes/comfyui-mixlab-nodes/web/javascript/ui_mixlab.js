@@ -299,15 +299,16 @@ async function get_my_app (filename = null, category = '') {
     data = []
 
     for (const res of result.data) {
-      let { app, workflow } = res.data
-      if (app.filename)
-        data.push({
+      let { app, workflow } = res.data;
+      if (app?.filename) data.push({
           ...app,
           data: workflow,
           date: res.date
         })
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
   return data
 }
 
@@ -1137,6 +1138,57 @@ app.registerExtension({
         (this.canvas.height * 0.5) / (this.ds.scale * dpr) // 考虑设备像素比
       this.setDirty(true, true)
     }
+
+    // 支持app模式的json
+    const loadAppJson = async data => {
+      let workflow
+      try {
+        let w = JSON.parse(data)
+        if (w.app && w.output) workflow = w.workflow
+      } catch (err) {}
+
+      if (workflow && workflow.version && workflow.nodes && workflow.extra) {
+        await app.loadGraphData(workflow)
+      }
+    }
+
+    if (!window._mixlab_app_paste_listener) {
+      window._mixlab_app_paste_listener = true
+      //粘贴json的事件
+      document.addEventListener('paste', async e => {
+        // ctrl+shift+v is used to paste nodes with connections
+        // this is handled by litegraph
+        if (this.shiftDown) return
+
+        let data = e.clipboardData || window.clipboardData
+
+        // No image found. Look for node data
+        data = data.getData('text/plain')
+
+        loadAppJson(data)
+      })
+
+      // 把json往里 拖
+      document.addEventListener('drop', async event => {
+        event.preventDefault()
+        event.stopPropagation()
+
+       
+
+        // Dragging from Chrome->Firefox there is a file but its a bmp, so ignore that
+        if (
+          event.dataTransfer.files.length &&
+          event.dataTransfer.files[0].type == 'application/json'
+        ) {
+          const reader = new FileReader()
+          reader.onload = async () => {
+       
+            loadAppJson(reader.result)
+          }
+          reader.readAsText(event.dataTransfer.files[0])
+        }
+      })
+    }
   },
   setup () {
     setTimeout(async () => {
@@ -1145,6 +1197,8 @@ app.registerExtension({
 
       const apps = await get_my_app()
       if (!apps) return
+
+      console.log('apps',apps)
 
       let apps_map = { 0: [] }
 
@@ -1511,14 +1565,16 @@ app.registerExtension({
                 document.body.appendChild(div)
             }
           },
-          apps_opts.length>0?{
-            content: 'Workflow App ♾️Mixlab',
-            has_submenu: true,
-            disabled: false,
-            submenu: {
-              options: apps_opts
-            }
-          }:null
+          apps_opts.length > 0
+            ? {
+                content: 'Workflow App ♾️Mixlab',
+                has_submenu: true,
+                disabled: false,
+                submenu: {
+                  options: apps_opts
+                }
+              }
+            : null
         )
 
         return options
@@ -1587,3 +1643,41 @@ app.registerExtension({
     } catch (error) {}
   }
 })
+
+//获取当前显存
+function fetchSystemStats () {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch('/system_stats')
+      const data = await response.json()
+      resolve(data)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+//清理显存
+function postFreeData () {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const postData = {
+        unload_models: true,
+        free_memory: true
+      }
+      const response = await fetch('/free', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+      })
+      if (response.ok) {
+        resolve()
+      } else {
+        reject(new Error('Request failed'))
+      }
+    } catch (error) {
+      reject(error)
+    }
+  })
+}

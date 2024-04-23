@@ -1810,21 +1810,20 @@ def createMask(image,x,y,w,h):
     # mask.save("mask.png")
     return mask
 
-
 def splitImage(image, num):
     width, height = image.size
 
     num_rows = int(num ** 0.5)
     num_cols = int(num / num_rows)
     
-    grid_width = width // num_cols
-    grid_height = height // num_rows
+    grid_width = int(width // num_cols)
+    grid_height = int(height // num_rows)
 
     grid_coordinates = []
     for i in range(num_rows):
         for j in range(num_cols):
-            x = j * grid_width
-            y = i * grid_height
+            x = int(j * grid_width)
+            y = int(i * grid_height)
             grid_coordinates.append((x, y, grid_width, grid_height))
 
     return grid_coordinates
@@ -2738,6 +2737,7 @@ class ImageColorTransfer:
         return {"required": {
                 "source": ("IMAGE",),
                 "target": ("IMAGE",),
+                "weight": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 },
                 }
     
@@ -2751,25 +2751,45 @@ class ImageColorTransfer:
     CATEGORY = "♾️Mixlab/Color"
 
     # 输入是否为列表
-    INPUT_IS_LIST = True
+    # INPUT_IS_LIST = True
 
     # 输出是否为列表
-    OUTPUT_IS_LIST = (True,)
+    # OUTPUT_IS_LIST = (True,)
 
-    def run(self,source,target):
+    def run(self,source,target,weight):
 
         res=[]
 
-        target=target[0][0]
-        print(target.shape)
-        target=tensor2pil(target)
+        #batch-list
+        source_list = [source[i:i + 1, ...] for i in range(source.shape[0])]
+        target_list = [target[i:i + 1, ...] for i in range(target.shape[0])]
 
-        for ims in source:
-            for im in ims:
-                image=tensor2pil(im)
-                image=color_transfer(image,target)
-                image=pil2tensor(image)
-                res.append(image)
+        # 长度纠正为相等
+        if len(target_list) != len(source_list):
+            target_list = target_list * (len(source_list) // len(target_list)) + target_list[:len(source_list) % len(target_list)]
+        
+        for i in range(len(source_list)):
+            target=target_list[i]
+            source=source_list[i]
+            target=tensor2pil(target)
+
+            image=tensor2pil(source)
+
+            image_res=color_transfer(image,target)
+
+            # weight Blend image # contributors:@ning
+            blend_mask = Image.new(mode="L", size=image.size,
+                                    color=(round(weight * 255)))
+            blend_mask = ImageOps.invert(blend_mask)
+            img_result = Image.composite(image, image_res, blend_mask)
+            del image, image_res, blend_mask
+            
+            img_result=pil2tensor(img_result)
+
+            res.append(img_result)
+
+        # list - batch
+        res=torch.cat(res, dim=0)
 
         return (res,)
 

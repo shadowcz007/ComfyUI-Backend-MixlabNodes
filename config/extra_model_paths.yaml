@@ -22,9 +22,9 @@
 
 #config for comfyui
 #your base path should be either an existing comfy install or a central folder where you store all of your models, loras, etc.
-
+# 模型地址
 comfyui:
-    base_path: C:\Users\38957\Documents\ai-lab\ComfyUI_windows_portable\ComfyUI
+    base_path: ./
     checkpoints: models/checkpoints/
     loras: models/loras/
     vae: models/vae/
@@ -45,7 +45,7 @@ comfyui:
     controlnet_ckpts: models/controlnet_ckpts/
     prompt_generator: models/prompt_generator/
 
-
+# 插件地址
 other_ui:
    base_path: ./
 #    checkpoints: models/checkpoints

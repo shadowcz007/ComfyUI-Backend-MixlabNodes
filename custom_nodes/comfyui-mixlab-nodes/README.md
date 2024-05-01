@@ -3,13 +3,15 @@
 > [Mixlab nodes discord](https://discord.gg/cXs9vZSqeK)
 
 #### 
+[comfyui-sd-prompt-mixlab](https://github.com/shadowcz007/comfyui-sd-prompt-mixlab)
+
 [comfyui-Image-reward](https://github.com/shadowcz007/comfyui-Image-reward)
 
 [comfyui-ultralytics-yolo](https://github.com/shadowcz007/comfyui-ultralytics-yolo)
 
 [comfyui-moondream](https://github.com/shadowcz007/comfyui-moondream)
 
-[comfyui-CLIPSeg](https://github.com/shadowcz007/comfyui-CLIPSeg)
+<!-- [comfyui-CLIPSeg](https://github.com/shadowcz007/comfyui-CLIPSeg) -->
 
 
 ## 🚀🚗🚚🏃 Workflow-to-APP 
@@ -17,7 +19,9 @@
 - 支持多个web app 切换
 - 发布为app的workflow，可以在右键里再次编辑了
 - web app可以设置分类，在comfyui右键菜单可以编辑更新web app
+- 支持动态提示
 
+![](./assets/微信图片_20240421205440.png)
 
 - Support multiple web app switching.
 - Add the AppInfo node, which allows you to transform the workflow into a web app by simple configuration.
@@ -112,6 +116,10 @@ https://github.com/shadowcz007/comfyui-mixlab-nodes/assets/12645064/e7e77f90-e43
 
 
 ### 3D
+![](./assets/3d-workflow.png)
+![](./assets/3d_app.png)
+[workflow](./assets/Image-to-3D_1.json)
+
 ![](./assets/3dimage.png)
 [workflow](./workflow/3D-workflow.json)
 
@@ -200,15 +208,20 @@ An improvement has been made to directly redirect to GitHub to search for missin
 
 ### Models
 
-[Download rembg Models](https://github.com/danielgatis/rembg/tree/main#Models),move to:models/rembg
+* [Download TripoSR](https://huggingface.co/stabilityai/TripoSR/blob/main/model.ckpt) and place it in ```models/triposr```
 
-[Download lama](https://github.com/enesmsahin/simple-lama-inpainting/releases/download/v0.1.0/big-lama.pt), move to : models/lama
+* [Download facebook/dino-vitb16](https://huggingface.co/facebook/dino-vitb16/tree/main)  and place it in ```models/triposr/facebook/dino-vitb16```
 
-[Download Salesforce/blip-image-captioning-base](https://huggingface.co/Salesforce/blip-image-captioning-base), move to : models/clip_interrogator/Salesforce/blip-image-captioning-base
 
-[Download succinctly/text2image-prompt-generator](https://huggingface.co/succinctly/text2image-prompt-generator/tree/main),move to:prompt_generator/text2image-prompt-generator
+[Download rembg Models](https://github.com/danielgatis/rembg/tree/main#Models),move to:```models/rembg```
 
-[Download Helsinki-NLP/opus-mt-zh-en](https://huggingface.co/Helsinki-NLP/opus-mt-zh-en/tree/main),move to:prompt_generator/opus-mt-zh-en
+[Download lama](https://github.com/enesmsahin/simple-lama-inpainting/releases/download/v0.1.0/big-lama.pt), move to : ```models/lama```
+
+[Download Salesforce/blip-image-captioning-base](https://huggingface.co/Salesforce/blip-image-captioning-base), move to :```models/clip_interrogator/Salesforce/blip-image-captioning-base```
+
+[Download succinctly/text2image-prompt-generator](https://huggingface.co/succinctly/text2image-prompt-generator/tree/main),move to:```models/prompt_generator/text2image-prompt-generator```
+
+[Download Helsinki-NLP/opus-mt-zh-en](https://huggingface.co/Helsinki-NLP/opus-mt-zh-en/tree/main),move to:```models/prompt_generator/opus-mt-zh-en```
 
 ## Installation
 

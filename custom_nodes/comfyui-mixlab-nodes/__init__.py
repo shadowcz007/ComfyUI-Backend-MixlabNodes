@@ -263,7 +263,7 @@ def get_my_workflow_for_app(filename="my_workflow_app.json",category="",is_all=F
                 print("发生异常：", str(e))
     else:
         app_workflow_path=os.path.join(category_path, filename)
-        # print('app_workflow_path: ',app_workflow_path)
+        print('app_workflow_path: ',app_workflow_path)
         try:
             with open(app_workflow_path) as json_file:
                 apps = [{
@@ -273,7 +273,8 @@ def get_my_workflow_for_app(filename="my_workflow_app.json",category="",is_all=F
         except Exception as e:
             print("发生异常：", str(e))
         
-        if len(apps)==1 and category!='' and category!=None:
+        # 这个代码不需要
+        # if len(apps)==1 and category!='' and category!=None:
             data=read_workflow_json_files(category_path)
             
             for item in data:
@@ -413,11 +414,25 @@ async def new_start(self, address, port, verbose=True, call_on_start=None):
         runner = web.AppRunner(self.app, access_log=None)
         await runner.setup()
 
-        if not await check_port_available(address, port):
-            raise RuntimeError(f"Port {port} is already in use.")
+        # if not await check_port_available(address, port):
+        #     raise RuntimeError(f"Port {port} is already in use.")
+        
+        http_success = False
+        http_port=port
+        for i in range(11):  # 尝试最多11次
+            if await check_port_available(address, port + i):
+                http_port = port + i
+                site = web.TCPSite(runner, address, http_port)
+                await site.start()
+                http_success = True
+                break
 
-        site = web.TCPSite(runner, address, port)
-        await site.start()
+        if not http_success:
+            raise RuntimeError(f"Ports {port} to {port + 10} are all in use.")
+        
+
+        # site = web.TCPSite(runner, address, port)
+        # await site.start()
 
         import ssl
         crt, key = create_for_https()
@@ -425,22 +440,22 @@ async def new_start(self, address, port, verbose=True, call_on_start=None):
         ssl_context.load_cert_chain(crt, key)
 
         success = False
-        for i in range(10):  # 尝试最多10次
-            if await check_port_available(address, port + 1 + i):
-                https_port = port + 1 + i
+        for i in range(11):  # 尝试最多11次
+            if await check_port_available(address, http_port + 1 + i):
+                https_port = http_port + 1 + i
                 site2 = web.TCPSite(runner, address, https_port, ssl_context=ssl_context)
                 await site2.start()
                 success = True
                 break
 
         if not success:
-            raise RuntimeError(f"Ports {port + 1} to {port + 10} are all in use.")
+            raise RuntimeError(f"Ports {http_port + 1} to {http_port + 10} are all in use.")
 
         if address == '':
             address = '0.0.0.0'
         if verbose:
             print("\033[93mStarting server\n")
-            print("\033[93mTo see the GUI go to: http://{}:{}".format(address, port))
+            print("\033[93mTo see the GUI go to: http://{}:{}".format(address, http_port))
             print("\033[93mTo see the GUI go to: https://{}:{}\033[0m".format(address, https_port))
         if call_on_start is not None:
             call_on_start(address, port)
@@ -453,6 +468,7 @@ async def new_start(self, address, port, verbose=True, call_on_start=None):
         #     address = '127.0.0.1'
         # webbrowser.open(f"https://{address}")
         # webbrowser.open(f"http://{address}:{port}")
+
 
 
 PromptServer.start=new_start
@@ -596,11 +612,13 @@ from .nodes.ScreenShareNode import ScreenShareNode,FloatingVideo
 from .nodes.ChatGPT import ChatGPTNode,ShowTextForGPT,CharacterInText,TextSplitByDelimiter
 from .nodes.Audio import GamePal,SpeechRecognition,SpeechSynthesis
 from .nodes.Utils import IncrementingListNode,ListSplit,CreateLoraNames,CreateSampler_names,CreateCkptNames,CreateSeedNode,TESTNODE_,TESTNODE_TOKEN,AppInfo,IntNumber,FloatSlider,TextInput,ColorInput,FontInput,TextToNumber,DynamicDelayProcessor,LimitNumber,SwitchByIndex,MultiplicationNode
-from .nodes.Mask import MaskListReplace,MaskListMerge,OutlineMask,FeatheredMask
+from .nodes.Mask import PreviewMask_,MaskListReplace,MaskListMerge,OutlineMask,FeatheredMask
 
 from .nodes.Style import ApplyVisualStylePrompting,StyleAlignedReferenceSampler,StyleAlignedBatchAlign,StyleAlignedSampleReferenceLatents
 
 from .nodes.Video import VideoCombine_Adv,LoadVideoAndSegment,ImageListReplace,VAEEncodeForInpaint_Frames
+
+from .nodes.TripoSR import LoadTripoSRModel,TripoSRSampler,SaveTripoSRMesh
 
 
 # 要导出的所有节点及其名称的字典
@@ -685,7 +703,11 @@ NODE_CLASS_MAPPINGS = {
     "MaskListReplace_":MaskListReplace,
     "ImageListReplace_":ImageListReplace,
     "VAEEncodeForInpaint_Frames":VAEEncodeForInpaint_Frames,
-    "IncrementingListNode_":IncrementingListNode
+    "IncrementingListNode_":IncrementingListNode,
+    "PreviewMask_":PreviewMask_,
+     "LoadTripoSRModel_": LoadTripoSRModel,
+    "TripoSRSampler_": TripoSRSampler,
+    "SaveTripoSRMesh": SaveTripoSRMesh
     # "GamePal":GamePal
 }
 
@@ -739,7 +761,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "GetImageSize_":"Get Image Size ♾️Mixlab",
     "VAEEncodeForInpaint_Frames":"VAE Encode For Inpaint Frames ♾️Mixlab",
     "IncrementingListNode_":"Create Incrementing Number List ♾️Mixlab",
-    "LoadImagesToBatch":"Load Images(base64) ♾️Mixlab"
+    "LoadImagesToBatch":"Load Images(base64) ♾️Mixlab",
+    "PreviewMask_":"Preview Mask",
+    "LoadTripoSRModel_": "Load TripoSR Model",
+    "TripoSRSampler_": "TripoSR Sampler",
+    "SaveTripoSRMesh": "Save TripoSR Mesh"
 }
 
 # web ui的节点功能

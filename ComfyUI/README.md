@@ -11,7 +11,7 @@ This ui will let you design and execute advanced stable diffusion pipelines usin
 
 ## Features
 - Nodes/graph/flowchart interface to experiment and create complex Stable Diffusion workflows without needing to code anything.
-- Fully supports SD1.x, SD2.x, [SDXL](https://comfyanonymous.github.io/ComfyUI_examples/sdxl/) and [Stable Video Diffusion](https://comfyanonymous.github.io/ComfyUI_examples/video/)
+- Fully supports SD1.x, SD2.x, [SDXL](https://comfyanonymous.github.io/ComfyUI_examples/sdxl/), [Stable Video Diffusion](https://comfyanonymous.github.io/ComfyUI_examples/video/) and [Stable Cascade](https://comfyanonymous.github.io/ComfyUI_examples/stable_cascade/)
 - Asynchronous Queue system
 - Many optimizations: Only re-executes the parts of the workflow that changes between executions.
 - Command line option: ```--lowvram``` to make it work on GPUs with less than 3GB vram (enabled automatically on GPUs with low vram)
@@ -142,7 +142,7 @@ You can install ComfyUI in Apple Mac silicon (M1 or M2) with any recent macOS ve
 1. Install pytorch nightly. For instructions, read the [Accelerated PyTorch training on Mac](https://developer.apple.com/metal/pytorch/) Apple Developer guide (make sure to install the latest pytorch nightly).
 1. Follow the [ComfyUI manual installation](#manual-install-windows-linux) instructions for Windows and Linux.
 1. Install the ComfyUI [dependencies](#dependencies). If you have another Stable Diffusion UI [you might be able to reuse the dependencies](#i-already-have-another-ui-for-stable-diffusion-installed-do-i-really-have-to-install-all-of-these-dependencies).
-1. Launch ComfyUI by running `python main.py --force-fp16`. Note that --force-fp16 will only work if you installed the latest pytorch nightly.
+1. Launch ComfyUI by running `python main.py`
 
 > **Note**: Remember to add your models, VAE, LoRAs etc. to the corresponding Comfy folders, as discussed in [ComfyUI manual installation](#manual-install-windows-linux).
 

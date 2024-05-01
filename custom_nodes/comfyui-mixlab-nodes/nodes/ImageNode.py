@@ -16,6 +16,19 @@ import math,glob
 from .Watcher import FolderWatcher
 import hashlib
 
+
+
+# 将PIL图片转换为OpenCV格式
+def pil_to_opencv(image):
+    open_cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+    return open_cv_image
+
+# 将OpenCV格式图片转换为PIL格式
+def opencv_to_pil(image):
+    pil_image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    return pil_image
+
+
 def composite_images(foreground, background, mask):
     width,height=foreground.size
  
@@ -620,7 +633,7 @@ def detect_faces(image):
 
 def areaToMask(x,y,w,h,image):
     # 创建一个与原图片大小相同的空白图片
-    mask = Image.new('1', image.size)
+    mask = Image.new('L', image.size)
 
     # 创建一个可用于绘制的对象
     draw = ImageDraw.Draw(mask)
@@ -653,7 +666,46 @@ def areaToMask(x,y,w,h,image):
 #     # bg_image.save("output.jpg")
 #     return bg_image
 
-def merge_images(bg_image, layer_image, mask, x, y, width, height, scale_option):
+
+import cv2
+import numpy as np
+
+# ps的正片叠底
+# 可以基于https://www.cnblogs.com/jsxyhelu/p/16947810.html ，用gpt写python代码
+def multiply_blend(image1, image2):
+    image1=pil_to_opencv(image1)
+    image2=pil_to_opencv(image2)
+    # 将图像转换为浮点型
+    image1 = image1.astype(float)
+    image2 = image2.astype(float)
+    if image1.shape != image2.shape:
+        image1 = cv2.resize(image1, (image2.shape[1], image2.shape[0]))
+        
+    # 归一化图像
+    image1 /= 255.0
+    image2 /= 255.0
+
+    # 正片叠底混合
+    blended = image1 * image2
+
+    # 将图像还原为8位无符号整数
+    blended = (blended * 255).astype(np.uint8)
+
+    blended=opencv_to_pil(blended)
+    return blended
+
+# # 读取图像
+# image1 = cv2.imread('1.png')
+# image2 = cv2.imread('3.png')
+
+# # 进行正片叠底混合
+# result = multiply_blend(image1, image2)
+
+# cv2.imwrite('result.jpg', result)
+
+
+
+def merge_images(bg_image, layer_image, mask, x, y, width, height, scale_option,is_multiply_blend=False):
     # 打开底图
     bg_image = bg_image.convert("RGBA")
 
@@ -682,8 +734,27 @@ def merge_images(bg_image, layer_image, mask, x, y, width, height, scale_option)
     nw, nh = layer_image.size
     mask = mask.resize((nw, nh))
 
-    # 在底图上粘贴图层
-    bg_image.paste(layer_image, (x, y), mask=mask)
+    # 分离出a通道
+    r, g, b, alpha = layer_image.split()
+    alpha = ImageOps.invert(alpha)
+    # 创建一个新的RGB图像
+    new_rgb_image = Image.new("RGB", layer_image.size)
+    # 将透明通道粘贴到新的RGB图像上
+    new_rgb_image.paste(layer_image, (0, 0), mask=alpha)
+   
+    new_rgb_image.paste(layer_image, (x, y), mask=mask)
+    mask=new_rgb_image.convert('L')
+    mask = ImageOps.invert(mask)
+
+    if is_multiply_blend:
+        bg_image_white=Image.new("RGB", bg_image.size,(255, 255, 255))
+
+        bg_image_white.paste(layer_image, (x, y), mask=mask)
+        bg_image=multiply_blend(bg_image_white,bg_image)
+        bg_image=bg_image.convert("RGBA")
+    else:
+        # 在底图上粘贴图层
+        bg_image.paste(layer_image, (x, y), mask=mask)
 
     # 输出合成后的图片
     return bg_image
@@ -1753,7 +1824,7 @@ class NewLayer:
                     "display": "number" # Cosmetic only: display as "number" or "slider"
                 }),
                 "scale_option": (["width","height",'overall'],),
-                "image": ("IMAGE",),
+                "image": (any_type,),
             },
              "optional":{
                     "mask": ("MASK",{"default": None}),
@@ -2155,12 +2226,16 @@ class GridOutput:
     def INPUT_TYPES(s):
         return { 
             "required": {
-                "grid": ("_GRID",)
-            }
+                "grid": ("_GRID",),
+                
+            },
+            "optional":{
+                  "bg_image":("IMAGE",)
+                }
                 }
     
-    RETURN_TYPES = ("INT","INT","INT","INT",)
-    RETURN_NAMES = ("x","y","width","height",)
+    RETURN_TYPES = ("INT","INT","INT","INT","MASK",)
+    RETURN_NAMES = ("x","y","width","height","mask",)
 
     FUNCTION = "run"
 
@@ -2169,9 +2244,26 @@ class GridOutput:
     INPUT_IS_LIST = False
     # OUTPUT_IS_LIST = (True,)
 
-    def run(self,grid):
+    def run(self,grid,bg_image=None):
         x,y,w,h=grid
-        return (x,y,w,h,)
+        x=int(x)
+        y=int(y)
+        w=int(w)
+        h=int(h)
+
+        masks=[]
+        if bg_image!=None:
+            for i in range(len(bg_image)):
+                im=bg_image[i]
+                #增加输出mask
+                im=tensor2pil(im)
+                mask=areaToMask(x,y,w,h,im)
+                mask=pil2tensor(mask)
+                masks.append(mask)
+        out=None
+        if len(masks)>0:
+            out = torch.cat(masks, dim=0)
+        return (x,y,w,h,out,)
 
 
 
@@ -2266,10 +2358,14 @@ class MergeLayers:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": { 
-            "layers": ("LAYER",),
-            "images": ("IMAGE",),
-                             },
-
+                            "layers": ("LAYER",),
+                            "images": ("IMAGE",),
+                                            },
+            "optional":{
+                           
+                            "is_multiply_blend":  ("BOOLEAN", {"default": False}),
+                            
+                    }
                 }
     
     RETURN_TYPES = ("IMAGE","MASK",)
@@ -2282,11 +2378,12 @@ class MergeLayers:
     INPUT_IS_LIST = True
     # OUTPUT_IS_LIST = (False,)
 
-    def run(self,layers,images):
+    def run(self,layers,images,is_multiply_blend):
 
         bg_images=[]
         masks=[]
- 
+        
+        is_multiply_blend=is_multiply_blend[0]
         # print(len(images),images[0].shape)
         # 1  torch.Size([2, 512, 512, 3])
         # 4  torch.Size([1, 1024, 768, 3])
@@ -2317,6 +2414,8 @@ class MergeLayers:
                     
                     layer_image=tensor2pil(image)
                     layer_mask=tensor2pil(mask)
+                    # t=layer_image.convert("RGBA")
+                    # t.save('test.png') 如果layerimage传入的是rgba，则是透明的
                     bg_image=merge_images(bg_image,
                                         layer_image,
                                         layer_mask,
@@ -2324,7 +2423,8 @@ class MergeLayers:
                                         layer['y'],
                                         layer['width'],
                                         layer['height'],
-                                        layer['scale_option']
+                                        layer['scale_option'],
+                                        is_multiply_blend
                                         )
                     
                     final_mask=merge_images(final_mask,

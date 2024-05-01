@@ -37,6 +37,7 @@ parser.add_argument("--listen", type=str, default="127.0.0.1", metavar="IP", nar
 parser.add_argument("--port", type=int, default=8188, help="Set the listen port.")
 parser.add_argument("--enable-cors-header", type=str, default=None, metavar="ORIGIN", nargs="?", const="*", help="Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default '*'.")
 parser.add_argument("--max-upload-size", type=float, default=100, help="Set the maximum upload size in MB.")
+
 parser.add_argument("--extra-model-paths-config", type=str, default=None, metavar="PATH", nargs='+', action='append', help="Load one or more extra_model_paths.yaml files.")
 parser.add_argument("--output-directory", type=str, default=None, help="Set the ComfyUI output directory.")
 parser.add_argument("--temp-directory", type=str, default=None, help="Set the ComfyUI temp directory (default is in the ComfyUI directory).")
@@ -113,6 +114,9 @@ parser.add_argument("--disable-metadata", action="store_true", help="Disable sav
 
 parser.add_argument("--multi-user", action="store_true", help="Enables per-user storage.")
 
+parser.add_argument("--verbose", action="store_true", help="Enables more debug prints.")
+
+
 if comfy.options.args_parsing:
     args = parser.parse_args()
 else:
@@ -123,3 +127,10 @@ if args.windows_standalone_build:
 
 if args.disable_auto_launch:
     args.auto_launch = False
+
+import logging
+logging_level = logging.INFO
+if args.verbose:
+    logging_level = logging.DEBUG
+
+logging.basicConfig(format="%(message)s", level=logging_level)

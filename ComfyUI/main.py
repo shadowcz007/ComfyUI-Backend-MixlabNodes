@@ -31,7 +31,6 @@ sys.path.insert(0, current_directory)
 
 # print('###新路径',sys.path)
 
-
 def execute_prestartup_script():
     def execute_script(script_path):
         module_name = os.path.splitext(script_path)[0]
@@ -43,6 +42,7 @@ def execute_prestartup_script():
         except Exception as e:
             print(f"Failed to execute startup-script: {script_path} / {e}")
         return False
+
     node_paths = folder_paths.get_folder_paths("custom_nodes")
     for custom_node_path in node_paths:
         possible_modules = os.listdir(custom_node_path)
@@ -268,11 +268,11 @@ if __name__ == "__main__":
 
     call_on_start = None
     if args.auto_launch:
-        def startup_server(address, port):
+        def startup_server(scheme, address, port):
             import webbrowser
             if os.name == 'nt' and address == '0.0.0.0':
                 address = '127.0.0.1'
-            webbrowser.open(f"http://{address}:{port}")
+            webbrowser.open(f"{scheme}://{address}:{port}")
         call_on_start = startup_server
 
     try:

@@ -24,7 +24,7 @@
 #your base path should be either an existing comfy install or a central folder where you store all of your models, loras, etc.
 # 模型地址
 comfyui:
-    base_path: ./
+    base_path: C:\Users\38957\Documents\ai-lab\ComfyUI_windows_portable\ComfyUI
     checkpoints: models/checkpoints/
     loras: models/loras/
     vae: models/vae/
@@ -47,7 +47,7 @@ comfyui:
 
 # 插件地址
 other_ui:
-   base_path: ./
+   base_path: C:\Users\38957\Documents\GitHub\comfyui-backend-release
 #    checkpoints: models/checkpoints
 #    gligen: models/gligen
    custom_nodes: custom_nodes

@@ -8,8 +8,8 @@
 可以修改```extra_model_paths.yaml```的```base_path```
 
 
-### custom_nodes位置
-修改```extra_model_paths.yaml```的 ```other_ui``` 里的```base_path```
+<!-- ### custom_nodes位置
+修改```extra_model_paths.yaml```的 ```other_ui``` 里的```base_path``` -->
 
 
 ## mac 安装

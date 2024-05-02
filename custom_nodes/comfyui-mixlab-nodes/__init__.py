@@ -7,7 +7,8 @@ import urllib
 import hashlib
 import datetime
 import folder_paths
-
+import logging
+from comfy.cli_args import args
 python = sys.executable
 
 
@@ -434,10 +435,20 @@ async def new_start(self, address, port, verbose=True, call_on_start=None):
         # site = web.TCPSite(runner, address, port)
         # await site.start()
 
-        import ssl
-        crt, key = create_for_https()
-        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        ssl_context.load_cert_chain(crt, key)
+        ssl_context = None
+        scheme = "http"
+        # 跟着本体修改
+        if args.tls_keyfile and args.tls_certfile:
+                scheme = "https"
+                ssl_context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_SERVER, verify_mode=ssl.CERT_NONE)
+                ssl_context.load_cert_chain(certfile=args.tls_certfile,
+                                keyfile=args.tls_keyfile)
+        else:
+            # 如果没传，则自动创建
+            import ssl
+            crt, key = create_for_https()
+            ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+            ssl_context.load_cert_chain(crt, key)
 
         success = False
         for i in range(11):  # 尝试最多11次
@@ -452,13 +463,27 @@ async def new_start(self, address, port, verbose=True, call_on_start=None):
             raise RuntimeError(f"Ports {http_port + 1} to {http_port + 10} are all in use.")
 
         if address == '':
-            address = '0.0.0.0'
+            address = '127.0.0.1'
+        if address=='0.0.0.0':
+            address = '127.0.0.1'
+            
         if verbose:
-            print("\033[93mStarting server\n")
-            print("\033[93mTo see the GUI go to: http://{}:{}".format(address, http_port))
-            print("\033[93mTo see the GUI go to: https://{}:{}\033[0m".format(address, https_port))
+
+            logging.info("\n")
+            logging.info("\n\nStarting server")
+
+            # print("\033[93mStarting server\n")
+            logging.info("\033[93mTo see the GUI go to: http://{}:{}".format(address, http_port))
+            logging.info("\033[93mTo see the GUI go to: https://{}:{}\033[0m".format(address, https_port))
+ 
+            # print("\033[93mTo see the GUI go to: http://{}:{}".format(address, http_port))
+            # print("\033[93mTo see the GUI go to: https://{}:{}\033[0m".format(address, https_port))
+
         if call_on_start is not None:
-            call_on_start(address, port)
+            if scheme=='https':
+                call_on_start(scheme,address, https_port)
+            else:
+                call_on_start(scheme,address, http_port)
 
     except Exception as e:
         print(f"Error starting the server: {e}")
@@ -771,42 +796,44 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 # web ui的节点功能
 WEB_DIRECTORY = "./web"
 
-print('--------------')
-print('\033[91m ### Mixlab Nodes: \033[93mLoaded')
+
+logging.info('--------------')
+logging.info('\033[91m ### Mixlab Nodes: \033[93mLoaded')
+# print('\033[91m ### Mixlab Nodes: \033[93mLoaded')
 
 try:
     from .nodes.Lama import LaMaInpainting
-    print('LaMaInpainting.available',LaMaInpainting.available)
+    logging.info('LaMaInpainting.available {}'.format(LaMaInpainting.available))
     if LaMaInpainting.available:
         NODE_CLASS_MAPPINGS['LaMaInpainting']=LaMaInpainting
 except Exception as e:
-    print('LaMaInpainting.available',False,e)
+    logging.info('LaMaInpainting.available False')
 
 try:
     from .nodes.ClipInterrogator import ClipInterrogator
-    print('ClipInterrogator.available',ClipInterrogator.available)
+    logging.info('ClipInterrogator.available {}'.format(ClipInterrogator.available))
     if ClipInterrogator.available:
         NODE_CLASS_MAPPINGS['ClipInterrogator']=ClipInterrogator
 except Exception as e:
-    print('ClipInterrogator.available',False,e)
+    logging.info('ClipInterrogator.available False')
 
 try:
     from .nodes.TextGenerateNode import PromptGenerate,ChinesePrompt
-    print('PromptGenerate.available',PromptGenerate.available)
+    logging.info('PromptGenerate.available {}'.format(PromptGenerate.available))
     if PromptGenerate.available:
         NODE_CLASS_MAPPINGS['PromptGenerate_Mix']=PromptGenerate
-    print('ChinesePrompt.available',ChinesePrompt.available)
+    logging.info('ChinesePrompt.available {}'.format(ChinesePrompt.available))
     if ChinesePrompt.available:
         NODE_CLASS_MAPPINGS['ChinesePrompt_Mix']=ChinesePrompt
 except Exception as e:
-    print('TextGenerateNode.available',False,e)
+    logging.info('TextGenerateNode.available False')
 
 try:
     from .nodes.RembgNode import RembgNode_
-    print('RembgNode_.available',RembgNode_.available)
+    logging.info('RembgNode_.available {}'.format(RembgNode_.available))
     if RembgNode_.available:
         NODE_CLASS_MAPPINGS['RembgNode_Mix']=RembgNode_
 except Exception as e:
-    print('RembgNode_.available',False,e)
+    logging.info('RembgNode_.available False' )
 
-print('\033[93m -------------- \033[0m')
+logging.info('\033[93m -------------- \033[0m')

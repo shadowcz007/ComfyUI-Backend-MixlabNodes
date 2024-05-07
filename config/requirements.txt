@@ -32,6 +32,6 @@ yacs
 trimesh[easy]
 ultralytics
 
-# insightface
-# onnxruntime
-# onnxruntime-gpu
+insightface
+onnxruntime
+onnxruntime-gpu

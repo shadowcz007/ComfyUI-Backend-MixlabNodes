@@ -3,3 +3,4 @@ python_embeded
 **/__pycache__/
 ComfyUI\custom_nodes\comfyui_controlnet_aux\ckpts
 /custom_nodes/comfyui-mixlab-nodes/app
+python_embeded.zip

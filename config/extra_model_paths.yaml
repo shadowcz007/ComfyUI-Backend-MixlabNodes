@@ -44,6 +44,7 @@ comfyui:
     configs: models/configs/
     controlnet_ckpts: models/controlnet_ckpts/
     prompt_generator: models/prompt_generator/
+    llamafile: models/llamafile/
 
 # 插件地址
 other_ui:

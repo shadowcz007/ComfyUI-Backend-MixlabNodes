@@ -14,7 +14,10 @@ python = sys.executable
 llama_port=None
 llama_model=""
 
-from .nodes.ChatGPT import get_llama_models,get_llama_model_path
+from .nodes.ChatGPT import get_llama_models,get_llama_model_path,llama_cpp_client
+
+llama_cpp_client("")
+
 
 from server import PromptServer
 
@@ -67,8 +70,6 @@ except ImportError:
     print("pip install -r requirements.txt")
     is_installed('watchdog')
     sys.exit()
-
-
 
 def install_openai():
     # Helper function to install the OpenAI module if not already installed
@@ -677,7 +678,13 @@ async def start_local_llm(data):
 
     app = create_app(
                 server_settings=server_settings,
-                model_settings=[ModelSettings(model=model,n_gpu_layers=9999,n_ctx=4098)],
+                model_settings=[
+                    ModelSettings(
+                    model=model,
+                    n_gpu_layers=9999,
+                    n_ctx=4098,
+                    chat_format="chatml"
+                    )],
             )
 
     def run_uvicorn():

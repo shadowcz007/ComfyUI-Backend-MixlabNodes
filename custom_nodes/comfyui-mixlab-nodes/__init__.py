@@ -14,9 +14,12 @@ python = sys.executable
 llama_port=None
 llama_model=""
 
-from .nodes.ChatGPT import get_llama_models,get_llama_model_path,llama_cpp_client
+try:
+    from .nodes.ChatGPT import get_llama_models,get_llama_model_path,llama_cpp_client
+    llama_cpp_client("")
 
-llama_cpp_client("")
+except:
+    print("##nodes.ChatGPT ImportError")
 
 
 from server import PromptServer
@@ -70,6 +73,8 @@ except ImportError:
     print("pip install -r requirements.txt")
     is_installed('watchdog')
     sys.exit()
+
+
 
 def install_openai():
     # Helper function to install the OpenAI module if not already installed
@@ -684,8 +689,7 @@ async def start_local_llm(data):
                     n_gpu_layers=9999,
                     n_ctx=4098,
                     chat_format="chatml"
-                    )],
-            )
+                    )])
 
     def run_uvicorn():
         uvicorn.run(
@@ -712,7 +716,13 @@ async def start_local_llm(data):
 async def my_hander_method(request):
     data =await request.json()
     # print(data)
-    result=await start_local_llm(data)
+    try:
+        result=await start_local_llm(data)
+    except:
+        result={
+            {"port":None,"model":"","llama_cpp_error":True}
+        }
+        print('start_local_llm error')
 
     return web.json_response(result)
 

@@ -45,6 +45,11 @@ comfyui:
     controlnet_ckpts: models/controlnet_ckpts/
     prompt_generator: models/prompt_generator/
     llamafile: models/llamafile/
+    prompt_generator: models/prompt_generator/
+    lama: models/lama/
+    clip_interrogator: models/clip_interrogator/
+
+
 
 # 插件地址
 other_ui:

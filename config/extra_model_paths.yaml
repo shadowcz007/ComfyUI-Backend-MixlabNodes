@@ -47,6 +47,7 @@ comfyui:
     llamafile: models/llamafile/
     lama: models/lama/
     clip_interrogator: models/clip_interrogator/
+    ipadapter: models/ipadapter/
 
 # 插件地址
 other_ui:

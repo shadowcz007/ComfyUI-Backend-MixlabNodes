@@ -51,8 +51,13 @@ async function start_llama (model = 'Phi-3-mini-4k-instruct-Q5_K_S.gguf') {
       })
     })
 
-    const data = await response.json()
-    return { url: `http://127.0.0.1:${data.port}`, model: data.model }
+    const data = await response.json();
+    if(data.llama_cpp_error){
+      return 
+    }
+    
+    return { url:`http://${window.location.hostname}:${data.port}`, model: data.model }
+    
   } catch (error) {
     console.error(error)
   }

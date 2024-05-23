@@ -8,6 +8,8 @@ import hashlib
 import datetime
 import folder_paths
 import logging
+import base64,io,re
+from PIL import Image
 from comfy.cli_args import args
 python = sys.executable
 
@@ -20,6 +22,7 @@ except:
 
 llama_port=None
 llama_model=""
+llama_chat_format=""
 
 try:
     from .nodes.ChatGPT import get_llama_models,get_llama_model_path,llama_cpp_client
@@ -28,6 +31,8 @@ try:
 except:
     print("##nodes.ChatGPT ImportError")
 
+
+from .nodes.RembgNode import get_rembg_models,U2NET_HOME,run_briarmbg,run_rembg
 
 from server import PromptServer
 
@@ -97,6 +102,26 @@ install_openai()
 current_path = os.path.abspath(os.path.dirname(__file__))
 
 
+def remove_base64_prefix(base64_str):
+  """
+  去除 base64 字符串中的 data:image/*;base64, 前缀
+
+  Args:
+    base64_str: base64 编码的字符串
+
+  Returns:
+    去除前缀后的 base64 字符串
+  """
+
+  # 使用正则表达式匹配常见的前缀
+  pattern = r'^data:image\/(.*);base64,(.+)$'
+  match = re.match(pattern, base64_str)
+  if match:
+    # 如果匹配到常见的前缀，则去除前缀并返回
+    return match.group(2)
+  else:
+    # 如果不匹配到常见的前缀，则直接返回
+    return base64_str
 
 def calculate_md5(string):
     encoded_string = string.encode()
@@ -628,8 +653,51 @@ async def get_checkpoints(request):
             names=get_llama_models()
     except:
         print("llamafile none")
+
+    try:
+        if data['type']=='rembg':
+            names=get_rembg_models(U2NET_HOME)
+    except:
+        print("rembg none")
     
     return web.json_response({"names":names,"types":list(folder_paths.folder_names_and_paths.keys())})
+
+
+@routes.post('/mixlab/rembg')
+async def rembg_hander(request):
+    data = await request.json()
+    model=data['model']
+    result={}
+
+    data_base64=remove_base64_prefix(data['base64'])
+    image_data = base64.b64decode(data_base64)
+    
+    # 创建一个BytesIO对象
+    image_stream = io.BytesIO(image_data)
+
+    # 使用PIL Image模块读取图像
+    image = Image.open(image_stream)
+
+    if model=='briarmbg':
+        _,rgba_images,_=run_briarmbg([image])
+    else:
+        _,rgba_images,_=run_rembg(model,[image])
+
+    with io.BytesIO() as buf:
+        rgba_images[0].save(buf, format='PNG')
+        img_bytes = buf.getvalue()
+    img_base64 = base64.b64encode(img_bytes).decode('utf-8')
+    
+    try: 
+        result={
+            'data':img_base64,
+            'model':model,
+            'status':'success',
+            }
+    except Exception as e:
+            print(e)
+
+    return web.json_response(result)
 
 
 @routes.post("/mixlab/prompt_result")
@@ -651,9 +719,9 @@ async def post_prompt_result(request):
 
 
 async def start_local_llm(data):
-    global llama_port,llama_model
-    if llama_port and llama_model:
-        return {"port":llama_port,"model":llama_model}
+    global llama_port,llama_model,llama_chat_format
+    if llama_port and llama_model and llama_chat_format:
+        return {"port":llama_port,"model":llama_model,"chat_format":llama_chat_format}
 
     import threading
     import uvicorn
@@ -671,7 +739,29 @@ async def start_local_llm(data):
 
     elif "model" in data:
         model=get_llama_model_path(data['model'])
+
+    n_gpu_layers=-1
+
+    if "n_gpu_layers" in data:
+        n_gpu_layers=data['n_gpu_layers']
+
+
+    chat_format="chatml"
+
+    model_alias=os.path.basename(model)
+
+    # 多模态
+    clip_model_path=None
     
+    prefix = "llava-phi-3-mini"
+    file_name = prefix+"-mmproj-"
+    if model_alias.startswith(prefix):
+        for file in os.listdir(os.path.dirname(model)):
+            if file.startswith(file_name):
+                clip_model_path=os.path.join(os.path.dirname(model),file)
+                chat_format='llava-1-5'
+    print('#clip_model_path',chat_format,clip_model_path)
+
 
     address="127.0.0.1"
     port=9090
@@ -688,14 +778,19 @@ async def start_local_llm(data):
     
     server_settings=ServerSettings(host=address,port=port)
 
+    name, ext = os.path.splitext(os.path.basename(model))
+    print('#model',name)
     app = create_app(
                 server_settings=server_settings,
                 model_settings=[
                     ModelSettings(
                     model=model,
-                    n_gpu_layers=-1,
+                    model_alias=name,
+                    n_gpu_layers=n_gpu_layers,
                     n_ctx=4098,
-                    chat_format="chatml"
+                    chat_format=chat_format,
+                    embedding=False,
+                    clip_model_path=clip_model_path
                     )])
 
     def run_uvicorn():
@@ -715,8 +810,9 @@ async def start_local_llm(data):
 
     llama_port=port
     llama_model=data['model']
+    llama_chat_format=chat_format
 
-    return  {"port":llama_port,"model":llama_model}
+    return  {"port":llama_port,"model":llama_model,"chat_format":llama_chat_format}
 
 # llam服务的开启
 @routes.post('/mixlab/start_llama')
@@ -733,19 +829,20 @@ async def my_hander_method(request):
 
     return web.json_response(result)
 
-# parser.add_argument("--llm-model", type=str, help="Path to Model file (gguf). Run the Local LLM by MixlabNodes")
-# if args.llm_model and os.path.exists(args.llm_model):
-#     start_local_llm({
-#         "model_path":args.llm_model
-#     })
-#     print("Local LLM Start")
-
+# 重启服务
+@routes.post('/mixlab/re_start')
+def re_start(request):
+    try:
+        sys.stdout.close_log()
+    except Exception as e:
+        pass
+    return os.execv(sys.executable, [sys.executable] + sys.argv)
 
 
 
 # 导入节点
 from .nodes.PromptNode import GLIGENTextBoxApply_Advanced,EmbeddingPrompt,RandomPrompt,PromptSlide,PromptSimplification,PromptImage,JoinWithDelimiter
-from .nodes.ImageNode import LoadImages_,CompositeImages,GridDisplayAndSave,GridInput,ImagesPrompt,SaveImageAndMetadata,SaveImageToLocal,SplitImage,GridOutput,GetImageSize_,MirroredImage,ImageColorTransfer,NoiseImage,TransparentImage,GradientImage,LoadImagesFromPath,LoadImagesFromURL,ResizeImage,TextImage,SvgImage,Image3D,ShowLayer,NewLayer,MergeLayers,CenterImage,AreaToMask,SmoothMask,SplitLongMask,ImageCropByAlpha,EnhanceImage,FaceToMask
+from .nodes.ImageNode import ComparingTwoFrames,LoadImages_,CompositeImages,GridDisplayAndSave,GridInput,ImagesPrompt,SaveImageAndMetadata,SaveImageToLocal,SplitImage,GridOutput,GetImageSize_,MirroredImage,ImageColorTransfer,NoiseImage,TransparentImage,GradientImage,LoadImagesFromPath,LoadImagesFromURL,ResizeImage,TextImage,SvgImage,Image3D,ShowLayer,NewLayer,MergeLayers,CenterImage,AreaToMask,SmoothMask,SplitLongMask,ImageCropByAlpha,EnhanceImage,FaceToMask
 # from .nodes.Vae import VAELoader,VAEDecode
 from .nodes.ScreenShareNode import ScreenShareNode,FloatingVideo
 
@@ -806,6 +903,7 @@ NODE_CLASS_MAPPINGS = {
     # "VAELoaderConsistencyDecoder":VAELoader,
     "SaveImageToLocal":SaveImageToLocal,
     "SaveImageAndMetadata_":SaveImageAndMetadata,
+    "ComparingTwoFrames_":ComparingTwoFrames,
     # "VAEDecodeConsistencyDecoder":VAEDecode,
     "ScreenShare":ScreenShareNode,
     "FloatingVideo":FloatingVideo,
@@ -860,6 +958,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "IntNumber":"Int Input ♾️MixlabApp",
     "ImagesPrompt_":"Images Input ♾️MixlabApp",
     "SaveImageAndMetadata_":"Save Image Output ♾️MixlabApp",
+    "ComparingTwoFrames_":"Comparing Two Frames ♾️MixlabApp",
     "ResizeImageMixlab":"Resize Image ♾️Mixlab",
     "RandomPrompt": "Random Prompt ♾️Mixlab",
     "PromptImage":"Output Prompt and Image ♾️Mixlab",

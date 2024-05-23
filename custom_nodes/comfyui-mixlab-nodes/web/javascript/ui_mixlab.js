@@ -11,6 +11,20 @@ import { smart_init, addSmartMenu } from './smart_connect.js'
 
 import { completion_ } from './chat.js'
 
+function showTextByLanguage (key, json) {
+  // 获取浏览器语言
+  var language = navigator.language
+  // 判断是否为中文
+  if (
+    language.indexOf('zh') !== -1 ||
+    (language.indexOf('cn') !== -1 && json[key])
+  ) {
+    return json[key]
+  } else {
+    return key
+  }
+}
+
 //系统prompt
 const systemPrompt = `You are a prompt creator, your task is to create prompts for the user input request, the prompts are image descriptions that include keywords for (an adjective, type of image, framing/composition, subject, subject appearance/action, environment, lighting situation, details of the shoot/illustration, visuals aesthetics and artists), brake keywords by comas, provide high quality, non-verboose, coherent, brief, concise, and not superfluous prompts, the subject from the input request must be included verbatim on the prompt,the prompt is english`
 
@@ -32,7 +46,7 @@ async function get_llamafile_models () {
     })
 
     const data = await response.json()
-    console.log(data)
+    // console.log(data)
     return data.names
   } catch (error) {
     console.error(error)
@@ -40,6 +54,11 @@ async function get_llamafile_models () {
 }
 // 运行llama
 async function start_llama (model = 'Phi-3-mini-4k-instruct-Q5_K_S.gguf') {
+  let n_gpu_layers = -1
+  try {
+    n_gpu_layers = parseInt(localStorage.getItem('_mixlab_llama_n_gpu'))
+  } catch (error) {}
+
   try {
     const response = await fetch('/mixlab/start_llama', {
       method: 'POST',
@@ -47,20 +66,55 @@ async function start_llama (model = 'Phi-3-mini-4k-instruct-Q5_K_S.gguf') {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model
+        model,
+        n_gpu_layers
       })
     })
 
-    const data = await response.json();
-    if(data.llama_cpp_error){
-      return 
+    const data = await response.json()
+    if (data.llama_cpp_error) {
+      return
     }
-    
-    return { url:`http://${window.location.hostname}:${data.port}`, model: data.model }
-    
+
+    return {
+      url: `http://${window.location.hostname}:${data.port}`,
+      model: data.model,
+      chat_format: data.chat_format
+    }
   } catch (error) {
     console.error(error)
   }
+}
+
+function resizeImage (base64Image) {
+  var img = new Image()
+  var canvas = document.createElement('canvas')
+  var ctx = canvas.getContext('2d')
+  return new Promise((res, rej) => {
+    img.onload = function () {
+      // 等比例缩放图片
+      var width = img.width
+      var height = img.height
+      var max_width = 768
+      if (width > max_width) {
+        height *= max_width / width
+        width = max_width
+      }
+
+      // 设置canvas尺寸
+      canvas.width = width
+      canvas.height = height
+
+      // 在canvas上绘制图片
+      ctx.drawImage(img, 0, 0, width, height)
+
+      // 将canvas转换为base64图片数据
+      var canvasData = canvas.toDataURL()
+      res(canvasData) //  canvas转换后的base64图片数据
+    }
+
+    img.src = base64Image
+  })
 }
 
 // 菜单入口
@@ -485,7 +539,6 @@ injectCSS(`::-webkit-scrollbar {
   border-left: 2px solid var(--input-text); 
 }
  
-
 `)
 
 async function getCustomnodeMappings (mode = 'url') {
@@ -610,13 +663,28 @@ app.showMissingNodesError = async function (
   // console.log('#nodesMap', nodesMap)
   // console.log('###MIXLAB', missingNodeTypes, hasAddedNodes)
   this.ui.dialog.show(
-    `When loading the graph, the following node types were not found: <ul>${missingNodeGithub(
-      missingNodeTypes,
-      nodesMap
-    ).join('')}</ul>${
-      hasAddedNodes
-        ? 'Nodes that have failed to load will show as red on the graph.'
-        : ''
+    `<a style="color: white;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    font-family: sans-serif;
+  }"
+  href="https://discord.gg/cXs9vZSqeK"  target="_blank">${showTextByLanguage(
+    'Welcome to Mixlab nodes discord, seeking help.',
+    {
+      'Welcome to Mixlab nodes discord, seeking help.':
+        '寻求帮助，加入Mixlab nodes交流频道'
+    }
+  )}</a><br><br>${showTextByLanguage(
+      'When loading the graph, the following node types were not found:',
+      {
+        'When loading the graph, the following node types were not found:':
+          '缺少以下节点：'
+      }
+    )}
+  
+   <ul>${missingNodeGithub(missingNodeTypes, nodesMap).join('')}</ul>${
+      hasAddedNodes ? '' : ''
     }`
   )
   this.logging.addEntry('Comfy.App', 'warn', {
@@ -768,15 +836,73 @@ function createModelsModal (models) {
       user-select: none;
     `
 
-  headTitleElement.textContent = 'Models'
   // headTitleElement.href = 'https://github.com/shadowcz007/comfyui-mixlab-nodes'
   // headTitleElement.target = '_blank'
   const linkIcon = document.createElement('small')
-  linkIcon.textContent = '自动开启'
+  linkIcon.textContent = showTextByLanguage('Auto Open', {
+    'Auto Open': '自动开启'
+  })
   linkIcon.style.padding = '4px'
 
-  headTitleElement.appendChild(linkIcon)
-  headerElement.appendChild(headTitleElement)
+  const n_gpu = document.createElement('input')
+  n_gpu.type = 'number'
+  n_gpu.setAttribute('min', -1)
+  n_gpu.setAttribute('max', 9999)
+
+  n_gpu.style = `color: var(--input-text);
+  background-color: var(--comfy-input-bg);
+  border-radius: 8px;
+  border-color: var(--border-color);
+  height: 26px;
+  padding: 4px 10px;
+  width: 48px;
+  margin-left: 12px;`
+  if (localStorage.getItem('_mixlab_llama_n_gpu')) {
+    n_gpu.value = parseInt(localStorage.getItem('_mixlab_llama_n_gpu'))
+  } else {
+    n_gpu.value = -1
+    localStorage.setItem('_mixlab_llama_n_gpu', -1)
+  }
+
+  const n_gpu_p = document.createElement('p')
+  n_gpu_p.innerText = 'n_gpu_layers'
+
+  const n_gpu_div = document.createElement('div')
+  n_gpu_div.style = `display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;`
+  n_gpu_div.appendChild(n_gpu_p)
+  n_gpu_div.appendChild(n_gpu)
+
+  const title = document.createElement('p')
+  title.innerText = 'Models'
+  title.style = `font-size: 18px;
+  margin-right: 8px;`
+
+  const left_d = document.createElement('div')
+  left_d.style = `display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;`
+  left_d.appendChild(title)
+
+  left_d.appendChild(linkIcon)
+
+  headTitleElement.appendChild(left_d)
+
+  headTitleElement.appendChild(n_gpu_div)
+
+  //重启
+  const reStart = document.createElement('small')
+  reStart.textContent = showTextByLanguage('restart', {
+    restart: '重启'
+  })
+
+  reStart.style.padding = '4px'
+
+  headTitleElement.appendChild(reStart)
+
   if (localStorage.getItem('_mixlab_auto_llama_open')) {
     linkIcon.style.backgroundColor = '#66ff6c'
     linkIcon.style.color = 'black'
@@ -792,6 +918,19 @@ function createModelsModal (models) {
       linkIcon.style.backgroundColor = '#66ff6c'
       linkIcon.style.color = 'black'
     }
+  })
+
+  reStart.addEventListener('click', e => {
+    e.stopPropagation()
+    div.remove()
+    fetch('mixlab/re_start', {
+      method: 'POST'
+    })
+  })
+
+  n_gpu.addEventListener('click', e => {
+    e.stopPropagation()
+    localStorage.setItem('_mixlab_llama_n_gpu', n_gpu.value)
   })
 
   modal.appendChild(headTitleElement)
@@ -844,6 +983,20 @@ function createModelsModal (models) {
     modalContent.appendChild(d)
   }
   modal.appendChild(modalContent)
+
+  const helpInfo = document.createElement('a')
+  helpInfo.textContent = showTextByLanguage('Help', {
+    Help: '寻求帮助'
+  })
+  helpInfo.style = `text-align: center;
+  display: block;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: white;`
+  helpInfo.href="https://discord.gg/cXs9vZSqeK"
+  helpInfo.target="_blank"
+  modal.appendChild(helpInfo)
 
   document.body.appendChild(div)
 }
@@ -1158,6 +1311,32 @@ function drawBadge (node, orig, restArgs) {
   return r
 }
 
+function convertImageUrlToBase64 (imageUrl) {
+  return fetch(imageUrl)
+    .then(response => response.blob())
+    .then(blob => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+    })
+}
+
+async function getSelectImageNode () {
+  var nodes = app.canvas.selected_nodes
+  let imageNode = null
+  if (Object.keys(app.canvas.selected_nodes).length == 0) return
+  for (var id in nodes) {
+    if (nodes[id].imgs) {
+      let base64 = await convertImageUrlToBase64(nodes[id].imgs[0].currentSrc)
+      imageNode = await resizeImage(base64)
+    }
+  }
+  return imageNode
+}
+
 app.registerExtension({
   name: 'Comfy.Mixlab.ui',
   init () {
@@ -1202,8 +1381,10 @@ app.registerExtension({
         w => w.name === 'text' && typeof w.value == 'string'
       )[0]
       if (widget) {
+        app.canvas.centerOnNode(node)
+
         let controller = new AbortController()
-        let ends = []
+        let ends = [] //TODO 判断终止 <|im_start|>
         let userInput = widget.value
         widget.value = widget.value.trim()
         widget.value += '\n'
@@ -1246,6 +1427,109 @@ app.registerExtension({
                 t => {
                   // console.log(t)
                   widget.value += t
+                }
+              )
+            })
+          }
+        }
+
+        widget.value = widget.value.trim()
+      }
+    }
+
+    LGraphCanvas.prototype.image2text = async function (node) {
+      let imageBase64 = await getSelectImageNode()
+
+      if (imageBase64) {
+        // console.log('image2text')
+        // 添加note 节点
+        const NoteNode = LiteGraph.createNode('Note')
+        NoteNode.title = `Image-to-Text ${node.id}`
+        NoteNode.size = [NoteNode.size[0] + 100, NoteNode.size[1]]
+        let widget = NoteNode.widgets[0]
+        widget.value = ''
+
+        NoteNode.pos = [node.pos[0] + node.size[0] + 24, node.pos[1] - 48]
+
+        app.canvas.graph.add(NoteNode, false)
+        app.canvas.centerOnNode(NoteNode)
+
+        let controller = new AbortController()
+        let ends = []
+        let userInput = widget.value
+        widget.value = widget.value.trim()
+        widget.value += '\n'
+
+        try {
+          await completion_(
+            window._mixlab_llamacpp.url + '/v1/chat/completions',
+            [
+              {
+                role: 'system',
+                content: localStorage.getItem('_mixlab_system_prompt')
+              },
+              // { role: 'user', content: userInput }
+
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'image_url',
+                    image_url: {
+                      url: imageBase64
+                    }
+                  },
+                  { type: 'text', text: 'What’s in this image?' }
+                ]
+              }
+            ],
+            controller,
+            t => {
+              // console.log(t)
+              widget.value += t
+
+              NoteNode.size[1] = widget.element.scrollHeight + 20
+              widget.computedHeight = NoteNode.size[1]
+              app.canvas.centerOnNode(NoteNode)
+            }
+          )
+        } catch (error) {
+          //是否要自动加载模型
+          if (localStorage.getItem('_mixlab_auto_llama_open')) {
+            let model = localStorage.getItem('_mixlab_llama_select')
+            start_llama(model).then(async res => {
+              window._mixlab_llamacpp = res
+              document.body
+                .querySelector('#mixlab_chatbot_by_llamacpp')
+                .setAttribute('title', res.url)
+
+              await completion_(
+                window._mixlab_llamacpp.url + '/v1/chat/completions',
+                [
+                  {
+                    role: 'system',
+                    content: localStorage.getItem('_mixlab_system_prompt')
+                  },
+                  {
+                    role: 'user',
+                    content: [
+                      {
+                        type: 'image_url',
+                        image_url: {
+                          url: imageBase64
+                        }
+                      },
+                      { type: 'text', text: 'What’s in this image?' }
+                    ]
+                  }
+                ],
+                controller,
+                t => {
+                  // console.log(t)
+                  widget.value += t
+                  NoteNode.size[1] = widget.element.scrollHeight + 20
+                  widget.computedHeight = NoteNode.size[1]
+                  app.canvas.centerOnNode(NoteNode)
                 }
               )
             })
@@ -1402,7 +1686,7 @@ app.registerExtension({
       this.setDirty(true, true)
     }
 
-    const getNodeMenuOptions=LGraphCanvas.prototype.getNodeMenuOptions;
+    const getNodeMenuOptions = LGraphCanvas.prototype.getNodeMenuOptions
     LGraphCanvas.prototype.getNodeMenuOptions = function (node) {
       // replace it
       const options = getNodeMenuOptions.apply(this, arguments) // start by calling the stored one
@@ -1433,7 +1717,7 @@ app.registerExtension({
         )
 
         if (
-          text_input&&
+          text_input &&
           text_input.length == 0 &&
           text_widget &&
           text_widget.length == 1 &&
@@ -1444,6 +1728,20 @@ app.registerExtension({
             content: 'Text-to-Text ♾️Mixlab', // with a name
             callback: () => {
               LGraphCanvas.prototype.text2text(node)
+            } // and the callback
+          })
+        }
+
+        if (
+          node.imgs &&
+          node.imgs.length > 0 &&
+          window._mixlab_llamacpp &&
+          window._mixlab_llamacpp.chat_format === 'llava-1-5'
+        ) {
+          opts.push({
+            content: 'Image-to-Text ♾️Mixlab', // with a name
+            callback: () => {
+              LGraphCanvas.prototype.image2text(node)
             } // and the callback
           })
         }

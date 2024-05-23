@@ -7,3 +7,4 @@ python_embeded.zip
 ComfyUI\input\*
 ComfyUI\output\*
 ComfyUI\temp\*
+llama.log

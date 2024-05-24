@@ -48,6 +48,7 @@ comfyui:
     lama: models/lama/
     clip_interrogator: models/clip_interrogator/
     ipadapter: models/ipadapter/
+    inpaint: models/inpaint/
 
 # 插件地址
 other_ui:

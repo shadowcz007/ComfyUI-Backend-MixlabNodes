@@ -24,6 +24,7 @@
             margin-left: 5%;
             user-select: none;
             margin-top: 32px;
+            margin-bottom: 120px;
         }
 
         .apps {
@@ -65,9 +66,9 @@
             box-shadow: 0px 0px 10px 10px #fbe9f0
         }
 
-        .card:hover {
+        /* .card:hover {
             box-shadow: 0px 0px 10px 10px #e9fbfa
-        }
+        } */
 
         .card h5 {
             font-size: 14px;
@@ -145,15 +146,6 @@
             margin-top: 4px;
         }
 
-        .status {
-            background: black;
-            color: white;
-            display: flex;
-            width: fit-content;
-            padding: 4px;
-            font-size: 12px;
-
-        }
 
         .description {
             display: flex;
@@ -263,18 +255,44 @@
             margin-top: 12px;
         }
 
+        .run_div {
+            position: fixed;
+            bottom: 28px;
+            display: flex;
+            left: 144px;
+            z-index: 100;
+            /* align-items: center; */
+            /* justify-content: space-around; */
+            /* width: calc(50% - 100px); */
+            flex-direction: column;
+            background-color: #f7f7f7;
+            box-shadow: 3px 3px 8px #cacaca;
+            border-radius: 8px;
+        }
+
+        .status {
+            /* background: #e7e7e7; */
+            color: black;
+            display: flex;
+            width: 120px;
+            padding-left: 11px;
+            font-size: 12px;
+            border-radius: 8px;
+            justify-content: flex-start;
+            align-items: center;
+            height: 48px;
+        }
+
         .run_btn {
             background: black;
             color: white;
-            width: 88px;
-            height: 88px;
-            position: fixed;
-            bottom: 72px;
-            left: calc(50% - 44px);
-            border-radius: 100%;
+            /* width: calc(50% - 100px); */
+            min-width: 200px;
+            max-width: 460px;
+            height: 48px;
+            border-radius: 8px;
             cursor: pointer;
             border: 3px solid;
-            z-index: 100;
         }
 
         button:hover {
@@ -1215,7 +1233,7 @@
         }
 
 
-        function createOutputs(outputData, link) {
+        async function createOutputs(outputData, link) {
             const url = new URL(window.location.href);
             const params = new URLSearchParams(url.search);
             const innerApp = params.get("innerApp");
@@ -1336,20 +1354,21 @@
                     "TransparentImage"].includes(node.class_type)) {
 
                     const url = node.options?.defaultImage || window._appData?.icon || base64Df;
-                    let a = document.createElement('a');
+                    let a = document.createElement('div');
                     a.id = `output_${node.id}`
-                    a.setAttribute('data-pswp-width', "200");
-                    a.setAttribute('data-pswp-height', "200");
-                    a.setAttribute('target', "_blank");
-                    a.setAttribute('href', url);
-                    a.setAttribute('title', node.title);
 
-                    let img = new Image();
-                    // img;
-                    img.src = url;
+                    let img = await createImage(url)
+
                     a.appendChild(img)
+                    // a.setAttribute('data-pswp-width', img.naturalWidth);
+                    // a.setAttribute('data-pswp-height', img.naturalHeight);
+                    // a.setAttribute('target', "_blank");
+                    // a.setAttribute('href', url);
+                    // a.setAttribute('title', node.title);
+
                     output_card.appendChild(a);
                     isShowImageFn = true;
+
                 }
 
                 //3d 
@@ -2397,7 +2416,7 @@
             })
         }
 
-        function createUI(data, share = true) {
+        async function createUI(data, share = true) {
             // appData.input, appData.output, appData.seed, share, appData.link
             if (!data) return
             const { input: inputData, output: outputData, data: workflow, seed, seedTitle, link, name } = data;
@@ -2538,29 +2557,43 @@
             }
 
 
-            statusDiv.appendChild(status);
+            // statusDiv.appendChild(status);
             statusDiv.appendChild(seeds);
 
             // 创建输入框
             var input1 = createInputs(inputData)
 
-            var output = createOutputs(outputData, link)
+            var output = await createOutputs(outputData, link)
 
             // 创建提交按钮
+            let submitDiv = document.createElement('div');
+            submitDiv.appendChild(statusDiv);
+
+            let submitDivBtn = document.createElement('div');
+            submitDivBtn.style.display = 'flex'
+            submitDiv.appendChild(submitDivBtn);
+
+            submitDivBtn.appendChild(status);
+
+            submitDiv.className = 'run_div';
             var submitButton = document.createElement('button');
             submitButton.textContent = 'Create';
             submitButton.className = 'run_btn'
 
             // 将所有UI元素添加到页面中
-            leftDiv.appendChild(titleDiv);
-            leftDiv.appendChild(iconDes);
+            // leftDiv.appendChild(titleDiv);
+            // leftDiv.appendChild(iconDes);
             // leftDiv.appendChild(des);
-            leftDiv.appendChild(statusDiv);
+            // leftDiv.appendChild(statusDiv);
             leftDiv.appendChild(input1);
 
-            if (typeof (data.data) == 'object') mainDiv.appendChild(submitButton);
+            submitDivBtn.appendChild(submitButton);
+            if (typeof (data.data) == 'object') mainDiv.appendChild(submitDiv);
 
             rightDiv.appendChild(output);
+
+            // mainDiv.appendChild(titleDiv);
+            // mainDiv.appendChild(iconDes);
 
             mainDiv.appendChild(leftDetails);
             mainDiv.appendChild(rightDiv);
@@ -2909,7 +2942,7 @@
         async function createApp(appData, share = true) {
             // console.log(appData)
             // 使用示例：
-            var ui = createUI(appData, share);
+            var ui = await createUI(appData, share);
 
             // 更新标题
             ui.title.update(appData.name || 'Mixlab APP');
@@ -3049,7 +3082,8 @@
             const lightbox = new PhotoSwipeLightbox({
                 gallery: '.output_card',
                 children: 'a',
-                pswpModule: () => import('/extensions/comfyui-mixlab-nodes/lib/photoswipe.esm.min.js')
+                pswpModule: () => import('/extensions/comfyui-mixlab-nodes/lib/photoswipe.esm.min.js'),
+                // appendToEl: document.querySelector('#result')
             });
             lightbox.on('uiRegister', function () {
                 lightbox.pswp.ui.registerElement({
@@ -3094,8 +3128,8 @@
             if (appData.author) {
                 let div = document.body.querySelector('#author');
                 if (appData.author.link) div.href = appData.author.link
-                div.style = `z-index:20;display: flex;flex-direction: column;position: fixed;bottom: 12px;right: 24px;cursor: pointer;text-decoration: none;color: black;`
-                div.innerHTML = `<p style="font-size:12px">Author:</p>
+                div.style = `z-index:20;display: flex;flex-direction: column;position: fixed;bottom: 24px;left: 24px;cursor: pointer;text-decoration: none;color: black;`
+                div.innerHTML = `<p style="font-size:12px;margin: 8px 0;">Author:</p>
                 <div style="display: flex;"> <img style="width:32px;height:32px;border-radius: 100%;" 
                 src="${appData.author.avatar || base64Df}"/>
                 <p style="margin-left:8px;font-size:12px;font-weight:800">${appData.author.name || '-'}</p></div>`

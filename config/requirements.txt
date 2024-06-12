@@ -36,3 +36,5 @@ ultralytics
 insightface
 onnxruntime
 onnxruntime-gpu
+
+soundfile

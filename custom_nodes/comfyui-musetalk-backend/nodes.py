@@ -16,6 +16,14 @@ from torchvision.transforms import Resize, CenterCrop
 import scipy.ndimage
 from PIL import Image, ImageDraw, ImageFilter
 
+
+def get_model_dir(m):
+    try:
+        return folder_paths.get_folder_paths(m)[0]
+    except:
+        return os.path.join(folder_paths.models_dir, m)
+
+
 # Utility functions from mtb nodes: https://github.com/melMass/comfy_mtb
 # https://github.com/kijai/ComfyUI-KJNodes/blob/main/utility/utility.py
 def pil2tensor(image):
@@ -97,7 +105,7 @@ class UNETLoader_MuseTalk:
 
     def load_unet(self):
         
-        model_path = os.path.join(folder_paths.models_dir,'musetalk')
+        model_path =get_model_dir('musetalk')
         
         if not os.path.exists(model_path):
             from huggingface_hub import snapshot_download
@@ -247,6 +255,8 @@ class audio_file_to_audio_tensor:
         
         return (resampled_audio_tensor, audio_dur,)
 
+
+
 class whisper_to_features:
     @classmethod
     def INPUT_TYPES(s):
@@ -266,7 +276,7 @@ class whisper_to_features:
         from .musetalk.whisper.model import Whisper, ModelDimensions
         device = mm.get_torch_device()
 
-        model_path = os.path.join(folder_paths.models_dir,'whisper',"tiny.pt")
+        model_path = os.path.join(get_model_dir('whisper'),"tiny.pt")
         
         if not os.path.exists(model_path):
             print(f"Downloading whisper tiny model (72MB) to {model_path}")

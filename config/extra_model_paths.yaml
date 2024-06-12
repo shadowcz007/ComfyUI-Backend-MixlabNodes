@@ -51,10 +51,12 @@ comfyui:
     inpaint: models/inpaint/
     triposr: models/triposr/
     rembg: models/rembg/
+    whisper: models/whisper/
+    musetalk: models/musetalk/
 
 # 插件地址
 other_ui:
-   base_path: C:\Users\38957\Documents\GitHub\comfyui-backend-release
+   base_path: ./
 #    checkpoints: models/checkpoints
 #    gligen: models/gligen
    custom_nodes: custom_nodes

@@ -14,7 +14,7 @@ from comfy.utils import ProgressBar, unet_to_diffusers, load_torch_file
 from comfy.model_base import BaseModel
 from torchvision.transforms import Resize, CenterCrop
 import scipy.ndimage
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
 # Tensor to PIL
 def tensor2pil(image):
@@ -24,7 +24,21 @@ def tensor2pil(image):
 def pil2tensor(image):
     return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
 
+def bbox_to_region(bbox, target_size=None):
+    bbox = bbox_check(bbox, target_size)
+    return (bbox[0], bbox[1], bbox[0] + bbox[2], bbox[1] + bbox[3])
 
+def bbox_check(bbox, target_size=None):
+    if not target_size:
+        return bbox
+
+    new_bbox = (
+        bbox[0],
+        bbox[1],
+        min(target_size[0] - bbox[0], bbox[2]),
+        min(target_size[1] - bbox[1], bbox[3]),
+    )
+    return new_bbox
 
 
 class PositionalEncoding(nn.Module):
@@ -597,7 +611,7 @@ class BatchUncrop:
         for v in range(len(cropped_images)):
             crop_imgs.append(tensor2pil(cropped_images[v]))
         
-        
+
         out_images = []
         for i in range(len(input_images)):
             img = input_images[i]

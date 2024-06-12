@@ -8,3 +8,4 @@ ComfyUI\input\*
 ComfyUI\output\*
 ComfyUI\temp\*
 llama.log
+*.7z

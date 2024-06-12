@@ -221,65 +221,6 @@
       ]
     },
     {
-      "id": 72,
-      "type": "DWPreprocessor",
-      "pos": [
-        -1785,
-        282
-      ],
-      "size": {
-        "0": 375.41033935546875,
-        "1": 197.4231719970703
-      },
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 315
-        },
-        {
-          "name": "resolution",
-          "type": "INT",
-          "link": 216,
-          "widget": {
-            "name": "resolution"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            167
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "POSE_KEYPOINT",
-          "type": "POSE_KEYPOINT",
-          "links": [],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "DWPreprocessor"
-      },
-      "widgets_values": [
-        "disable",
-        "disable",
-        "enable",
-        512,
-        "yolox_l.torchscript.pt",
-        "dw-ll_ucoco_384_bs5.torchscript.pt"
-      ]
-    },
-    {
       "id": 76,
       "type": "ImageToMask",
       "pos": [
@@ -400,10 +341,10 @@
         392,
         301
       ],
-      "size": {
-        "0": 315,
-        "1": 531
-      },
+      "size": [
+        315,
+        531
+      ],
       "flags": {},
       "order": 27,
       "mode": 0,
@@ -432,7 +373,8 @@
         "image/gif",
         false,
         false,
-        false
+        false,
+        "/view?filename=Comfyui_00008_.gif&subfolder=&type=temp&format=image%2Fgif"
       ]
     },
     {
@@ -478,10 +420,10 @@
         -856,
         595
       ],
-      "size": {
-        "0": 315,
-        "1": 531
-      },
+      "size": [
+        315,
+        531
+      ],
       "flags": {},
       "order": 21,
       "mode": 0,
@@ -510,7 +452,8 @@
         "image/gif",
         false,
         false,
-        false
+        false,
+        "/view?filename=Comfyui_00006_.gif&subfolder=&type=temp&format=image%2Fgif"
       ]
     },
     {
@@ -638,10 +581,10 @@
         1240,
         -320
       ],
-      "size": {
-        "0": 342.5999755859375,
-        "1": 558.5999755859375
-      },
+      "size": [
+        342.5999755859375,
+        558.5999755859375
+      ],
       "flags": {},
       "order": 29,
       "mode": 0,
@@ -673,7 +616,8 @@
         "video/h265-mp4",
         false,
         false,
-        false
+        false,
+        "/view?filename=Comfyui_00009_.mp4&subfolder=&type=temp&format=video%2Fh265-mp4"
       ]
     },
     {
@@ -683,10 +627,10 @@
         1250,
         520
       ],
-      "size": {
-        "0": 342.5999755859375,
-        "1": 558.5999755859375
-      },
+      "size": [
+        342.5999755859375,
+        558.5999755859375
+      ],
       "flags": {},
       "order": 30,
       "mode": 0,
@@ -718,7 +662,8 @@
         "video/h265-mp4",
         false,
         false,
-        false
+        false,
+        "/view?filename=Comfyui_00010_.mp4&subfolder=&type=temp&format=video%2Fh265-mp4"
       ]
     },
     {
@@ -728,10 +673,10 @@
         1662,
         -321
       ],
-      "size": {
-        "0": 315,
-        "1": 383
-      },
+      "size": [
+        315,
+        383
+      ],
       "flags": {},
       "order": 31,
       "mode": 0,
@@ -758,7 +703,8 @@
       },
       "widgets_values": [
         "",
-        ""
+        "",
+        "/view?filename=video_final_00003.mp4&subfolder=&type=output&format=video%2Fmp4"
       ]
     },
     {
@@ -768,10 +714,10 @@
         1680,
         467
       ],
-      "size": {
-        "0": 315,
-        "1": 383
-      },
+      "size": [
+        315,
+        383
+      ],
       "flags": {},
       "order": 32,
       "mode": 0,
@@ -798,7 +744,8 @@
       },
       "widgets_values": [
         "",
-        ""
+        "",
+        "/view?filename=video_final_00004.mp4&subfolder=&type=output&format=video%2Fmp4"
       ]
     },
     {
@@ -1193,70 +1140,16 @@
       ]
     },
     {
-      "id": 148,
-      "type": "LoadVideoAndSegment_",
-      "pos": [
-        -3444,
-        -631
-      ],
-      "size": {
-        "0": 315,
-        "1": 214
-      },
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "scenes_video",
-          "type": "SCENE_VIDEO",
-          "links": [
-            328
-          ],
-          "shape": 6,
-          "slot_index": 0
-        },
-        {
-          "name": "scenes_count",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "frame_count",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "fps",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadVideoAndSegment_"
-      },
-      "widgets_values": [
-        "sun.mp4",
-        -1,
-        0,
-        null,
-        "video"
-      ]
-    },
-    {
       "id": 142,
       "type": "VideoCombine_Adv",
       "pos": [
         -41,
         290
       ],
-      "size": {
-        "0": 315,
-        "1": 531
-      },
+      "size": [
+        315,
+        531
+      ],
       "flags": {},
       "order": 24,
       "mode": 0,
@@ -1285,7 +1178,8 @@
         "image/gif",
         false,
         false,
-        false
+        false,
+        "/view?filename=Comfyui_00007_.gif&subfolder=&type=temp&format=image%2Fgif"
       ]
     },
     {
@@ -1490,6 +1384,119 @@
       }
     },
     {
+      "id": 148,
+      "type": "LoadVideoAndSegment_",
+      "pos": [
+        -3444,
+        -631
+      ],
+      "size": {
+        "0": 315,
+        "1": 214
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "scenes_video",
+          "type": "SCENE_VIDEO",
+          "links": [
+            328
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "scenes_count",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "frame_count",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "fps",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadVideoAndSegment_"
+      },
+      "widgets_values": [
+        "sun.mp4",
+        -1,
+        0,
+        null,
+        "video"
+      ]
+    },
+    {
+      "id": 72,
+      "type": "DWPreprocessor",
+      "pos": [
+        -1794,
+        90
+      ],
+      "size": [
+        400.060534749558,
+        184.61861710361399
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 315
+        },
+        {
+          "name": "resolution",
+          "type": "INT",
+          "link": 216,
+          "widget": {
+            "name": "resolution"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            167
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "POSE_KEYPOINT",
+          "type": "POSE_KEYPOINT",
+          "links": [],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DWPreprocessor"
+      },
+      "widgets_values": [
+        "disable",
+        "disable",
+        "enable",
+        512,
+        "yolo_nas_s_fp16.onnx",
+        "dw-ll_ucoco_384.onnx"
+      ]
+    },
+    {
       "id": 156,
       "type": "ResizeImageMixlab",
       "pos": [
@@ -1550,7 +1557,7 @@
       "widgets_values": [
         256,
         256,
-        "width",
+        "overall",
         "off",
         "#FFFFFF"
       ]

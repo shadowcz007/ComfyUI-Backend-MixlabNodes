@@ -16,13 +16,28 @@ from torchvision.transforms import Resize, CenterCrop
 import scipy.ndimage
 from PIL import Image, ImageDraw, ImageFilter
 
-# Tensor to PIL
-def tensor2pil(image):
-    return Image.fromarray(np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8))
-
-# Convert PIL to Tensor
+# Utility functions from mtb nodes: https://github.com/melMass/comfy_mtb
+# https://github.com/kijai/ComfyUI-KJNodes/blob/main/utility/utility.py
 def pil2tensor(image):
+    if isinstance(image, list):
+        return torch.cat([pil2tensor(img) for img in image], dim=0)
+
     return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
+
+
+def tensor2pil(image):
+    batch_count = image.size(0) if len(image.shape) > 3 else 1
+    if batch_count > 1:
+        out = []
+        for i in range(batch_count):
+            out.extend(tensor2pil(image[i]))
+        return out
+
+    return [
+        Image.fromarray(
+            np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        )
+    ]
 
 def bbox_to_region(bbox, target_size=None):
     bbox = bbox_check(bbox, target_size)
@@ -410,7 +425,7 @@ class GrowMaskWithBlur:
             # Convert the tensor list to PIL images, apply blur, and convert back
             for idx, tensor in enumerate(out):
                 # Convert tensor to PIL image
-                pil_image = tensor2pil(tensor.cpu().detach())
+                pil_image = tensor2pil(tensor.cpu().detach())[0]
                 # Apply Gaussian blur
                 pil_image = pil_image.filter(ImageFilter.GaussianBlur(blur_radius))
                 # Convert back to tensor
@@ -419,9 +434,7 @@ class GrowMaskWithBlur:
             return (blurred, 1.0 - blurred)
         else:
             return (torch.stack(out, dim=0), 1.0 - torch.stack(out, dim=0),)
-
-
-
+        
 class BatchCropFromMask:
 
     @classmethod
@@ -465,7 +478,7 @@ class BatchCropFromMask:
             round(alpha * curr_center[1] + (1 - alpha) * prev_center[1])
         )
 
-    def crop(self, masks, original_images, crop_size_mult, bbox_smooth_alpha):
+    def crop(self, original_images, masks, crop_size_mult, bbox_smooth_alpha):
  
         bounding_boxes = []
         cropped_images = []
@@ -477,7 +490,7 @@ class BatchCropFromMask:
         curr_max_bbox_width = 0
         curr_max_bbox_height = 0
         for mask in masks:
-            _mask = tensor2pil(mask)
+            _mask = tensor2pil(mask)[0]
             non_zero_indices = np.nonzero(np.array(_mask))
             min_x, max_x = np.min(non_zero_indices[1]), np.max(non_zero_indices[1])
             min_y, max_y = np.min(non_zero_indices[0]), np.max(non_zero_indices[0])
@@ -497,7 +510,7 @@ class BatchCropFromMask:
 
         # Then, for each mask and corresponding image...
         for i, (mask, img) in enumerate(zip(masks, original_images)):
-            _mask = tensor2pil(mask)
+            _mask = tensor2pil(mask)[0]
             non_zero_indices = np.nonzero(np.array(_mask))
             min_x, max_x = np.min(non_zero_indices[1]), np.max(non_zero_indices[1])
             min_y, max_y = np.min(non_zero_indices[0]), np.max(non_zero_indices[0])
@@ -552,9 +565,6 @@ class BatchCropFromMask:
         
         return (original_images, cropped_out, bounding_boxes, self.max_bbox_width, self.max_bbox_height, )
 
-
-
-
 class BatchUncrop:
 
     @classmethod
@@ -602,16 +612,9 @@ class BatchUncrop:
         elif len(bboxes) < len(original_images):
             raise ValueError("There should be at least as many bboxes as there are original and cropped images")
 
-
-        input_images=[]
-        crop_imgs=[]
-        for v in range(len(original_images)):
-            input_images.append(tensor2pil(original_images[v]))
+        input_images = tensor2pil(original_images)
+        crop_imgs = tensor2pil(cropped_images)
         
-        for v in range(len(cropped_images)):
-            crop_imgs.append(tensor2pil(cropped_images[v]))
-        
-
         out_images = []
         for i in range(len(input_images)):
             img = input_images[i]
@@ -658,8 +661,6 @@ class BatchUncrop:
             out_images.append(img.convert("RGB"))
 
         return (pil2tensor(out_images),)
-
-
 
 NODE_CLASS_MAPPINGS = {
     "whisper_to_features": whisper_to_features,

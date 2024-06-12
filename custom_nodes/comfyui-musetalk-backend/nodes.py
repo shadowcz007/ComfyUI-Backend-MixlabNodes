@@ -7,11 +7,24 @@ import math
 import folder_paths
 from contextlib import nullcontext
 from tqdm import tqdm
-
+from nodes import MAX_RESOLUTION
 import comfy.latent_formats
 import comfy.model_management as mm
 from comfy.utils import ProgressBar, unet_to_diffusers, load_torch_file
 from comfy.model_base import BaseModel
+from torchvision.transforms import Resize, CenterCrop
+import scipy.ndimage
+from PIL import Image
+
+# Tensor to PIL
+def tensor2pil(image):
+    return Image.fromarray(np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8))
+
+# Convert PIL to Tensor
+def pil2tensor(image):
+    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
+
+
 
 
 class PositionalEncoding(nn.Module):
@@ -61,7 +74,7 @@ class UNETLoader_MuseTalk:
             from huggingface_hub import snapshot_download
             snapshot_download(repo_id="TMElyralab/MuseTalk", local_dir=model_path, local_dir_use_symlinks=False)
 
-        unet_weight_path = os.path.join(model_path, "musetalk","pytorch_model.bin") 
+        unet_weight_path = os.path.join(model_path,"pytorch_model.bin") 
         
         sd = load_torch_file(unet_weight_path)
      
@@ -109,6 +122,7 @@ class muse_talk_sampler:
         masked_images = masked_images.to(dtype).to(device)      
 
         autocast_condition = (dtype != torch.float32) and not mm.is_device_mps(device)
+
         with torch.autocast(mm.get_autocast_device(device), dtype=dtype) if autocast_condition else nullcontext():
             timesteps = torch.tensor([0], device=device)
             vae.first_stage_model.to(device)
@@ -129,9 +143,10 @@ class muse_talk_sampler:
             out_frame_list = []
             
             pbar = ProgressBar(total)
+            print(total)
             model.diffusion_model.to(device)
             for i, (whisper_batch,latent_batch) in enumerate(tqdm(gen,total=total)):
-        
+                
                 tensor_list = [torch.FloatTensor(arr) for arr in whisper_batch]
                 audio_feature_batch = torch.stack(tensor_list).to(device) # torch, B, 5*N,384
                 audio_feature_batch = PositionalEncoding(d_model=384)(audio_feature_batch)
@@ -296,12 +311,350 @@ class whisper_to_features:
         selected_feature = np.concatenate(selected_feature, axis=0)
         selected_feature = selected_feature.reshape(-1, 384)# 50*384
         return selected_feature,selected_idx
+    
+
+class GrowMaskWithBlur:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "mask": ("MASK",),
+                "expand": ("INT", {"default": 0, "min": -MAX_RESOLUTION, "max": MAX_RESOLUTION, "step": 1}),
+                "incremental_expandrate": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 100.0, "step": 0.1}),
+                "tapered_corners": ("BOOLEAN", {"default": True}),
+                "flip_input": ("BOOLEAN", {"default": False}),
+                "blur_radius": ("FLOAT", {
+                    "default": 0.0,
+                    "min": 0.0,
+                    "max": 100,
+                    "step": 0.1
+                }),
+                "lerp_alpha": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "decay_factor": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+            },
+            "optional": {
+                "fill_holes": ("BOOLEAN", {"default": False}),
+            },
+        }
+
+    CATEGORY = "KJNodes/masking"
+    RETURN_TYPES = ("MASK", "MASK",)
+    RETURN_NAMES = ("mask", "mask_inverted",)
+    FUNCTION = "expand_mask"
+    DESCRIPTION = """
+# GrowMaskWithBlur
+- mask: Input mask or mask batch
+- expand: Expand or contract mask or mask batch by a given amount
+- incremental_expandrate: increase expand rate by a given amount per frame
+- tapered_corners: use tapered corners
+- flip_input: flip input mask
+- blur_radius: value higher than 0 will blur the mask
+- lerp_alpha: alpha value for interpolation between frames
+- decay_factor: decay value for interpolation between frames
+- fill_holes: fill holes in the mask (slow)"""
+    
+    def expand_mask(self, mask, expand, tapered_corners, flip_input, blur_radius, incremental_expandrate, lerp_alpha, decay_factor, fill_holes=False):
+        alpha = lerp_alpha
+        decay = decay_factor
+        if flip_input:
+            mask = 1.0 - mask
+        c = 0 if tapered_corners else 1
+        kernel = np.array([[c, 1, c],
+                           [1, 1, 1],
+                           [c, 1, c]])
+        growmask = mask.reshape((-1, mask.shape[-2], mask.shape[-1])).cpu()
+        out = []
+        previous_output = None
+        current_expand = expand
+        for m in growmask:
+            output = m.numpy()
+            for _ in range(abs(round(current_expand))):
+                if current_expand < 0:
+                    output = scipy.ndimage.grey_erosion(output, footprint=kernel)
+                else:
+                    output = scipy.ndimage.grey_dilation(output, footprint=kernel)
+            if current_expand < 0:
+                current_expand -= abs(incremental_expandrate)
+            else:
+                current_expand += abs(incremental_expandrate)
+            if fill_holes:
+                binary_mask = output > 0
+                output = scipy.ndimage.binary_fill_holes(binary_mask)
+                output = output.astype(np.float32) * 255
+            output = torch.from_numpy(output)
+            if alpha < 1.0 and previous_output is not None:
+                # Interpolate between the previous and current frame
+                output = alpha * output + (1 - alpha) * previous_output
+            if decay < 1.0 and previous_output is not None:
+                # Add the decayed previous output to the current frame
+                output += decay * previous_output
+                output = output / output.max()
+            previous_output = output
+            out.append(output)
+
+        if blur_radius != 0:
+            # Convert the tensor list to PIL images, apply blur, and convert back
+            for idx, tensor in enumerate(out):
+                # Convert tensor to PIL image
+                pil_image = tensor2pil(tensor.cpu().detach())
+                # Apply Gaussian blur
+                pil_image = pil_image.filter(ImageFilter.GaussianBlur(blur_radius))
+                # Convert back to tensor
+                out[idx] = pil2tensor(pil_image)
+            blurred = torch.cat(out, dim=0)
+            return (blurred, 1.0 - blurred)
+        else:
+            return (torch.stack(out, dim=0), 1.0 - torch.stack(out, dim=0),)
+
+
+
+class BatchCropFromMask:
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "original_images": ("IMAGE",),
+                "masks": ("MASK",),
+                "crop_size_mult": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}),
+                "bbox_smooth_alpha": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+            },
+        }
+
+    RETURN_TYPES = (
+        "IMAGE",
+        "IMAGE",
+        "BBOX",
+        "INT",
+        "INT",
+    )
+    RETURN_NAMES = (
+        "original_images",
+        "cropped_images",
+        "bboxes",
+        "width",
+        "height",
+    )
+    FUNCTION = "crop"
+    CATEGORY = "KJNodes/masking"
+
+    def smooth_bbox_size(self, prev_bbox_size, curr_bbox_size, alpha):
+        if alpha == 0:
+            return prev_bbox_size
+        return round(alpha * curr_bbox_size + (1 - alpha) * prev_bbox_size)
+
+    def smooth_center(self, prev_center, curr_center, alpha=0.5):
+        if alpha == 0:
+            return prev_center
+        return (
+            round(alpha * curr_center[0] + (1 - alpha) * prev_center[0]),
+            round(alpha * curr_center[1] + (1 - alpha) * prev_center[1])
+        )
+
+    def crop(self, masks, original_images, crop_size_mult, bbox_smooth_alpha):
+ 
+        bounding_boxes = []
+        cropped_images = []
+
+        self.max_bbox_width = 0
+        self.max_bbox_height = 0
+
+        # First, calculate the maximum bounding box size across all masks
+        curr_max_bbox_width = 0
+        curr_max_bbox_height = 0
+        for mask in masks:
+            _mask = tensor2pil(mask)
+            non_zero_indices = np.nonzero(np.array(_mask))
+            min_x, max_x = np.min(non_zero_indices[1]), np.max(non_zero_indices[1])
+            min_y, max_y = np.min(non_zero_indices[0]), np.max(non_zero_indices[0])
+            width = max_x - min_x
+            height = max_y - min_y
+            curr_max_bbox_width = max(curr_max_bbox_width, width)
+            curr_max_bbox_height = max(curr_max_bbox_height, height)
+
+        # Smooth the changes in the bounding box size
+        self.max_bbox_width = self.smooth_bbox_size(self.max_bbox_width, curr_max_bbox_width, bbox_smooth_alpha)
+        self.max_bbox_height = self.smooth_bbox_size(self.max_bbox_height, curr_max_bbox_height, bbox_smooth_alpha)
+
+        # Apply the crop size multiplier
+        self.max_bbox_width = round(self.max_bbox_width * crop_size_mult)
+        self.max_bbox_height = round(self.max_bbox_height * crop_size_mult)
+        bbox_aspect_ratio = self.max_bbox_width / self.max_bbox_height
+
+        # Then, for each mask and corresponding image...
+        for i, (mask, img) in enumerate(zip(masks, original_images)):
+            _mask = tensor2pil(mask)
+            non_zero_indices = np.nonzero(np.array(_mask))
+            min_x, max_x = np.min(non_zero_indices[1]), np.max(non_zero_indices[1])
+            min_y, max_y = np.min(non_zero_indices[0]), np.max(non_zero_indices[0])
             
+            # Calculate center of bounding box
+            center_x = np.mean(non_zero_indices[1])
+            center_y = np.mean(non_zero_indices[0])
+            curr_center = (round(center_x), round(center_y))
+
+            # If this is the first frame, initialize prev_center with curr_center
+            if not hasattr(self, 'prev_center'):
+                self.prev_center = curr_center
+
+            # Smooth the changes in the center coordinates from the second frame onwards
+            if i > 0:
+                center = self.smooth_center(self.prev_center, curr_center, bbox_smooth_alpha)
+            else:
+                center = curr_center
+
+            # Update prev_center for the next frame
+            self.prev_center = center
+
+            # Create bounding box using max_bbox_width and max_bbox_height
+            half_box_width = round(self.max_bbox_width / 2)
+            half_box_height = round(self.max_bbox_height / 2)
+            min_x = max(0, center[0] - half_box_width)
+            max_x = min(img.shape[1], center[0] + half_box_width)
+            min_y = max(0, center[1] - half_box_height)
+            max_y = min(img.shape[0], center[1] + half_box_height)
+
+            # Append bounding box coordinates
+            bounding_boxes.append((min_x, min_y, max_x - min_x, max_y - min_y))
+
+            # Crop the image from the bounding box
+            cropped_img = img[min_y:max_y, min_x:max_x, :]
+            
+            # Calculate the new dimensions while maintaining the aspect ratio
+            new_height = min(cropped_img.shape[0], self.max_bbox_height)
+            new_width = round(new_height * bbox_aspect_ratio)
+
+            # Resize the image
+            resize_transform = Resize((new_height, new_width))
+            resized_img = resize_transform(cropped_img.permute(2, 0, 1))
+
+            # Perform the center crop to the desired size
+            crop_transform = CenterCrop((self.max_bbox_height, self.max_bbox_width)) # swap the order here if necessary
+            cropped_resized_img = crop_transform(resized_img)
+
+            cropped_images.append(cropped_resized_img.permute(1, 2, 0))
+
+        cropped_out = torch.stack(cropped_images, dim=0)
+        
+        return (original_images, cropped_out, bounding_boxes, self.max_bbox_width, self.max_bbox_height, )
+
+
+
+
+class BatchUncrop:
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "original_images": ("IMAGE",),
+                "cropped_images": ("IMAGE",),
+                "bboxes": ("BBOX",),
+                "border_blending": ("FLOAT", {"default": 0.25, "min": 0.0, "max": 1.0, "step": 0.01}, ),
+                "crop_rescale": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
+                "border_top": ("BOOLEAN", {"default": True}),
+                "border_bottom": ("BOOLEAN", {"default": True}),
+                "border_left": ("BOOLEAN", {"default": True}),
+                "border_right": ("BOOLEAN", {"default": True}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "uncrop"
+
+    CATEGORY = "KJNodes/masking"
+
+    def uncrop(self, original_images, cropped_images, bboxes, border_blending, crop_rescale, border_top, border_bottom, border_left, border_right):
+        def inset_border(image, border_width, border_color, border_top, border_bottom, border_left, border_right):
+            draw = ImageDraw.Draw(image)
+            width, height = image.size
+            if border_top:
+                draw.rectangle((0, 0, width, border_width), fill=border_color)
+            if border_bottom:
+                draw.rectangle((0, height - border_width, width, height), fill=border_color)
+            if border_left:
+                draw.rectangle((0, 0, border_width, height), fill=border_color)
+            if border_right:
+                draw.rectangle((width - border_width, 0, width, height), fill=border_color)
+            return image
+
+        if len(original_images) != len(cropped_images):
+            raise ValueError(f"The number of original_images ({len(original_images)}) and cropped_images ({len(cropped_images)}) should be the same")
+
+        # Ensure there are enough bboxes, but drop the excess if there are more bboxes than images
+        if len(bboxes) > len(original_images):
+            print(f"Warning: Dropping excess bounding boxes. Expected {len(original_images)}, but got {len(bboxes)}")
+            bboxes = bboxes[:len(original_images)]
+        elif len(bboxes) < len(original_images):
+            raise ValueError("There should be at least as many bboxes as there are original and cropped images")
+
+
+        input_images=[]
+        crop_imgs=[]
+        for v in range(len(original_images)):
+            input_images.append(tensor2pil(original_images[v]))
+        
+        for v in range(len(cropped_images)):
+            crop_imgs.append(tensor2pil(cropped_images[v]))
+        
+        
+        out_images = []
+        for i in range(len(input_images)):
+            img = input_images[i]
+            crop = crop_imgs[i]
+            bbox = bboxes[i]
+            
+            # uncrop the image based on the bounding box
+            bb_x, bb_y, bb_width, bb_height = bbox
+
+            paste_region = bbox_to_region((bb_x, bb_y, bb_width, bb_height), img.size)
+            
+            # scale factors
+            scale_x = crop_rescale
+            scale_y = crop_rescale
+
+            # scaled paste_region
+            paste_region = (round(paste_region[0]*scale_x), round(paste_region[1]*scale_y), round(paste_region[2]*scale_x), round(paste_region[3]*scale_y))
+
+            # rescale the crop image to fit the paste_region
+            crop = crop.resize((round(paste_region[2]-paste_region[0]), round(paste_region[3]-paste_region[1])))
+            crop_img = crop.convert("RGB")
+   
+            if border_blending > 1.0:
+                border_blending = 1.0
+            elif border_blending < 0.0:
+                border_blending = 0.0
+
+            blend_ratio = (max(crop_img.size) / 2) * float(border_blending)
+
+            blend = img.convert("RGBA")
+            mask = Image.new("L", img.size, 0)
+
+            mask_block = Image.new("L", (paste_region[2]-paste_region[0], paste_region[3]-paste_region[1]), 255)
+            mask_block = inset_border(mask_block, round(blend_ratio / 2), (0), border_top, border_bottom, border_left, border_right)
+                      
+            mask.paste(mask_block, paste_region)
+            blend.paste(crop_img, paste_region)
+
+            mask = mask.filter(ImageFilter.BoxBlur(radius=blend_ratio / 4))
+            mask = mask.filter(ImageFilter.GaussianBlur(radius=blend_ratio / 4))
+
+            blend.putalpha(mask)
+            img = Image.alpha_composite(img.convert("RGBA"), blend)
+            out_images.append(img.convert("RGB"))
+
+        return (pil2tensor(out_images),)
+
+
+
 NODE_CLASS_MAPPINGS = {
     "whisper_to_features": whisper_to_features,
     "vhs_audio_to_audio_tensor": vhs_audio_to_audio_tensor,
     "muse_talk_sampler": muse_talk_sampler,
-    "UNETLoader_MuseTalk": UNETLoader_MuseTalk
+    "UNETLoader_MuseTalk": UNETLoader_MuseTalk,
+    "GrowMaskWithBlur":GrowMaskWithBlur,
+    "BatchCropFromMask":BatchCropFromMask,
+    "BatchUncrop":BatchUncrop
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "whisper_to_features": "Whisper To Features",

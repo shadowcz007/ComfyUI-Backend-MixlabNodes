@@ -215,11 +215,11 @@ class muse_talk_sampler:
 
             yield whisper_batch, latent_batch
 
-class vhs_audio_to_audio_tensor:
+class audio_file_to_audio_tensor:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-            "vhs_audio": ("VHS_AUDIO",),
+            "audio_file_path": ("STRING",  {"forceInput": True}),
             "target_sample_rate": ("INT", {"default": 16000, "min": 0, "max": 48000}),
             "target_channels": ("INT", {"default": 1, "min": 1, "max": 2}),
              },
@@ -231,12 +231,9 @@ class vhs_audio_to_audio_tensor:
     FUNCTION = "process"
     CATEGORY = "VoiceCraft"
 
-    def process(self, vhs_audio, target_sample_rate, target_channels):
-        import io
-        # Convert the byte stream to a tensor
-        audio_bytes = vhs_audio()
-        audio_buffer = io.BytesIO(audio_bytes)
-        audio_tensor, sample_rate = torchaudio.load(audio_buffer)
+    def process(self, audio_file_path, target_sample_rate, target_channels):
+        
+        audio_tensor, sample_rate = torchaudio.load(audio_file_path)
         assert audio_tensor.shape[0] in [1, 2], "Audio must be mono or stereo."
         if target_channels == 1:
             audio_tensor = audio_tensor.mean(0, keepdim=True)
@@ -664,7 +661,7 @@ class BatchUncrop:
 
 NODE_CLASS_MAPPINGS = {
     "whisper_to_features": whisper_to_features,
-    "vhs_audio_to_audio_tensor": vhs_audio_to_audio_tensor,
+    "audio_file_to_audio_tensor": audio_file_to_audio_tensor,
     "muse_talk_sampler": muse_talk_sampler,
     "UNETLoader_MuseTalk": UNETLoader_MuseTalk,
     "GrowMaskWithBlur":GrowMaskWithBlur,
@@ -673,7 +670,7 @@ NODE_CLASS_MAPPINGS = {
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "whisper_to_features": "Whisper To Features",
-    "vhs_audio_to_audio_tensor": "VHS Audio To Audio Tensor",
+    "audio_file_to_audio_tensor": "Audio File To Audio Tensor",
     "muse_talk_sampler": "MuseTalk Sampler",
     "UNETLoader_MuseTalk": "UNETLoader_MuseTalk"
 }

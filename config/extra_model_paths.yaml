@@ -53,6 +53,7 @@ comfyui:
     rembg: models/rembg/
     whisper: models/whisper/
     musetalk: models/musetalk/
+    chat_tts: models/chat_tts/
 
 # 插件地址
 other_ui:

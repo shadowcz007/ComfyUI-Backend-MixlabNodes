@@ -847,15 +847,14 @@ from .nodes.ImageNode import ImageListToBatch_,ComparingTwoFrames,LoadImages_,Co
 from .nodes.ScreenShareNode import ScreenShareNode,FloatingVideo
 
 from .nodes.ChatGPT import ChatGPTNode,ShowTextForGPT,CharacterInText,TextSplitByDelimiter
-from .nodes.Audio import GamePal,SpeechRecognition,SpeechSynthesis
+from .nodes.Audio import AudioPlayNode,SpeechRecognition,SpeechSynthesis
 from .nodes.Utils import IncrementingListNode,ListSplit,CreateLoraNames,CreateSampler_names,CreateCkptNames,CreateSeedNode,TESTNODE_,TESTNODE_TOKEN,AppInfo,IntNumber,FloatSlider,TextInput,ColorInput,FontInput,TextToNumber,DynamicDelayProcessor,LimitNumber,SwitchByIndex,MultiplicationNode
 from .nodes.Mask import PreviewMask_,MaskListReplace,MaskListMerge,OutlineMask,FeatheredMask
 
 from .nodes.Style import ApplyVisualStylePrompting,StyleAlignedReferenceSampler,StyleAlignedBatchAlign,StyleAlignedSampleReferenceLatents
 
-from .nodes.Video import GenerateFramesByCount,scenesNode_,CombineAudioVideo,VideoCombine_Adv,LoadVideoAndSegment,ImageListReplace,VAEEncodeForInpaint_Frames,LoadAndCombinedAudio_
 
-from .nodes.TripoSR import LoadTripoSRModel,TripoSRSampler,SaveTripoSRMesh
+
 
 
 # 要导出的所有节点及其名称的字典
@@ -935,23 +934,12 @@ NODE_CLASS_MAPPINGS = {
     "ApplyVisualStylePrompting_":ApplyVisualStylePrompting,
     "StyleAlignedReferenceSampler_": StyleAlignedReferenceSampler,
     "StyleAlignedSampleReferenceLatents_": StyleAlignedSampleReferenceLatents,
-    "StyleAlignedBatchAlign_": StyleAlignedBatchAlign,
-    "LoadVideoAndSegment_":LoadVideoAndSegment,
-    "VideoCombine_Adv":VideoCombine_Adv,
+    "StyleAlignedBatchAlign_": StyleAlignedBatchAlign, 
     "ListSplit_":ListSplit,
-    "MaskListReplace_":MaskListReplace,
-    "ImageListReplace_":ImageListReplace,
-    "VAEEncodeForInpaint_Frames":VAEEncodeForInpaint_Frames,
+    "MaskListReplace_":MaskListReplace, 
     "IncrementingListNode_":IncrementingListNode,
     "PreviewMask_":PreviewMask_,
-     "LoadTripoSRModel_": LoadTripoSRModel,
-    "TripoSRSampler_": TripoSRSampler,
-    "SaveTripoSRMesh": SaveTripoSRMesh,
-    "LoadAndCombinedAudio_":LoadAndCombinedAudio_,
-    "CombineAudioVideo":CombineAudioVideo,
-    "ScenesNode_":scenesNode_,
-    "GenerateFramesByCount":GenerateFramesByCount
-    # "GamePal":GamePal
+    "AudioPlay":AudioPlayNode
 }
 
 # 一个包含节点友好/可读的标题的字典
@@ -1004,17 +992,10 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "GridInput":"Grid Input ♾️Mixlab",
     "GridOutput":"Grid Output ♾️Mixlab",
     "GetImageSize_":"Get Image Size ♾️Mixlab",
-    "VAEEncodeForInpaint_Frames":"VAE Encode For Inpaint Frames ♾️Mixlab",
     "IncrementingListNode_":"Create Incrementing Number List ♾️Mixlab",
     "LoadImagesToBatch":"Load Images(base64) ♾️Mixlab",
     "PreviewMask_":"Preview Mask",
-    "LoadTripoSRModel_": "Load TripoSR Model",
-    "TripoSRSampler_": "TripoSR Sampler",
-    "SaveTripoSRMesh": "Save TripoSR Mesh",
-    "LoadAndCombinedAudio_":"Load And Combined Audio",
-    "CombineAudioVideo":"Combine Audio Video",
-    "ScenesNode_":"Scenes",
-    "GenerateFramesByCount":"Generate Frames By Count"
+    "AudioPlay":"Audio Play ♾️Mixlab"
 }
 
 # web ui的节点功能
@@ -1059,5 +1040,62 @@ try:
         NODE_CLASS_MAPPINGS['RembgNode_Mix']=RembgNode_
 except Exception as e:
     logging.info('RembgNode_.available False' )
+
+
+try:
+    from .nodes.Video import GenerateFramesByCount,scenesNode_,CombineAudioVideo,VideoCombine_Adv,LoadVideoAndSegment,ImageListReplace,VAEEncodeForInpaint_Frames,LoadAndCombinedAudio_
+    
+    NODE_CLASS_MAPPINGS_V = {
+        "VAEEncodeForInpaint_Frames":VAEEncodeForInpaint_Frames,
+        "ImageListReplace_":ImageListReplace,
+        "LoadVideoAndSegment_":LoadVideoAndSegment,
+        "VideoCombine_Adv":VideoCombine_Adv,
+        "LoadAndCombinedAudio_":LoadAndCombinedAudio_,
+        "CombineAudioVideo":CombineAudioVideo,
+        "ScenesNode_":scenesNode_,
+        "GenerateFramesByCount":GenerateFramesByCount 
+    }
+
+    # 一个包含节点友好/可读的标题的字典
+    NODE_DISPLAY_NAME_MAPPINGS_V = {
+        "VAEEncodeForInpaint_Frames":"VAE Encode For Inpaint Frames ♾️Mixlab",
+        "ImageListReplace_":"Image List Replace",
+        "LoadVideoAndSegment_":"Load Video And Segment",
+        "VideoCombine_Adv":"Video Combine",
+        "LoadAndCombinedAudio_":"Load And Combined Audio",
+        "CombineAudioVideo":"Combine Audio Video",
+        "ScenesNode_":"Scenes Node", 
+        "GenerateFramesByCount":"Generate Frames By Count"
+    }
+
+
+    NODE_CLASS_MAPPINGS.update(NODE_CLASS_MAPPINGS_V)
+    NODE_DISPLAY_NAME_MAPPINGS.update(NODE_DISPLAY_NAME_MAPPINGS_V)
+
+except:
+    logging.info('Video.available False')
+
+
+try:
+    from .nodes.TripoSR import LoadTripoSRModel,TripoSRSampler,SaveTripoSRMesh
+    logging.info('TripoSR.available')
+
+    NODE_CLASS_MAPPINGS['LoadTripoSRModel_']=LoadTripoSRModel
+    NODE_DISPLAY_NAME_MAPPINGS["LoadTripoSRModel_"]= "Load TripoSR Model"
+    
+    NODE_CLASS_MAPPINGS['TripoSRSampler_']=TripoSRSampler
+    NODE_DISPLAY_NAME_MAPPINGS["TripoSRSampler_"]= "TripoSR Sampler"
+
+    NODE_CLASS_MAPPINGS['SaveTripoSRMesh']=SaveTripoSRMesh
+    NODE_DISPLAY_NAME_MAPPINGS["SaveTripoSRMesh"]= "Save TripoSR Mesh"
+    
+
+except Exception as e:
+    logging.info('TripoSR.available False' )
+
+
+
+
+
 
 logging.info('\033[93m -------------- \033[0m')

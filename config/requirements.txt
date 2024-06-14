@@ -38,3 +38,5 @@ onnxruntime
 onnxruntime-gpu
 
 soundfile
+vocos
+vector_quantize_pytorch

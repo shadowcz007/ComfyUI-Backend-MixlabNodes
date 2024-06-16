@@ -6,12 +6,7 @@ import yaml
 from pathlib import Path
 from enum import Enum
 from .log import log
-import subprocess
-import threading
-import comfy
-import tempfile
 import folder_paths
-
 here = Path(__file__).parent.resolve()
 
 config_path = Path(here, "config.yaml")
@@ -20,22 +15,12 @@ if os.path.exists(config_path):
     config = yaml.load(open(config_path, "r"), Loader=yaml.FullLoader)
 
     annotator_ckpts_path = str(Path(here, config["annotator_ckpts_path"]))
-    TEMP_DIR = config["custom_temp_path"]
     USE_SYMLINKS = config["USE_SYMLINKS"]
     ORT_PROVIDERS = config["EP_list"]
 
     if USE_SYMLINKS is None or type(USE_SYMLINKS) != bool:
         log.error("USE_SYMLINKS must be a boolean. Using False by default.")
         USE_SYMLINKS = False
-
-    if TEMP_DIR is None:
-        TEMP_DIR = tempfile.gettempdir()
-    elif not os.path.isdir(TEMP_DIR):
-        try:
-            os.makedirs(TEMP_DIR)
-        except:
-            log.error("Failed to create custom temp directory. Using default.")
-            TEMP_DIR = tempfile.gettempdir()
 
     if not os.path.isdir(annotator_ckpts_path):
         try:
@@ -45,16 +30,15 @@ if os.path.exists(config_path):
             annotator_ckpts_path = str(Path(here, "./ckpts"))
 else:
     annotator_ckpts_path = str(Path(here, "./ckpts"))
-    TEMP_DIR = tempfile.gettempdir()
     USE_SYMLINKS = False
     ORT_PROVIDERS = ["CUDAExecutionProvider", "DirectMLExecutionProvider", "OpenVINOExecutionProvider", "ROCMExecutionProvider", "CPUExecutionProvider", "CoreMLExecutionProvider"]
 
 # 使用comfyui的目录结构
 annotator_ckpts_path=folder_paths.get_folder_paths('controlnet_ckpts')[0]
 
-os.environ['AUX_ANNOTATOR_CKPTS_PATH'] = annotator_ckpts_path
-os.environ['AUX_TEMP_DIR'] = str(TEMP_DIR)
+
 os.environ['AUX_USE_SYMLINKS'] = str(USE_SYMLINKS)
+os.environ['AUX_ANNOTATOR_CKPTS_PATH'] = annotator_ckpts_path
 os.environ['AUX_ORT_PROVIDERS'] = str(",".join(ORT_PROVIDERS))
 
 log.info(f"Using ckpts path: {annotator_ckpts_path}")
@@ -78,18 +62,12 @@ def common_annotator_call(model, tensor_image, input_batch=False, **kwargs):
         np_results = model(np_images, output_type="np", detect_resolution=detect_resolution, **kwargs)
         return torch.from_numpy(np_results.astype(np.float32) / 255.0)
 
-    batch_size = tensor_image.shape[0]
-    pbar = comfy.utils.ProgressBar(batch_size)
-    out_tensor = None
-    for i, image in enumerate(tensor_image):
+    out_list = []
+    for image in tensor_image:
         np_image = np.asarray(image.cpu() * 255., dtype=np.uint8)
         np_result = model(np_image, output_type="np", detect_resolution=detect_resolution, **kwargs)
-        out = torch.from_numpy(np_result.astype(np.float32) / 255.0)
-        if out_tensor is None:
-            out_tensor = torch.zeros(batch_size, *out.shape, dtype=torch.float32)
-        out_tensor[i] = out
-        pbar.update(1)
-    return out_tensor
+        out_list.append(torch.from_numpy(np_result.astype(np.float32) / 255.0))
+    return torch.stack(out_list, dim=0)
 
 def create_node_input_types(**extra_kwargs):
     return {
@@ -192,23 +170,3 @@ def get_unique_axis0(data):
     unique_idxs[:1] = True
     unique_idxs[1:] = np.any(arr[:-1, :] != arr[1:, :], axis=-1)
     return arr[unique_idxs]
-
-#Ref: https://github.com/ltdrdata/ComfyUI-Manager/blob/284e90dc8296a2e1e4f14b4b2d10fba2f52f0e53/__init__.py#L14
-def handle_stream(stream, prefix):
-    for line in stream:
-        print(prefix, line, end="")
-
-
-def run_script(cmd, cwd='.'):
-    process = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
-
-    stdout_thread = threading.Thread(target=handle_stream, args=(process.stdout, ""))
-    stderr_thread = threading.Thread(target=handle_stream, args=(process.stderr, "[!]"))
-
-    stdout_thread.start()
-    stderr_thread.start()
-
-    stdout_thread.join()
-    stderr_thread.join()
-
-    return process.wait()

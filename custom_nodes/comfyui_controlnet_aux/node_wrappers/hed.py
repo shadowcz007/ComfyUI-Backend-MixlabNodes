@@ -46,6 +46,6 @@ NODE_CLASS_MAPPINGS = {
     "FakeScribblePreprocessor": Fake_Scribble_Preprocessor
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "HEDPreprocessor": "HED Soft-Edge Lines",
+    "HEDPreprocessor": "HED Lines",
     "FakeScribblePreprocessor": "Fake Scribble Lines (aka scribble_hed)"
 }

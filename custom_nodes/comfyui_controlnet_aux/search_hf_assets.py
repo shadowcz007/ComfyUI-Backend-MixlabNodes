@@ -7,13 +7,10 @@ aux_dir = Path(__file__).parent / 'src' / 'controlnet_aux'
 VAR_DICT = dict(
     HF_MODEL_NAME = "lllyasviel/Annotators",
     DWPOSE_MODEL_NAME = "yzd-v/DWPose",
-    BDS_MODEL_NAME = "bdsqlsz/qinglong_controlnet-lllite",
+    ANIFACESEG_MODEL_NAME = "bdsqlsz/qinglong_controlnet-lllite",
     DENSEPOSE_MODEL_NAME = "LayerNorm/DensePose-TorchScript-with-hint-image",
     MESH_GRAPHORMER_MODEL_NAME = "hr16/ControlNet-HandRefiner-pruned",
     SAM_MODEL_NAME = "dhkim2810/MobileSAM",
-    UNIMATCH_MODEL_NAME = "hr16/Unimatch",
-    DEPTH_ANYTHING_MODEL_NAME = "LiheYoung/Depth-Anything", #HF Space
-    DIFFUSION_EDGE_MODEL_NAME = "hr16/Diffusion-Edge"
 )
 re_result_dict = {}
 for preprocc in os.listdir(aux_dir):

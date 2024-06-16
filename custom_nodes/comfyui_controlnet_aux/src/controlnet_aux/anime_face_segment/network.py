@@ -3,16 +3,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
-
-from controlnet_aux.util import custom_torch_download
+from torchvision.models import MobileNet_V2_Weights
 
 class UNet(nn.Module):
     def __init__(self):
         super(UNet, self).__init__()
         self.NUM_SEG_CLASSES = 7 # Background, hair, face, eye, mouth, skin, clothes
-
-        mobilenet_v2 = torchvision.models.mobilenet_v2(pretrained=False)
-        mobilenet_v2.load_state_dict(torch.load(custom_torch_download(filename="mobilenet_v2-b0353104.pth")), strict=True)
+        
+        mobilenet_v2 = torchvision.models.mobilenet_v2(weights=MobileNet_V2_Weights.IMAGENET1K_V1)
         mob_blocks = mobilenet_v2.features
         
         # Encoder

@@ -39,13 +39,13 @@ class DWPose_Preprocessor:
             **input_types["optional"],
             "bbox_detector": (
                 ["yolox_l.torchscript.pt", "yolox_l.onnx", "yolo_nas_l_fp16.onnx", "yolo_nas_m_fp16.onnx", "yolo_nas_s_fp16.onnx"],
-                {"default": "yolox_l.onnx"}
+                {"default": "yolox_l.torchscript.pt"}
             ),
             "pose_estimator": (["dw-ll_ucoco_384_bs5.torchscript.pt", "dw-ll_ucoco_384.onnx", "dw-ll_ucoco.onnx"], {"default": "dw-ll_ucoco_384_bs5.torchscript.pt"})
         }
         return input_types
 
-    RETURN_TYPES = ("IMAGE", "POSE_KEYPOINT")
+    RETURN_TYPES = ("IMAGE",)
     FUNCTION = "estimate_pose"
 
     CATEGORY = "ControlNet Preprocessors/Faces and Poses Estimators"
@@ -88,7 +88,7 @@ class DWPose_Preprocessor:
         del model
         return {
             'ui': { "openpose_json": [json.dumps(self.openpose_dicts, indent=4)] },
-            "result": (out, self.openpose_dicts)
+            "result": (out, )
         }
 
 class AnimalPose_Preprocessor:
@@ -102,7 +102,7 @@ class AnimalPose_Preprocessor:
             pose_estimator = (["rtmpose-m_ap10k_256_bs5.torchscript.pt", "rtmpose-m_ap10k_256.onnx"], {"default": "rtmpose-m_ap10k_256_bs5.torchscript.pt"})
         )
 
-    RETURN_TYPES = ("IMAGE", "POSE_KEYPOINT")
+    RETURN_TYPES = ("IMAGE",)
     FUNCTION = "estimate_pose"
 
     CATEGORY = "ControlNet Preprocessors/Faces and Poses Estimators"
@@ -143,7 +143,7 @@ class AnimalPose_Preprocessor:
         del model
         return {
             'ui': { "openpose_json": [json.dumps(self.openpose_dicts, indent=4)] },
-            "result": (out, self.openpose_dicts)
+            "result": (out, )
         }
 
 NODE_CLASS_MAPPINGS = {

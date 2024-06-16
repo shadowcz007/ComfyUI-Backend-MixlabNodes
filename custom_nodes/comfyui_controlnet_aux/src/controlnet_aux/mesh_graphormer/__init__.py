@@ -9,10 +9,9 @@ class MeshGraphormerDetector:
         self.pipeline = pipeline
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path=MESH_GRAPHORMER_MODEL_NAME, filename="graphormer_hand_state_dict.bin", hrnet_filename="hrnetv2_w64_imagenet_pretrained.pth", seed=88):
+    def from_pretrained(cls, pretrained_model_or_path=MESH_GRAPHORMER_MODEL_NAME, filename="graphormer_hand_state_dict.bin", hrnet_filename="hrnetv2_w64_imagenet_pretrained.pth"):
         args.resume_checkpoint = custom_hf_download(pretrained_model_or_path, filename)
         args.hrnet_checkpoint = custom_hf_download(pretrained_model_or_path, hrnet_filename)
-        args.seed = seed
         pipeline = MeshGraphormerMediapipe(args)
         return cls(pipeline)
     

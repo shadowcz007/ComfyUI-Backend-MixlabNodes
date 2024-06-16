@@ -21,7 +21,7 @@ class Scribble_XDoG_Preprocessor:
     @classmethod
     def INPUT_TYPES(s):
         return create_node_input_types(
-            threshold = ("INT", {"default": 32, "min": 1, "max": 64, "step": 1})
+            threshold = ("INT", {"default": 32, "min": 1, "max": 64, "step": 64})
         )
 
     RETURN_TYPES = ("IMAGE",)
@@ -29,11 +29,11 @@ class Scribble_XDoG_Preprocessor:
 
     CATEGORY = "ControlNet Preprocessors/Line Extractors"
 
-    def execute(self, image, threshold, resolution=512, **kwargs):
+    def execute(self, image, resolution=512, **kwargs):
         from controlnet_aux.scribble import ScribbleXDog_Detector
 
         model = ScribbleXDog_Detector()
-        return (common_annotator_call(model, image, resolution=resolution, thr_a=threshold), )
+        return (common_annotator_call(model, image, resolution=resolution), )
 
 NODE_CLASS_MAPPINGS = {
     "ScribblePreprocessor": Scribble_Preprocessor,

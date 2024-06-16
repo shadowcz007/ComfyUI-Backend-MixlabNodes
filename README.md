@@ -25,3 +25,12 @@
 注意python版本3.11，torch版本 ==2.1.2 
 完成安装后，记得给权限 ```chmod +x run_mac.sh```
 运行```./run_mac.sh```
+
+
+修改aux的模型地址为comfyui统一配置方式
+custom_nodes\comfyui_controlnet_aux\utils.py
+```
+# 使用comfyui的目录结构
+annotator_ckpts_path=folder_paths.get_folder_paths('controlnet_ckpts')[0]
+
+```

@@ -54,6 +54,8 @@ comfyui:
     whisper: models/whisper/
     musetalk: models/musetalk/
     chat_tts: models/chat_tts/
+    liveportrait: models/liveportrait/
+    insightface: models/insightface/
 
 # 插件地址
 other_ui:

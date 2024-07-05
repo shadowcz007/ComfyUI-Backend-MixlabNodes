@@ -846,14 +846,11 @@ from .nodes.ImageNode import ImageListToBatch_,ComparingTwoFrames,LoadImages_,Co
 # from .nodes.Vae import VAELoader,VAEDecode
 from .nodes.ScreenShareNode import ScreenShareNode,FloatingVideo
 
-from .nodes.ChatGPT import ChatGPTNode,ShowTextForGPT,CharacterInText,TextSplitByDelimiter
 from .nodes.Audio import AudioPlayNode,SpeechRecognition,SpeechSynthesis
 from .nodes.Utils import IncrementingListNode,ListSplit,CreateLoraNames,CreateSampler_names,CreateCkptNames,CreateSeedNode,TESTNODE_,TESTNODE_TOKEN,AppInfo,IntNumber,FloatSlider,TextInput,ColorInput,FontInput,TextToNumber,DynamicDelayProcessor,LimitNumber,SwitchByIndex,MultiplicationNode
 from .nodes.Mask import PreviewMask_,MaskListReplace,MaskListMerge,OutlineMask,FeatheredMask
 
 from .nodes.Style import ApplyVisualStylePrompting,StyleAlignedReferenceSampler,StyleAlignedBatchAlign,StyleAlignedSampleReferenceLatents
-
-
 
 
 
@@ -907,10 +904,7 @@ NODE_CLASS_MAPPINGS = {
     # "VAEDecodeConsistencyDecoder":VAEDecode,
     "ScreenShare":ScreenShareNode,
     "FloatingVideo":FloatingVideo,
-    "ChatGPTOpenAI":ChatGPTNode,
-    "ShowTextForGPT":ShowTextForGPT,
-    "CharacterInText":CharacterInText,
-    "TextSplitByDelimiter":TextSplitByDelimiter,
+   
     "SpeechRecognition":SpeechRecognition,
     "SpeechSynthesis":SpeechSynthesis,
     "Color":ColorInput,
@@ -945,6 +939,10 @@ NODE_CLASS_MAPPINGS = {
 # 一个包含节点友好/可读的标题的字典
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AppInfo":"App Info ♾️MixlabApp",
+    "ScreenShare":"Screen Share ♾️Mixlab",
+    "FloatingVideo":"Floating Video ♾️Mixlab",
+    "TextImage":"Text Image ♾️Mixlab",
+    
     "Color":"Color Input ♾️MixlabApp",
     "TextInput_":"Text Input ♾️MixlabApp",
     "FloatSlider":"Float Slider Input ♾️MixlabApp",
@@ -958,10 +956,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SplitLongMask":"Splitting a long image into sections",
     "VAELoaderConsistencyDecoder":"Consistency Decoder Loader",
     "VAEDecodeConsistencyDecoder":"Consistency Decoder Decode",
-    "ScreenShare":"Screen Share ♾️Mixlab",
-    "FloatingVideo":"FloatingVideo ♾️Mixlab",
-    "ChatGPTOpenAI":"ChatGPT & Local LLM ♾️Mixlab",
-    "ShowTextForGPT":"Show Text ♾️MixlabApp",
+    
+    
     "MergeLayers":"Merge Layers ♾️Mixlab",
     "SpeechSynthesis":"SpeechSynthesis ♾️Mixlab",
     "SpeechRecognition":"SpeechRecognition ♾️Mixlab",
@@ -995,7 +991,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "IncrementingListNode_":"Create Incrementing Number List ♾️Mixlab",
     "LoadImagesToBatch":"Load Images(base64) ♾️Mixlab",
     "PreviewMask_":"Preview Mask",
-    "AudioPlay":"Audio Play ♾️Mixlab"
+    "AudioPlay":"Audio Play ♾️Mixlab",
+
+     "MultiplicationNode":"Math Operation ♾️Mixlab",
 }
 
 # web ui的节点功能
@@ -1005,6 +1003,41 @@ WEB_DIRECTORY = "./web"
 logging.info('--------------')
 logging.info('\033[91m ### Mixlab Nodes: \033[93mLoaded')
 # print('\033[91m ### Mixlab Nodes: \033[93mLoaded')
+
+try:
+    from .nodes.ChatGPT import ChatGPTNode,ShowTextForGPT,CharacterInText,TextSplitByDelimiter
+    logging.info('ChatGPT.available True')
+
+    NODE_CLASS_MAPPINGS_V = {
+       "ChatGPTOpenAI":ChatGPTNode,
+        "ShowTextForGPT":ShowTextForGPT,
+        "CharacterInText":CharacterInText,
+        "TextSplitByDelimiter":TextSplitByDelimiter,
+    }
+
+    # 一个包含节点友好/可读的标题的字典
+    NODE_DISPLAY_NAME_MAPPINGS_V = {
+        "ChatGPTOpenAI":"ChatGPT & Local LLM ♾️Mixlab",
+        "ShowTextForGPT":"Show Text ♾️MixlabApp",
+        "CharacterInText":"Character In Text",
+        "TextSplitByDelimiter":"Text Split By Delimiter",
+    }
+
+
+    NODE_CLASS_MAPPINGS.update(NODE_CLASS_MAPPINGS_V)
+    NODE_DISPLAY_NAME_MAPPINGS.update(NODE_DISPLAY_NAME_MAPPINGS_V)
+
+except Exception as e:
+    logging.info('ChatGPT.available False')
+
+
+try:
+    from .nodes.edit_mask import EditMask
+    logging.info('edit_mask.available True')
+    NODE_CLASS_MAPPINGS['EditMask']=EditMask
+    NODE_DISPLAY_NAME_MAPPINGS['EditMask']="Edit Mask ♾️Mixlab"
+except Exception as e:
+    logging.info('edit_mask.available False')
 
 try:
     from .nodes.Lama import LaMaInpainting

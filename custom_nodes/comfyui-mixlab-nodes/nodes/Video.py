@@ -179,6 +179,9 @@ def split_video(video_path, video_segment_frames, transition_frames, output_dir)
         
         # 打印当前片段的起始帧和结束帧
         print(f"Segment {i+1}: Start Frame {start_frame}, End Frame {end_frame}")
+
+        if end_frame<start_frame:
+            break
         
         # 保存当前片段为一个视频文件
         segment_video_path = f"{output_dir}/segment_{i+1}.avi"
@@ -187,6 +190,7 @@ def split_video(video_path, video_segment_frames, transition_frames, output_dir)
         segment_video = cv2.VideoWriter(segment_video_path, fourcc, fps, (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)),
                                                               int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))))
         
+
         for frame_num in range(start_frame, end_frame):
             ret, frame = video_capture.read()
             if ret:
@@ -526,22 +530,27 @@ class LoadAndCombinedAudio_:
 
     CATEGORY = "♾️Mixlab/Audio"
 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("audio_file_path",)
+    RETURN_TYPES = ("STRING","AUDIO",)
+    RETURN_NAMES = ("audio_file_path","audio",)
     FUNCTION = "run"
 
     def run(self,audios, start_time, duration):
         output_dir = folder_paths.get_output_directory()
         counter=get_new_counter(output_dir,'audio_')
 
-        audio_file = f"audio_{counter:05}.wav"
+        audio_file_name = f"audio_{counter:05}.wav"
 
-        audio_file=save_audio_base64s_to_file(audios['base64'],output_dir,audio_file)
+        audio_file=save_audio_base64s_to_file(audios['base64'],output_dir,audio_file_name)
         # duration == -1 则不裁切
         if duration > -1:
             crop_audio(audio_file, start_time, duration)
 
-        return (audio_file,)
+        return (audio_file, {
+                "filename": audio_file_name,
+                "subfolder": "",
+                "type": "output",
+                "audio_path":audio_file
+                } ,)
 
 class CombineAudioVideo:
     @classmethod
@@ -615,8 +624,8 @@ class VideoCombine_Adv:
             },
         }
 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("video_file_path",)
+    RETURN_TYPES = ("SCENE_VIDEO",)
+    RETURN_NAMES = ("scenes_video",)
     OUTPUT_NODE = True
     CATEGORY = "♾️Mixlab/Video"
     FUNCTION = "run"
@@ -890,7 +899,7 @@ class scenesNode_:
         
         return {"required": {
                     "scenes_video": ('SCENE_VIDEO',),
-                     "index": ("INT", {"default": 0, "min": 0, "step": 1}),
+                    "index": ("INT", {"default": 0, "min": 0, "step": 1}),
                      
                      },}
 
@@ -903,7 +912,7 @@ class scenesNode_:
     INPUT_IS_LIST = True
 
     def load_video_cv_fallback(self, video, frame_load_cap, skip_first_frames):
-        print('#video',video)
+        # print('#video',video)
         try:
             video_cap = cv2.VideoCapture(video)
             if not video_cap.isOpened():

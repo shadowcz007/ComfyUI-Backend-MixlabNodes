@@ -6,7 +6,10 @@
 
 ##### `最新`：
 
-ChatGPT 节点支持 Local LLM（llama.cpp），Phi3、llama3 都可以直接一个节点运行了。模型下载后，放置到 `models/llamafile/`
+- 增加 Edit Mask，方便在生成的时候手动绘制 mask [workflow](./workflow/edit-mask-workflow.json)
+
+
+- ChatGPT 节点支持 Local LLM（llama.cpp），Phi3、llama3 都可以直接一个节点运行了。模型下载后，放置到 `models/llamafile/`
 
 - 右键菜单支持 text-to-text，方便对 prompt 词补全
 
@@ -23,7 +26,11 @@ ChatGPT 节点支持 Local LLM（llama.cpp），Phi3、llama3 都可以直接一
 
 #### `相关插件推荐`
 
-<!-- [comfyui-sd-prompt-mixlab](https://github.com/shadowcz007/comfyui-sd-prompt-mixlab) -->
+[comfyui-liveportrait](https://github.com/shadowcz007/comfyui-liveportrait)
+
+[Comfyui-ChatTTS](https://github.com/shadowcz007/Comfyui-ChatTTS)
+
+[comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)
 
 [comfyui-Image-reward](https://github.com/shadowcz007/comfyui-Image-reward)
 
@@ -162,6 +169,9 @@ pip install llama-cpp-python \
 
 > A new layer class node has been added, allowing you to separate the image into layers. After merging the images, you can input the controlnet for further processing.
 
+> The composite images node overlays a foreground image onto a background image at specified positions and scales, with optional blending modes and masking capabilities. position : 'overall',"center_center","left_bottom","center_bottom","right_bottom","left_top","center_top","right_top"
+
+
 ![layers](./assets/layers-workflow.svg)
 
 ![poster](./assets/poster-workflow.svg)
@@ -192,6 +202,12 @@ pip install llama-cpp-python \
 #### LoadImagesFromURL
 
 > Conveniently load images from a fixed address on the internet to ensure that default images in the workflow can be executed.
+
+#### TextImage
+
+> [下载字体](https://drxie.github.io/OSFCC/)放到 ```custom_nodes/comfyui-mixlab-nodes/assets/fonts```
+
+
 
 ### Style
 

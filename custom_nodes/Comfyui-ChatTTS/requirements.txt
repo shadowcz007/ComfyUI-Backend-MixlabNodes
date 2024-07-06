@@ -3,3 +3,12 @@ tqdm
 einops
 vector_quantize_pytorch
 vocos
+pydub
+faster_whisper
+whisper_timestamped
+inflect
+unidecode
+eng_to_ipa
+cn2an
+jieba
+pybase16384

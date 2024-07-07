@@ -40,3 +40,7 @@ onnxruntime-gpu
 soundfile
 vocos
 vector_quantize_pytorch
+
+
+faster_whisper 
+pybase16384

@@ -56,6 +56,9 @@ comfyui:
     chat_tts: models/chat_tts/
     liveportrait: models/liveportrait/
     insightface: models/insightface/
+    face_parsing: models/face_parsing/
+    facerestore: models/facerestore/
+    facedetection: models/facedetection/
 
 # 插件地址
 other_ui:

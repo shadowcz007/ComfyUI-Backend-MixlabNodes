@@ -143,13 +143,20 @@ def ipadapter_model_loader(file):
 
     return model
 
+def get_model_dir(m):
+    try:
+        return folder_paths.get_folder_paths(m)[0]
+    except:
+        return os.path.join(folder_paths.models_dir, m)
+
 def insightface_loader(provider):
     try:
         from insightface.app import FaceAnalysis
     except ImportError as e:
         raise Exception(e)
 
-    path = os.path.join(folder_paths.models_dir, "insightface")
+    path = get_model_dir("insightface")
+    # os.path.join(folder_paths.models_dir, "insightface")
     model = FaceAnalysis(name="buffalo_l", root=path, providers=[provider + 'ExecutionProvider',])
     model.prepare(ctx_id=0, det_size=(640, 640))
     return model

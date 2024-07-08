@@ -34,3 +34,12 @@ custom_nodes\comfyui_controlnet_aux\utils.py
 annotator_ckpts_path=folder_paths.get_folder_paths('controlnet_ckpts')[0]
 
 ```
+
+IPA用到 insightface ,添加代码，优先使用配置的路径
+```
+def get_model_dir(m):
+    try:
+        return folder_paths.get_folder_paths(m)[0]
+    except:
+        return os.path.join(folder_paths.models_dir, m)
+```

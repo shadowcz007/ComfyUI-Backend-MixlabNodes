@@ -43,3 +43,7 @@ def get_model_dir(m):
     except:
         return os.path.join(folder_paths.models_dir, m)
 ```
+
+comfyui-reactor-node 修改模型为配置的路径
+
+glob.glob(models_path) ,models_path 需要 models_path = os.path.join(FACE_MODELS_PATH, "*")

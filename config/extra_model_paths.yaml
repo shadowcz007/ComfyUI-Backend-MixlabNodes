@@ -60,6 +60,8 @@ comfyui:
     facerestore: models/facerestore/
     facedetection: models/facedetection/
     ip_lap: models/ip_lap/
+    ultralytics: models/ultralytics/
+    sams: models/sams/
 
 # 插件地址
 other_ui:

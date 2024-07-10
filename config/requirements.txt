@@ -49,3 +49,5 @@ face_alignment
 librosa==0.9.2
 
 segment_anything
+
+lpips

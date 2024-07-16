@@ -980,16 +980,14 @@ class OpenVoiceCloneBySpeaker:
 
     CATEGORY = "♾️Mixlab/Audio/ChatTTS"
 
-    INPUT_IS_LIST = True
+    INPUT_IS_LIST = False
     OUTPUT_NODE = True
-    OUTPUT_IS_LIST = (True,) #list 列表 [1,2,3]
+    OUTPUT_IS_LIST = (False,) #list 列表 [1,2,3]
   
-    def chat_tts_run(self,audio_list,speaker,speaker_name,silence_duration,whisper=None):
-        name=speaker_name[0]
-        speaker=speaker[0]
-        silence_duration=silence_duration[0]
-        print(audio_list,whisper)
-        name=name.strip().lower()
+    def chat_tts_run(self,audio_list,speaker,speaker_name,silence_duration=0.5,whisper=None):
+        name=speaker_name.strip().lower()
+        print(name,speaker,silence_duration,audio_list,whisper)
+        
 
         # 音色
         spk=speaker[name]
@@ -1024,7 +1022,7 @@ class OpenVoiceCloneBySpeaker:
             ) = folder_paths.get_save_image_path("openvoice", output_dir)
 
             # 添加文件名后缀
-            audio_file = f"openvoice_{counter:05}.wav"
+            audio_file = f"openvoice_clone_voice_{counter:05}.wav"
             save_path=os.path.join(output_dir, audio_file)
     
             openvoice_run.run(reference_audio['audio_path'],source_audio['audio_path'],save_path,whisper)
@@ -1044,8 +1042,7 @@ class OpenVoiceCloneBySpeaker:
             audio=audio_list[index]
             if audio['name']==name:
                 audio_list[index]=clone_voice(audio['audio_path'])
-                audio_paths.append(audio_list[index]['audio_path'])
-
+            audio_paths.append(audio_list[index]['audio_path'])
 
         last_result = merge_audio_files(audio_paths,silence_duration)
 

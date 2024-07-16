@@ -54,6 +54,7 @@ comfyui:
     whisper: models/whisper/
     musetalk: models/musetalk/
     chat_tts: models/chat_tts/
+    open_voice: models/open_voice/
     liveportrait: models/liveportrait/
     insightface: models/insightface/
     face_parsing: models/face_parsing/

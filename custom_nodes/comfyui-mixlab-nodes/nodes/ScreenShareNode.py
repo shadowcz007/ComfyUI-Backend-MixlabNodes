@@ -143,28 +143,13 @@ class FloatingVideo:
 
 
 
-# class ScreenRecorderNode:
-#     @classmethod
+# class SildeNode:
+#     CATEGORY = "quicknodes"
+#     @classmethod    
 #     def INPUT_TYPES(s):
-#         return { "required":{
-#             "image": ("IMAGE",),
-#             "fps": ("INT", {"default": 24, "min":8,"step": 1, "max": 60}),
-#             "duration": ("INT", {"default": 1000, "min": 1,"step": 100, "max": 0xffffffffffffffff}),
-            
-#         },
-#           "optional":{ 
-#               "seed": ("SEED",), 
-#                 } }
-    
-#     RETURN_TYPES = ('IMAGE',)
-#     RETURN_NAMES = ("images",)
-#     FUNCTION = "run"
-
-#     CATEGORY = "♾️Mixlab/Screen"
-
-#     # INPUT_IS_LIST = True
-#     OUTPUT_IS_LIST = (True,)
-  
-#     # 运行的函数
-#     def run(self,image,fps,duration,seed):
-#         return {"ui":{"refresh_rate": [image]},"result": (image,)}
+#         return { "required":{} }
+#     RETURN_TYPES = ()
+#     RETURN_NAMES = ()
+#     FUNCTION = "func"
+#     def func(self):
+#         return ()

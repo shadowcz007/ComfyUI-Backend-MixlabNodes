@@ -42,7 +42,8 @@ vocos
 vector_quantize_pytorch
 
 
-faster_whisper 
+faster_whisper
+whisper_timestamped
 pybase16384
 pydub
 face_alignment

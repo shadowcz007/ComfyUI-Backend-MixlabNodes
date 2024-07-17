@@ -59,7 +59,7 @@ class IP_LAP:
                     }
                 }
 
-    CATEGORY = "AIFSH_IP_LAP" 
+    CATEGORY = "IP_LAP" 
 
     RETURN_TYPES = ("SCENE_VIDEO",)
 
@@ -132,7 +132,7 @@ class IP_LAP:
             return audio_file
 
         video=convert_to_25fps(video,os.path.join(temp_path, f"25fps_{video_name}"))
-        audio_p=extract_audio(audio_p,temp_path)
+        # audio_p=extract_audio(audio_p,temp_path)
 
         self.ip_lap(video,audio_p,out_video_file)
 

@@ -577,8 +577,6 @@ class CombineAudioVideo:
 
         output_dir = folder_paths.get_output_directory()
 
-        counter=get_new_counter(output_dir,'video_final_')
-
         # 判断是否是 Tensor 类型
         is_tensor = not isinstance(audio, dict)
         # print('#判断是否是 Tensor 类型',is_tensor,audio)
@@ -605,6 +603,7 @@ class CombineAudioVideo:
             
         # 获取文件名和扩展名
         base, ext = os.path.splitext(video)
+        counter=get_new_counter(output_dir,'video_final_')
 
         v_file = f"video_final_{counter:05}{ext}"
         
@@ -620,7 +619,6 @@ class CombineAudioVideo:
                 "format": get_mime_type(v_file),
             }
         ]
-
 
         return {"ui": {"gifs": previews},"result":(v_file_path,)}
 

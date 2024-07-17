@@ -85,7 +85,9 @@ class IP_LAP_infer:
     def __init__(self,T=5,Nl=15,ref_img_N=25,
                  img_size=128,mel_step_size=16,
                  face_det_batch_size=4,
-                 checkpoints_path=""):
+                 checkpoints_path="",
+                 facemash_model_dir=""
+                 ):
         self.T = T
         self.Nl = Nl
         self.ref_img_N = ref_img_N
@@ -117,14 +119,16 @@ class IP_LAP_infer:
         self.renderer = self.load_model(model=Renderer(), path=renderer_checkpoint_path)
 
         self.fa = face_alignment.FaceAlignment(face_alignment.LandmarksType.TWO_D, flip_input=False, device=self.device)
-
-        self.face_mask = FaceMask()
+        # print("#facemash_model_dir",facemash_model_dir)
+        self.face_mask = FaceMask(face_landmarks_detector_path=facemash_model_dir)
+        
 
     def __call__(self,video_file, audio_file, outfile):
         temp_dir = os.path.join(os.path.dirname(outfile), NAME)
         if not os.path.exists(temp_dir): os.makedirs(temp_dir, exist_ok=True)
         ##(1) Reading input video frames  ###
-        print(f'[Step 1]Reading video frames ... from {video_file}', NAME)
+        print('\033[93m ',f'[Step 1]Reading video frames ... from {video_file}', NAME, '\033[0m')
+        
         if not os.path.isfile(video_file):
             raise ValueError('the input video file does not exist')
         elif video_file.split('.')[1] in ['jpg', 'png', 'jpeg']: #if input a single image for testing
@@ -176,13 +180,15 @@ class IP_LAP_infer:
             mel_chunks.append(mel[:, start_idx: start_idx + self.mel_step_size])  # mel for generate one video frame
             mel_chunk_idx += 1
         
-        print('[Step 3]detect facial using face detection tool', NAME)
+        print('\033[93m ',f'[Step 3]detect facial using face detection tool', NAME, '\033[0m')
+        
         ori_face_frames, ori_face_coords = self.face_detect(ori_background_frames)
         # print(len(ori_face_frames))
         import gc; gc.collect(); torch.cuda.empty_cache()
 
         ##(3) detect facial landmarks using mediapipe tool
-        print('[Step 4]detect facial landmarks using mediapipe tool', NAME)
+        print('\033[93m ',f'[Step 4]detect facial landmarks using mediapipe tool', NAME, '\033[0m')
+      
         boxes = []  #bounding boxes of human face
         lip_dists = [] #lip dists
         #we define the lip dist(openness): distance between the  midpoints of the upper lip and lower lip
@@ -363,9 +369,9 @@ class IP_LAP_infer:
         file_num = 0
         
         pbar = comfy.utils.ProgressBar(len(range(0, input_mel_chunks_len-2, 1)))
-
+        print('\033[93m ',f'[IP_LAP] [Step 5]Lipsync...', NAME, '\033[0m')
         for batch_idx, batch_start_idx in tqdm(enumerate(range(0, input_mel_chunks_len-2, 1)),
-                                       total=len(range(0, input_mel_chunks_len-2, 1)), desc="[IP_LAP] [Step 5]Lipsync..."):
+                                       total=len(range(0, input_mel_chunks_len-2, 1))):
             T_input_frame, T_ori_face_coordinates = [], []
             #note: input_frame include background as well as face
             T_mel_batch, T_crop_face,T_pose_landmarks = [], [],[]

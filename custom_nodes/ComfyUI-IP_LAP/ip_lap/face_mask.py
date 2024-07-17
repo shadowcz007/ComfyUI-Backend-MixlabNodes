@@ -1,22 +1,20 @@
-import cv2
+import cv2,os
 import numpy as np
 from typing import Any
 import mediapipe as mp 
-from basicsr.utils.download_util import load_file_from_url
+
 
 class FaceMask:
-    def __init__(self) -> None:
+    def __init__(self,face_landmarks_detector_path: str) -> None:
         BaseOptions = mp.tasks.BaseOptions
         FaceLandmarker = mp.tasks.vision.FaceLandmarker
         FaceLandmarkerOptions = mp.tasks.vision.FaceLandmarkerOptions
         VisionRunningMode = mp.tasks.vision.RunningMode
 
-        face_landmarks_detector_path = load_file_from_url(url="https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task",
-                           model_dir="weights",
-                           file_name="face_landmarker.task")
         options = FaceLandmarkerOptions(
             base_options=BaseOptions(model_asset_path=face_landmarks_detector_path),
             running_mode=VisionRunningMode.IMAGE)
+    
         self.face_landmarks_detector = FaceLandmarker.create_from_options(options)
 
     def __call__(self,image,*args: Any, **kwds: Any) -> Any:

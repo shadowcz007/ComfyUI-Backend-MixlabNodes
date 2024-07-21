@@ -47,3 +47,7 @@ def get_model_dir(m):
 comfyui-reactor-node 修改模型为配置的路径
 
 glob.glob(models_path) ,models_path 需要 models_path = os.path.join(FACE_MODELS_PATH, "*")
+
+
+> 加速推理速度
+ [flash-attn 安装方法](https://t.zsxq.com/CMcRp)

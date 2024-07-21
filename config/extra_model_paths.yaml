@@ -64,6 +64,7 @@ comfyui:
     ip_lap: models/ip_lap/
     ultralytics: models/ultralytics/
     sams: models/sams/
+    t5: models/t5/
 
 # 插件地址
 other_ui:

@@ -60,3 +60,6 @@ lpips
 
 peft>=0.10.0
 flash-attn
+
+tensorrt>=10.0.1
+onnx

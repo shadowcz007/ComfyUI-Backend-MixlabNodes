@@ -1,0 +1,198 @@
+{
+  "last_node_id": 6,
+  "last_link_id": 4,
+  "nodes": [
+    {
+      "id": 4,
+      "type": "RenameSpeaker",
+      "pos": [
+        67,
+        354
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "speaker",
+          "type": "SPEAKER",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "speaker",
+          "type": "SPEAKER",
+          "links": [
+            3
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RenameSpeaker"
+      },
+      "widgets_values": [
+        "mixlab"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "AudioPlay",
+      "pos": [
+        894,
+        232
+      ],
+      "size": {
+        "0": 395.4819030761719,
+        "1": 277.2229919433594
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 4
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioPlay"
+      },
+      "widgets_values": [
+        [
+          "/view?filename=podcast_a60f3374.wav&type=output&subfolder=&rand=0.2799341351709246",
+          null
+        ]
+      ]
+    },
+    {
+      "id": 2,
+      "type": "MultiPersonPodcast",
+      "pos": [
+        436,
+        226
+      ],
+      "size": {
+        "0": 410.3086853027344,
+        "1": 321.5319519042969
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "speaker",
+          "type": "SPEAKER",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_list",
+          "type": "AUDIO",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            4
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MultiPersonPodcast"
+      },
+      "widgets_values": [
+        "mixlab：嘿，欢迎来到《梦幻纷飞：探索心灵迷雾的奇境之旅》！在这里，你将踏上一段超现实的奇幻之旅。想象一下，悬浮的棋盘和巨大的漂浮眼睛，哇，这些异象会让你对其他世界维度充满好奇。我们的艺术家梦影，以其独特的杏仁形眼睛和飘逸的黑发，穿着流动的礼服，完美融入暗淡的背景，形成一个神秘的身影。\n\nmixlab：在这次展览中，我们将一起揭示人类心灵的秘密与欲望。梦影的作品通过细腻的绘画技巧和超越常规的图像构思，带你探索内心深处的情感和欲望。准备好被激发想象力和困惑了吗？哇，通过与艺术家的互动，你将进入一个超越现实的境界，挑战你对现实和逻辑的理解。\n\nmixlab：所以，快来吧！让我们一起投身这场奇境之旅，挖掘人类的秘密与欲望，激发你的想象力与困惑。希望这段旅程能让你在艺术与灵魂的碰撞中，找到珍贵的回忆，并引发内心的转变与行动。准备好了吗？走吧！ ",
+        0,
+        3,
+        0,
+        0,
+        false,
+        1.01
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadSpeaker",
+      "pos": [
+        62,
+        232
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "speaker",
+          "type": "SPEAKER",
+          "links": [
+            2
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "title": "小末",
+      "properties": {
+        "Node name for S&R": "LoadSpeaker"
+      },
+      "widgets_values": [
+        "小末_00001"
+      ]
+    }
+  ],
+  "links": [
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "SPEAKER"
+    ],
+    [
+      3,
+      4,
+      0,
+      2,
+      0,
+      "SPEAKER"
+    ],
+    [
+      4,
+      2,
+      1,
+      6,
+      0,
+      "AUDIO"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.0610764609500012,
+      "offset": [
+        66.77820509314748,
+        7.386447688827992
+      ]
+    }
+  },
+  "version": 0.4
+}

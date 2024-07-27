@@ -1,6 +1,7 @@
 @echo off
 
 setlocal enabledelayedexpansion
+set NO_ALBUMENTATIONS_UPDATE=1
 set "file=.\config\python_path.txt"
 set "python_exec="
 for /f "usebackq delims=" %%i in ("%file%") do (

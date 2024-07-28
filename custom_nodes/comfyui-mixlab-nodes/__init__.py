@@ -10,6 +10,7 @@ import datetime
 import folder_paths
 import logging
 import base64,io,re
+import random
 from PIL import Image
 from comfy.cli_args import args
 python = sys.executable
@@ -309,9 +310,10 @@ def get_my_workflow_for_app(filename="my_workflow_app.json",category="",is_all=F
         print('app_workflow_path: ',app_workflow_path)
         try:
             with open(app_workflow_path) as json_file:
+                json_data=json.load(json_file)
                 apps = [{
                     'filename':filename,
-                    'data':json.load(json_file)
+                    'data':json_data
                 }]
         except Exception as e:
             print("发生异常：", str(e))
@@ -616,13 +618,30 @@ async def mixlab_workflow_hander(request):
                     category=data['category']
                 if 'admin' in data:
                     admin=data['admin']
+
+                ds=get_my_workflow_for_app(filename,category,admin)                
+                for json_data in ds:
+                    # 不传给前端
+                    if 'output' in json_data:
+                        del json_data['output']
+                    if 'workflow' in json_data:
+                        del json_data['workflow']
+
                 result={
-                    'data':get_my_workflow_for_app(filename,category,admin),
+                    'data':ds,
                     'status':'success',
                 }
             elif data['task']=='list':
+                ds=get_workflows()
+                for json_data in ds:
+                    # 不传给前端
+                    if 'output' in json_data:
+                        del json_data['output']
+                    if 'workflow' in json_data:
+                        del json_data['workflow']
+
                 result={
-                    'data':get_workflows(),
+                    'data':ds,
                     'status':'success',
                 }
     except Exception as e:
@@ -725,6 +744,25 @@ async def rembg_hander(request):
     
 #     return web.json_response({"result":res})
 
+# 种子设置
+def random_seed(seed, data):
+    max_seed = 4294967295
+
+    for id, value in data.items():
+        if 'seed' in value['inputs'] and not isinstance(value['inputs']['seed'], list) and seed[id] in ['increment', 'decrement', 'randomize']:
+            value['inputs']['seed'] = round(random.random() * max_seed)
+        
+        if 'noise_seed' in value['inputs'] and not isinstance(value['inputs']['noise_seed'], list) and seed[id] in ['increment', 'decrement', 'randomize']:
+            value['inputs']['noise_seed'] = round(random.random() * max_seed)
+        
+        if value.get('class_type') == "Seed_" and seed[id] in ['increment', 'decrement', 'randomize']:
+            value['inputs']['seed'] = round(random.random() * max_seed)
+        
+        print('new Seed', value)
+    
+    return data
+
+
 # 运行工作流，代替官方的prompt接口
 @routes.post("/mixlab/prompt")
 async def mixlab_post_prompt(request):
@@ -739,13 +777,16 @@ async def mixlab_post_prompt(request):
 
     # 输入的参数
     input_data=json_data['input'] if "input" in json_data else []
+    # 种子
+    seed=json_data['seed'] if "seed" in json_data else {}
 
     apps=get_my_workflow_for_app(json_data['filename'],json_data['category'],False)
     
-    prompt=None
+    prompt=json_data['prompt'] if 'prompt' in json_data else None
+
     if len(apps)==1:
         # 取到prompt
-        prompt=apps[0]['output']
+        prompt=apps[0]['data']['output']
         # 更新input_data到prompt里
         '''
           {
@@ -759,7 +800,7 @@ async def mixlab_post_prompt(request):
                 "id": "22"
             },
         '''
-        
+
         for inp in input_data:
             id=inp['id']
             if prompt[id]['class_type']==inp['class_type']:
@@ -768,41 +809,50 @@ async def mixlab_post_prompt(request):
 
     if prompt==None:
         return web.json_response({"error": "no prompt", "node_errors": []}, status=400)
+    else:
+        # 种子更新 
+        '''
+            "seed": {
+                    "45": "randomize",
+                    "46": "randomize"
+                }
+            '''
+        json_data["prompt"]=random_seed(seed,prompt)
 
     print("#json_data",prompt)
     # 需要把apps处理成 prompt
     # 注意seed的处理
     
-    # if "number" in json_data:
-    #     number = float(json_data['number'])
-    # else:
-    #     number = p_intance.number
-    #     if "front" in json_data:
-    #         if json_data['front']:
-    #             number = -number
+    if "number" in json_data:
+        number = float(json_data['number'])
+    else:
+        number = p_intance.number
+        if "front" in json_data:
+            if json_data['front']:
+                number = -number
 
-    #     p_intance.number += 1
+        p_intance.number += 1
 
-    # if "prompt" in json_data:
-    #     prompt = json_data["prompt"]
-    #     valid = execution.validate_prompt(prompt)
-    #     extra_data = {}
-    #     if "extra_data" in json_data:
-    #         extra_data = json_data["extra_data"]
+    if "prompt" in json_data:
+        prompt = json_data["prompt"]
+        valid = execution.validate_prompt(prompt)
+        extra_data = {}
+        if "extra_data" in json_data:
+            extra_data = json_data["extra_data"]
 
-    #     if "client_id" in json_data:
-    #         extra_data["client_id"] = json_data["client_id"]
-    #     if valid[0]:
-    #         prompt_id = str(uuid.uuid4())
-    #         outputs_to_execute = valid[2]
-    #         p_intance.prompt_queue.put((number, prompt_id, prompt, extra_data, outputs_to_execute))
-    #         response = {"prompt_id": prompt_id, "number": number, "node_errors": valid[3]}
-    #         return web.json_response(response)
-    #     else:
-    #         logging.warning("invalid prompt: {}".format(valid[1]))
-    #         return web.json_response({"error": valid[1], "node_errors": valid[3]}, status=400)
-    # else:
-    #     return web.json_response({"error": "no prompt", "node_errors": []}, status=400)
+        if "client_id" in json_data:
+            extra_data["client_id"] = json_data["client_id"]
+        if valid[0]:
+            prompt_id = str(uuid.uuid4())
+            outputs_to_execute = valid[2]
+            p_intance.prompt_queue.put((number, prompt_id, prompt, extra_data, outputs_to_execute))
+            response = {"prompt_id": prompt_id, "number": number, "node_errors": valid[3]}
+            return web.json_response(response)
+        else:
+            logging.warning("invalid prompt: {}".format(valid[1]))
+            return web.json_response({"error": valid[1], "node_errors": valid[3]}, status=400)
+    else:
+        return web.json_response({"error": "no prompt", "node_errors": []}, status=400)
 
 
 

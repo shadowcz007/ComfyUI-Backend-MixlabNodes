@@ -1131,21 +1131,6 @@
             // 随机seed
             promptWorkflow = randomSeed(seed, promptWorkflow);
 
-            // //动态提示,改为输入的时候，手动触发
-            // for (const id in promptWorkflow) {
-            //     let node = promptWorkflow[id]
-            //     if (["TextInput_", "CLIPTextEncode", "PromptSimplification", "ChinesePrompt_Mix"].includes(
-            //         node.class_type
-            //     )) {
-            //         if (node.class_type == "PromptSimplification") {
-            //             promptWorkflow[id].inputs.prompt = dynamicPrompts(node.inputs.prompt);
-            //         } else {
-            //             promptWorkflow[id].inputs.text = dynamicPrompts(node.inputs.text);
-            //         }
-            //         console.log('#动态提示', promptWorkflow[id].inputs)
-            //     }
-            // }
-
             let url = get_url()
             const data = JSON.stringify({ prompt: promptWorkflow, client_id });
             fetch(`${url}/prompt`, {

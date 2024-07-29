@@ -17,11 +17,12 @@ from . import diffusers_convert
 from . import model_detection
 
 from . import sd1_clip
-from . import sd2_clip
 from . import sdxl_clip
+import comfy.text_encoders.sd2_clip
 import comfy.text_encoders.sd3_clip
 import comfy.text_encoders.sa_t5
 import comfy.text_encoders.aura_t5
+import comfy.text_encoders.hydit
 
 import comfy.model_patcher
 import comfy.lora
@@ -135,7 +136,11 @@ class CLIP:
             return self.cond_stage_model.load_sd(sd)
 
     def get_sd(self):
-        return self.cond_stage_model.state_dict()
+        sd_clip = self.cond_stage_model.state_dict()
+        sd_tokenizer = self.tokenizer.state_dict()
+        for k in sd_tokenizer:
+            sd_clip[k] = sd_tokenizer[k]
+        return sd_clip
 
     def load_model(self):
         model_management.load_model_gpu(self.patcher)
@@ -381,6 +386,7 @@ class CLIPType(Enum):
     STABLE_CASCADE = 2
     SD3 = 3
     STABLE_AUDIO = 4
+    HUNYUAN_DIT = 5
 
 def load_clip(ckpt_paths, embedding_directory=None, clip_type=CLIPType.STABLE_DIFFUSION):
     clip_data = []
@@ -408,8 +414,8 @@ def load_clip(ckpt_paths, embedding_directory=None, clip_type=CLIPType.STABLE_DI
                 clip_target.clip = sdxl_clip.SDXLRefinerClipModel
                 clip_target.tokenizer = sdxl_clip.SDXLTokenizer
         elif "text_model.encoder.layers.22.mlp.fc1.weight" in clip_data[0]:
-            clip_target.clip = sd2_clip.SD2ClipModel
-            clip_target.tokenizer = sd2_clip.SD2Tokenizer
+            clip_target.clip = comfy.text_encoders.sd2_clip.SD2ClipModel
+            clip_target.tokenizer = comfy.text_encoders.sd2_clip.SD2Tokenizer
         elif "encoder.block.23.layer.1.DenseReluDense.wi_1.weight" in clip_data[0]:
             weight = clip_data[0]["encoder.block.23.layer.1.DenseReluDense.wi_1.weight"]
             dtype_t5 = weight.dtype
@@ -429,6 +435,9 @@ def load_clip(ckpt_paths, embedding_directory=None, clip_type=CLIPType.STABLE_DI
         if clip_type == CLIPType.SD3:
             clip_target.clip = comfy.text_encoders.sd3_clip.sd3_clip(clip_l=True, clip_g=True, t5=False)
             clip_target.tokenizer = comfy.text_encoders.sd3_clip.SD3Tokenizer
+        elif clip_type == CLIPType.HUNYUAN_DIT:
+            clip_target.clip = comfy.text_encoders.hydit.HyditModel
+            clip_target.tokenizer = comfy.text_encoders.hydit.HyditTokenizer
         else:
             clip_target.clip = sdxl_clip.SDXLClipModel
             clip_target.tokenizer = sdxl_clip.SDXLTokenizer

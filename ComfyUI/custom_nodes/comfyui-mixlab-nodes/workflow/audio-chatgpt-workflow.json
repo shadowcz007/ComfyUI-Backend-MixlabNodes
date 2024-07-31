@@ -1,0 +1,314 @@
+{
+  "last_node_id": 10,
+  "last_link_id": 16,
+  "nodes": [
+    {
+      "id": 9,
+      "type": "SpeechSynthesis",
+      "pos": [
+        40,
+        356
+      ],
+      "size": {
+        "0": 352.8227844238281,
+        "1": 95.3553237915039
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 12,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            13,
+            16
+          ],
+          "shape": 6,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SpeechSynthesis"
+      },
+      "widgets_values": [
+        "作为一个人工智能助手，我没有性别，也无法进行社交互动。我的主要任务是为用户提供帮助和信息。请问有什么问题我可以为您解答吗？"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "SpeechRecognition",
+      "pos": [
+        537,
+        321
+      ],
+      "size": {
+        "0": 228.5580291748047,
+        "1": 239.85951232910156
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "start_by",
+          "type": "INT",
+          "link": 14,
+          "widget": {
+            "name": "start_by"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "links": [
+            15
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SpeechRecognition"
+      },
+      "widgets_values": [
+        null,
+        1,
+        4,
+        null
+      ]
+    },
+    {
+      "id": 4,
+      "type": "ChatGPTOpenAI",
+      "pos": [
+        -403,
+        14
+      ],
+      "size": {
+        "0": 400,
+        "1": 358
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            12
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "messages",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "session_history",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ChatGPTOpenAI"
+      },
+      "widgets_values": [
+        null,
+        null,
+        "跟你一样泡妞",
+        "You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.",
+        "gpt-3.5-turbo",
+        354,
+        "randomize",
+        1,
+        null
+      ]
+    },
+    {
+      "id": 10,
+      "type": "ShowTextForGPT",
+      "pos": [
+        867,
+        349
+      ],
+      "size": {
+        "0": 315,
+        "1": 76.00000762939453
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 15,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ShowTextForGPT"
+      },
+      "widgets_values": [
+        "纽斯"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "DynamicDelayProcessor",
+      "pos": [
+        496,
+        4
+      ],
+      "size": {
+        "0": 400,
+        "1": 200
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "any_input",
+          "type": "*",
+          "link": 13
+        },
+        {
+          "name": "delay_by_text",
+          "type": "STRING",
+          "link": 16,
+          "widget": {
+            "name": "delay_by_text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "*",
+          "links": [
+            14
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DynamicDelayProcessor"
+      },
+      "widgets_values": [
+        1,
+        "",
+        2.5,
+        "enable",
+        1
+      ]
+    }
+  ],
+  "links": [
+    [
+      4,
+      2,
+      0,
+      5,
+      0,
+      "*"
+    ],
+    [
+      7,
+      4,
+      0,
+      6,
+      0,
+      "STRING"
+    ],
+    [
+      8,
+      6,
+      0,
+      5,
+      1,
+      "STRING"
+    ],
+    [
+      9,
+      5,
+      0,
+      7,
+      0,
+      "INT"
+    ],
+    [
+      12,
+      4,
+      0,
+      9,
+      0,
+      "STRING"
+    ],
+    [
+      13,
+      9,
+      0,
+      5,
+      0,
+      "*"
+    ],
+    [
+      14,
+      5,
+      0,
+      8,
+      0,
+      "INT"
+    ],
+    [
+      15,
+      8,
+      0,
+      10,
+      0,
+      "STRING"
+    ],
+    [
+      16,
+      9,
+      0,
+      5,
+      1,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

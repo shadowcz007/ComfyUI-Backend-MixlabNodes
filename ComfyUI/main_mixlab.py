@@ -8,6 +8,29 @@ import time
 from comfy.cli_args import args
 
 
+# 去除
+# del folder_paths.folder_names_and_paths["custom_nodes"]
+# 把引用的本地库的路径改为当前目录下 ，以下代码贴至 main.py 修改
+
+import sys
+import os
+
+# 去掉环境里的comfyUI路径
+comfyui_path = "ComfyUI" # 替换为你要判断和去掉的路径
+
+for path in sys.path:
+    file_name = os.path.basename(path)
+    if comfyui_path ==file_name:
+        # print(f"{path} 包含 ComfyUI 路径")
+        sys.path.remove(path)
+    # else:
+    #     print(f"{path} 不包含 ComfyUI 路径")
+
+# 添加当前的ComfyUI路径
+current_directory = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, current_directory)
+
+
 def execute_prestartup_script():
     def execute_script(script_path):
         module_name = os.path.splitext(script_path)[0]

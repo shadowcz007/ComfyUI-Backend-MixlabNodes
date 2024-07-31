@@ -40,6 +40,3 @@ comfyui:
   ultralytics: models/ultralytics/
   sams: models/sams/
   t5: models/t5/
-other_ui:
-  # base_path: C:\Users\38957\Documents\GitHub\comfyui-backend-release
-  custom_nodes: custom_nodes

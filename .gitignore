@@ -9,4 +9,4 @@ ComfyUI\output\*
 ComfyUI\temp\*
 llama.log
 *.7z
-/ComfyUI/user
+ComfyUI/user

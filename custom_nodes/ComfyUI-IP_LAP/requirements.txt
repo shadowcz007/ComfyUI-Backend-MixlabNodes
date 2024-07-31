@@ -1,7 +1,0 @@
-face_alignment
-mediapipe
-basicsr
-lws
-librosa==0.9.2
-moviepy
-pydub

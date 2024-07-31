@@ -1,74 +1,45 @@
-#Rename this to extra_model_paths.yaml and ComfyUI will load it
-
-
-#config for a1111 ui
-#all you have to do is change the base_path to where yours is installed
-# a111:
-#     base_path: path/to/stable-diffusion-webui/
-
-#     checkpoints: models/Stable-diffusion
-#     configs: models/Stable-diffusion
-#     vae: models/VAE
-#     loras: |
-#          models/Lora
-#          models/LyCORIS
-#     upscale_models: |
-#                   models/ESRGAN
-#                   models/RealESRGAN
-#                   models/SwinIR
-#     embeddings: embeddings
-#     hypernetworks: models/hypernetworks
-#     controlnet: models/ControlNet
-
-#config for comfyui
-#your base path should be either an existing comfy install or a central folder where you store all of your models, loras, etc.
-# 模型地址
 comfyui:
-    base_path: C:\Users\38957\Documents\ai-lab\ComfyUI_windows_portable\ComfyUI
-    checkpoints: models/checkpoints/
-    loras: models/loras/
-    vae: models/vae/
-    clip: models/clip/
-    unet: models/unet/
-    clip_vision: models/clip_vision/
-    style_models: models/style_models/
-    embeddings: models/embeddings/
-    diffusers: models/diffusers/
-    vae_approx: models/vae_approx/
-    controlnet: models/controlnet/
-    gligen: models/gligen/
-    upscale_models: models/upscale_models/
-    hypernetworks: models/hypernetworks/
-    photomaker: models/photomaker/
-    classifiers: models/classifiers/
-    configs: models/configs/
-    controlnet_ckpts: models/controlnet_ckpts/
-    prompt_generator: models/prompt_generator/
-    llamafile: models/llamafile/
-    lama: models/lama/
-    clip_interrogator: models/clip_interrogator/
-    ipadapter: models/ipadapter/
-    inpaint: models/inpaint/
-    triposr: models/triposr/
-    rembg: models/rembg/
-    whisper: models/whisper/
-    musetalk: models/musetalk/
-    chat_tts: models/chat_tts/
-    chat_tts_speaker: models/chat_tts_speaker/
-    open_voice: models/open_voice/
-    liveportrait: models/liveportrait/
-    insightface: models/insightface/
-    face_parsing: models/face_parsing/
-    facerestore: models/facerestore/
-    facedetection: models/facedetection/
-    ip_lap: models/ip_lap/
-    ultralytics: models/ultralytics/
-    sams: models/sams/
-    t5: models/t5/
-
-# 插件地址
-other_ui:
-   base_path: ./
-#    checkpoints: models/checkpoints
-#    gligen: models/gligen
-   custom_nodes: custom_nodes
+  base_path: C:\Users\38957\Documents\ai-lab\ComfyUI_windows_portable\ComfyUI
+  checkpoints: models/checkpoints/
+  loras: models/loras/
+  vae: models/vae/
+  clip: models/clip/
+  unet: models/unet/
+  clip_vision: models/clip_vision/
+  style_models: models/style_models/
+  embeddings: models/embeddings/
+  diffusers: models/diffusers/
+  vae_approx: models/vae_approx/
+  controlnet: models/controlnet/
+  gligen: models/gligen/
+  upscale_models: models/upscale_models/
+  hypernetworks: models/hypernetworks/
+  photomaker: models/photomaker/
+  classifiers: models/classifiers/
+  configs: models/configs/
+  controlnet_ckpts: models/controlnet_ckpts/
+  prompt_generator: models/prompt_generator/
+  llamafile: models/llamafile/
+  lama: models/lama/
+  clip_interrogator: models/clip_interrogator/
+  ipadapter: models/ipadapter/
+  inpaint: models/inpaint/
+  triposr: models/triposr/
+  rembg: models/rembg/
+  whisper: models/whisper/
+  musetalk: models/musetalk/
+  chat_tts: models/chat_tts/
+  chat_tts_speaker: models/chat_tts_speaker/
+  open_voice: models/open_voice/
+  liveportrait: models/liveportrait/
+  insightface: models/insightface/
+  face_parsing: models/face_parsing/
+  facerestore: models/facerestore/
+  facedetection: models/facedetection/
+  ip_lap: models/ip_lap/
+  ultralytics: models/ultralytics/
+  sams: models/sams/
+  t5: models/t5/
+# other_ui:
+#   base_path: C:\Users\38957\Documents\GitHub\comfyui-backend-release
+#   custom_nodes: custom_nodes

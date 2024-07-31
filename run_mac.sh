@@ -13,7 +13,7 @@ echo "启动 ComfyUI..."
 
 # 指定Python环境和脚本路径
 # PYTHON_PATH="./venv/bin/python"
-SCRIPT_PATH="ComfyUI/main.py"
+SCRIPT_PATH="ComfyUI/main_mixlab.py"
 
 # 添加额外的参数
 EXTRA_MODEL_PATHS_CONFIG="./extra_model_paths.yaml"

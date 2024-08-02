@@ -9,7 +9,7 @@ from comfy.cli_args import args
 
 
 # 去除
-# del folder_paths.folder_names_and_paths["custom_nodes"]
+del folder_paths.folder_names_and_paths["custom_nodes"]
 # 把引用的本地库的路径改为当前目录下 ，以下代码贴至 main.py 修改
 
 import sys
@@ -29,6 +29,8 @@ for path in sys.path:
 # 添加当前的ComfyUI路径
 current_directory = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, current_directory)
+
+folder_paths.folder_names_and_paths["custom_nodes"] = ([os.path.join(current_directory,"custom_nodes")], set())
 
 
 def execute_prestartup_script():
@@ -71,7 +73,7 @@ def execute_prestartup_script():
             print("{:6.1f} seconds{}:".format(n[0], import_message), n[1])
         print()
 
-execute_prestartup_script()
+# execute_prestartup_script()
 
 
 # Main code
@@ -221,8 +223,11 @@ def load_extra_path_config(yaml_path):
 
 
 if __name__ == "__main__":
+
+    logging.info(f"#custom_nodes:{folder_paths.get_folder_paths('custom_nodes')}")
+
     if args.temp_directory:
-        temp_dir = os.path.join(os.path.abspath(args.temp_directory), "temp")
+        temp_dir = os.path.abspath(args.temp_directory)
         logging.info(f"Setting temp directory to: {temp_dir}")
         folder_paths.set_temp_directory(temp_dir)
     cleanup_temp()

@@ -114,6 +114,7 @@ def get_ipadapter_file(preset, is_sdxl):
     else:
         raise Exception(f"invalid type '{preset}'")
 
+    print('#ipadapter_file',pattern)
     ipadapter_file = [e for e in ipadapter_list if re.search(pattern, e, re.IGNORECASE)]
     ipadapter_file = folder_paths.get_full_path("ipadapter", ipadapter_file[0]) if ipadapter_file else None
 

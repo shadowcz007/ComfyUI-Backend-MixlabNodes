@@ -1,4 +1,9 @@
 function get_url () {
+  // 如果有缓存记录
+  let hostUrl = localStorage.getItem('_hostUrl') || ''
+  if (hostUrl) {
+    return hostUrl
+  }
   let api_host = `${window.location.hostname}:${window.location.port}`
   let api_base = ''
   let url = `${window.location.protocol}//${api_host}${api_base}`

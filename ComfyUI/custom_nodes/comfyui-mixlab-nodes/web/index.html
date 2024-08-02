@@ -2870,7 +2870,12 @@
                                     window._appData.category,
                                     window._appData.seed,
                                     inp,
-                                    api.clientId
+                                    api.clientId,
+                                    window._appData.data ? [{
+                                        data: {
+                                            output: window._appData.data
+                                        }
+                                    }] : null
                                 ).then(res => {
 
                                     if (!res) {
@@ -2900,7 +2905,12 @@
                         window._appData.category,
                         window._appData.seed,
                         window._appData.input.filter(inp => inp),
-                        api.clientId
+                        api.clientId,
+                        window._appData.data ? [{
+                            data: {
+                                output: window._appData.data
+                            }
+                        }] : null
                     ).then(res => {
 
                         if (!res) {

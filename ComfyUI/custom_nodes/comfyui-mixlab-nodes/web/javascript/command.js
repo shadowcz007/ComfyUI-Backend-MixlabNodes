@@ -148,8 +148,12 @@ function queuePromptNew (filename, category, seed, input, client_id) {
 
   // 随机seed
   //  promptWorkflow = randomSeed(seed, promptWorkflow);
+  let d = { filename, category, seed, input, client_id }
+  if (apps) {
+    d.apps = apps
+  }
 
-  const data = JSON.stringify({ filename, category, seed, input, client_id })
+  const data = JSON.stringify(d)
   return new Promise((res, rej) => {
     fetch(`${url}/mixlab/prompt`, {
       method: 'POST',

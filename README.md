@@ -51,3 +51,5 @@ glob.glob(models_path) ,models_path 需要 models_path = os.path.join(FACE_MODEL
 
 > 加速推理速度
  [flash-attn 安装方法](https://t.zsxq.com/CMcRp)
+ 
+https://github.com/bdashore3/flash-attention/releases/download/v2.5.2/flash_attn-2.5.2+cu122torch2.2.0cxx11abiFALSE-cp311-cp311-win_amd64.whl

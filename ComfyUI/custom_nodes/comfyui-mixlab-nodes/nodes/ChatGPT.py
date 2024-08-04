@@ -207,7 +207,8 @@ def chat(client, model_name,messages ):
         return content
 
 
-llm_apis=[{
+llm_apis=[
+            {
                 "value": "https://api.openai.com/v1",
                 "label": "openai"
             },
@@ -277,21 +278,24 @@ class ChatGPTNode:
         return {
             "required": {
                 # "api_key":("KEY", {"default": "", "multiline": True,"dynamicPrompts": False}),
-                "api_key":("STRING", {"forceInput": True,}),
-                "api_url":(list(llm_apis_dict.keys()), 
-                    {"default": list(llm_apis_dict.keys())[0]}),
+                # "api_key":("STRING", {"forceInput": True,}),
+               
                 "prompt": ("STRING", {"multiline": True,"dynamicPrompts": False}),
                 "system_content": ("STRING", 
                                    {
                                        "default": "You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.", 
                                        "multiline": True,"dynamicPrompts": False
                                        }),
+                 
                 "model": ( model_list, 
                     {"default": model_list[0]}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "step": 1}),
                 "context_size":("INT", {"default": 1, "min": 0, "max":30, "step": 1}),
+                "api_url":(list(llm_apis_dict.keys()), 
+                    {"default": list(llm_apis_dict.keys())[0]}),
             },
              "optional":{
+                    "api_key":("STRING", {"forceInput": True,}),
                     "custom_model_name":("STRING", {"forceInput": True,}), #适合自定义model
                      "custom_api_url":("STRING", {"forceInput": True,}), #适合自定义model
                 },
@@ -307,15 +311,17 @@ class ChatGPTNode:
 
     
     def generate_contextual_text(self,
-                                 api_key,
-                                 api_url, 
+                                #  api_key,
                                  prompt, 
                                  system_content,
-                                model, 
+                                 model, 
                                 seed,
                                 context_size,
+                                api_url,
+                                api_key=None,
                                 custom_model_name=None,
-                                custom_api_url=None):
+                                custom_api_url=None,
+                                ):
         
         if custom_model_name!=None:
             model=custom_model_name
@@ -324,6 +330,9 @@ class ChatGPTNode:
 
         if custom_api_url!=None:
             api_url=custom_api_url
+
+        if api_key==None:
+            api_key="lm_studio"
 
         # print(api_key!='',api_url,prompt,system_content,model,seed)
         # 可以选择保留会话历史以维持上下文记忆
@@ -337,7 +346,7 @@ class ChatGPTNode:
             self.system_content=system_content
             # self.session_history=[]
             # self.session_history.append({"role": "system", "content": system_content})
-        
+        print("api_key,api_url",api_key,api_url)
         # 
         if is_azure_url(api_url):
             client=azure_client(api_key,api_url)

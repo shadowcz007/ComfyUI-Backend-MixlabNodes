@@ -207,6 +207,35 @@ def chat(client, model_name,messages ):
         return content
 
 
+llm_apis=[{
+                "value": "https://api.openai.com/v1",
+                "label": "openai"
+            },
+            {
+                "value": "https://openai.api2d.net/v1",
+                "label": "api2d"
+            },
+            # {
+            #     "value": "https://docs-test-001.openai.azure.com",
+            #     "label": "https://docs-test-001.openai.azure.com"
+            # },
+             
+            {
+                "value": "https://api.moonshot.cn/v1",
+                "label": "Kimi"
+            },
+            {
+                "value": "https://api.deepseek.com/v1",
+                "label": "DeepSeek-V2"
+            },
+            {
+                "value": "https://api.siliconflow.cn/v1",
+                "label": "SiliconCloud"
+            }]
+        
+llm_apis_dict = {api["label"]: api["value"] for api in llm_apis}
+
+
 class ChatGPTNode:
     def __init__(self):
         # self.__client = OpenAI()
@@ -216,8 +245,9 @@ class ChatGPTNode:
 
     @classmethod
     def INPUT_TYPES(cls):
+
         model_list=[ 
-                    "gpt-3.5-turbo",
+            "gpt-3.5-turbo",
             "gpt-3.5-turbo-16k",
             "gpt-4o",
             "gpt-4o-2024-05-13",
@@ -243,10 +273,13 @@ class ChatGPTNode:
             "01-ai/Yi-1.5-9B-Chat-16K",
             "meta-llama/Meta-Llama-3.1-8B-Instruct"
                     ]
+        
         return {
             "required": {
-                "api_key":("KEY", {"default": "", "multiline": True,"dynamicPrompts": False}),
-                "api_url":("URL", {"default": "", "multiline": True,"dynamicPrompts": False}),
+                # "api_key":("KEY", {"default": "", "multiline": True,"dynamicPrompts": False}),
+                "api_key":("STRING", {"forceInput": True,}),
+                "api_url":(list(llm_apis_dict.keys()), 
+                    {"default": list(llm_apis_dict.keys())[0]}),
                 "prompt": ("STRING", {"multiline": True,"dynamicPrompts": False}),
                 "system_content": ("STRING", 
                                    {
@@ -258,10 +291,11 @@ class ChatGPTNode:
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "step": 1}),
                 "context_size":("INT", {"default": 1, "min": 0, "max":30, "step": 1}),
             },
-             "hidden": {
-                "unique_id": "UNIQUE_ID",
-                "extra_pnginfo": "EXTRA_PNGINFO",
-            },
+             "optional":{
+                    "custom_model_name":("STRING", {"forceInput": True,}), #适合自定义model
+                     "custom_api_url":("STRING", {"forceInput": True,}), #适合自定义model
+                },
+             
         }
 
     RETURN_TYPES = ("STRING","STRING","STRING",)
@@ -278,7 +312,19 @@ class ChatGPTNode:
                                  prompt, 
                                  system_content,
                                 model, 
-                                seed,context_size,unique_id = None, extra_pnginfo=None):
+                                seed,
+                                context_size,
+                                custom_model_name=None,
+                                custom_api_url=None):
+        
+        if custom_model_name!=None:
+            model=custom_model_name
+
+        api_url=llm_apis_dict[api_url] if api_url in llm_apis_dict else ""
+
+        if custom_api_url!=None:
+            api_url=custom_api_url
+
         # print(api_key!='',api_url,prompt,system_content,model,seed)
         # 可以选择保留会话历史以维持上下文记忆
         # 或者在此处清除会话历史 self.session_history.clear()
@@ -359,7 +405,7 @@ class SiliconflowFreeNode:
             ]
         return {
             "required": {
-                "api_key":("KEY", {"default": "", "multiline": True,"dynamicPrompts": False}),
+                "api_key":("STRING", {"forceInput": True,}),
                 "prompt": ("STRING", {"multiline": True,"dynamicPrompts": False}),
                 "system_content": ("STRING", 
                                    {
@@ -371,10 +417,9 @@ class SiliconflowFreeNode:
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "step": 1}),
                 "context_size":("INT", {"default": 1, "min": 0, "max":30, "step": 1}),
             },
-             "hidden": {
-                "unique_id": "UNIQUE_ID",
-                "extra_pnginfo": "EXTRA_PNGINFO",
-            },
+               "optional":{
+                    "custom_model_name":("STRING", {"forceInput": True,}), #适合自定义model
+                }, 
         }
 
     RETURN_TYPES = ("STRING","STRING","STRING",)
@@ -390,8 +435,11 @@ class SiliconflowFreeNode:
                                  prompt, 
                                  system_content,
                                 model, 
-                                seed,context_size,unique_id = None, extra_pnginfo=None):
-    
+                                seed,context_size,custom_model_name=None):
+
+        if custom_model_name!=None:
+            model=custom_model_name
+
         api_url="https://api.siliconflow.cn/v1"
         
         # 把系统信息和初始信息添加到会话历史中

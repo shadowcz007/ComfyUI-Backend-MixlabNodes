@@ -1,6 +1,6 @@
 ![](https://img.shields.io/github/release/shadowcz007/comfyui-mixlab-nodes)
 
-> 适配了最新版 comfyui 的 py3.11 ，torch 2.1.2+cu121
+> 适配了最新版 comfyui 的 py3.11 ，torch 2.3.1+cu121
 > [Mixlab nodes discord](https://discord.gg/cXs9vZSqeK)
 
 
@@ -118,7 +118,7 @@ https://github.com/shadowcz007/comfyui-mixlab-nodes/assets/12645064/e7e77f90-e43
 
 > Support for calling multiple GPTs.Local LLM（llama.cpp）、 ChatGPT、ChatGLM3 、ChatGLM4 , Some code provided by rui. If you are using OpenAI's service, fill in https://api.openai.com/v1 . If you are using a local LLM service, fill in http://127.0.0.1:xxxx/v1 . Azure OpenAI:https://xxxx.openai.azure.com
 
-[LLM_base_workflow](./example/LLM_base_workflow.json)
+[LLM_base_workflow](./workflow/LLM_base_workflow.json)
 
 - SiliconflowLLM
 - ChatGPTOpenAI

@@ -2,7 +2,22 @@ torch==2.1.2
 torchvision==0.16.2
 
 torchsde
+torchaudio
+einops
+tokenizers>=0.13.3
+sentencepiece
+safetensors>=0.4.2
 aiohttp
+pyyaml
+Pillow
+scipy
+tqdm
+psutil
+
+#non essential dependencies:
+kornia>=0.7.1
+spandrel
+soundfile
 
 numpy
 pyOpenSSL
@@ -21,11 +36,11 @@ rembg
 
 importlib_metadata
 huggingface_hub
-scipy
+
 filelock
-Pillow
-einops
-pyyaml
+
+
+
 scikit-image
 python-dateutil
 mediapipe
@@ -43,4 +58,27 @@ insightface
 onnxruntime
 onnxruntime-gpu
 
-soundfile
+vocos
+vector_quantize_pytorch
+
+faster_whisper
+whisper_timestamped
+inflect
+unidecode
+eng_to_ipa
+cn2an
+jieba
+pybase16384
+pydub
+face_alignment
+librosa==0.9.2
+
+segment_anything
+
+lpips
+
+peft>=0.10.0
+flash-attn
+
+tensorrt>=10.0.1
+onnx

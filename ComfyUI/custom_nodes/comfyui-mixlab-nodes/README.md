@@ -10,6 +10,8 @@
 
 ![alt text](./assets/1722517810720.png)
 
+- 增加 InputKey 节点，用于管理LLM的Key,同时优化LLM相关节点，为后续agent模式做准备
+
 - 增加 SiliconflowLLM，可以使用由Siliconflow提供的免费LLM
 
 - 增加 Edit Mask，方便在生成的时候手动绘制 mask [workflow](./workflow/edit-mask-workflow.json)

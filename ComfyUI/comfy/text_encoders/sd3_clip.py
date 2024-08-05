@@ -54,14 +54,7 @@ class SD3ClipModel(torch.nn.Module):
             self.clip_g = None
 
         if t5:
-            if dtype_t5 is None:
-                dtype_t5 = dtype
-            elif comfy.model_management.dtype_size(dtype_t5) > comfy.model_management.dtype_size(dtype):
-                dtype_t5 = dtype
-
-            if not comfy.model_management.supports_cast(device, dtype_t5):
-                dtype_t5 = dtype
-
+            dtype_t5 = comfy.model_management.pick_weight_dtype(dtype_t5, dtype, device)
             self.t5xxl = T5XXLModel(device=device, dtype=dtype_t5)
             self.dtypes.add(dtype_t5)
         else:
@@ -88,7 +81,7 @@ class SD3ClipModel(torch.nn.Module):
     def encode_token_weights(self, token_weight_pairs):
         token_weight_pairs_l = token_weight_pairs["l"]
         token_weight_pairs_g = token_weight_pairs["g"]
-        token_weight_pars_t5 = token_weight_pairs["t5xxl"]
+        token_weight_pairs_t5 = token_weight_pairs["t5xxl"]
         lg_out = None
         pooled = None
         out = None
@@ -115,7 +108,7 @@ class SD3ClipModel(torch.nn.Module):
             pooled = torch.cat((l_pooled, g_pooled), dim=-1)
 
         if self.t5xxl is not None:
-            t5_out, t5_pooled = self.t5xxl.encode_token_weights(token_weight_pars_t5)
+            t5_out, t5_pooled = self.t5xxl.encode_token_weights(token_weight_pairs_t5)
             if lg_out is not None:
                 out = torch.cat([lg_out, t5_out], dim=-2)
             else:

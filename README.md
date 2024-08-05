@@ -13,6 +13,15 @@
 写到```config\python_path.txt```
 
 
+基于官方的[ 2.3.1+cu121 v0.0.1 环境 Python 3.11.8](https://github.com/comfyanonymous/ComfyUI/releases/download/v0.0.1/ComfyUI_windows_portable_nvidia.7z)
+
+
+> 加速推理速度
+ [flash-attn 安装方法](https://t.zsxq.com/CMcRp)
+ 
+https://github.com/bdashore3/flash-attention/releases/download/v2.6.3/flash_attn-2.6.3+cu123torch2.3.1cxx11abiFALSE-cp311-cp311-win_amd64.whl
+
+
 ### 模型位置
 可以修改```extra_model_paths.yaml```的```base_path```
 
@@ -49,7 +58,5 @@ comfyui-reactor-node 修改模型为配置的路径
 glob.glob(models_path) ,models_path 需要 models_path = os.path.join(FACE_MODELS_PATH, "*")
 
 
-> 加速推理速度
- [flash-attn 安装方法](https://t.zsxq.com/CMcRp)
- 
-https://github.com/bdashore3/flash-attention/releases/download/v2.5.2/flash_attn-2.5.2+cu122torch2.2.0cxx11abiFALSE-cp311-cp311-win_amd64.whl
+
+

@@ -8,6 +8,7 @@ from PIL.PngImagePlugin import PngInfo
 import base64,os,random
 from io import BytesIO
 import folder_paths
+import node_helpers
 import json,io
 import comfy.utils
 from comfy.cli_args import args
@@ -1746,12 +1747,16 @@ class Image3D:
             ims.append(output_image)
         
         
+        mask=None
+        bg_image=None
+        mat=None
+
         # 如果没有系列截图
         if len(ims)==0:
             # 这个是3d模型当前截图
             image = base64_to_image(upload['image'])
 
-            mat=None
+            
             if 'material' in upload and upload['material']:
                 mat=base64_to_image(upload['material'])
                 mat=mat.convert('RGB')
@@ -1762,7 +1767,7 @@ class Image3D:
             
             mask=mask.convert('L')
 
-            bg_image=None
+            
             if 'bg_image' in upload and upload['bg_image']:
                 bg_image = base64_to_image(upload['bg_image'])
                 bg_image=bg_image.convert('RGB')
@@ -1772,8 +1777,9 @@ class Image3D:
             mask=pil2tensor(mask)
             image=pil2tensor(image)
         else:
-            mask=None
+            
             image = torch.cat(ims, dim=0)
+
         
         m=[]
         if not material is None:

@@ -194,7 +194,7 @@ app.registerExtension({
             let d = getLocalData('_mixlab_3d_image')
             // console.log('serializeValue', node)
             if (d && d[node.id]) {
-              let { url, bg, material } = d[node.id]
+              let { url, bg, material, images } = d[node.id]
               let data = {}
               if (url) {
                 data.image = await parseImage(url)
@@ -208,6 +208,10 @@ app.registerExtension({
 
               if (material) {
                 data.material = await parseImage(material)
+              }
+
+              if (images) {
+                data.images = images
               }
 
               return JSON.parse(JSON.stringify(data))
@@ -646,7 +650,7 @@ app.registerExtension({
         const r = onExecuted?.apply?.(this, arguments)
 
         let div = this.widgets.filter(d => d.div)[0]?.div
-        console.log('Test', this.widgets)
+        // console.log('Test', this.widgets)
 
         let material = message.material[0]
         if (material) {

@@ -24,7 +24,7 @@ watchdog
 opencv-python-headless
 matplotlib
 openai
-simple-lama-inpainting
+# simple-lama-inpainting
 clip-interrogator==0.6.0
 transformers>=4.36.0
 diffusers>=0.27.0

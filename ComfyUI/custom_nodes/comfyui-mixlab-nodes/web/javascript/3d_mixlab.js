@@ -383,7 +383,7 @@ app.registerExtension({
               })
 
               if (modelViewerVariants) {
-                modelViewerVariants.style.width = `${that.size[0] - 24}px`
+                modelViewerVariants.style.width = `${that.size[0] - 48}px`
                 modelViewerVariants.style.height = `${that.size[1] - 48}px`
               }
 
@@ -540,7 +540,7 @@ app.registerExtension({
                     )
 
                     // 更新尺寸
-                    let w = that.size[0] - 24,
+                    let w = that.size[0] - 48,
                       h = (w * bg_img.naturalHeight) / bg_img.naturalWidth
 
                     if (modelViewerVariants) {
@@ -575,7 +575,7 @@ app.registerExtension({
               if (dd[that.id]) {
                 const { bg_w, bg_h } = dd[that.id]
                 if (bg_h && bg_w) {
-                  let w = that.size[0] - 24,
+                  let w = that.size[0] - 48,
                     h = (w * bg_h) / bg_w
 
                   if (modelViewerVariants) {
@@ -595,9 +595,11 @@ app.registerExtension({
 
         let preview = document.createElement('div')
         preview.className = 'preview'
-        preview.style = `margin-top: 12px;display: flex;
+        preview.style = `margin-top: 12px;
+          display: flex;
           justify-content: center;
-          align-items: center;background-repeat: no-repeat;background-size: contain;`
+          align-items: center;background-repeat: no-repeat;
+          background-size: contain;`
 
         let upload = inputDiv('_mixlab_3d_image', '3D Model', preview)
 
@@ -616,7 +618,7 @@ app.registerExtension({
           if (dd[that.id]) {
             const { bg_w, bg_h } = dd[that.id]
             if (bg_h && bg_w) {
-              let w = that.size[0] - 24,
+              let w = that.size[0] - 48,
                 h = (w * bg_h) / bg_w
 
               if (modelViewerVariants) {

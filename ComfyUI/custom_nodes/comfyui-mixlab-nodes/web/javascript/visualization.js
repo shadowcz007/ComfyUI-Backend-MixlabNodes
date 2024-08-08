@@ -1,4 +1,4 @@
-import { app } from "../../scripts/app.js"
+import { app } from "../../../scripts/app.js"
 
 class Visualizer {
     constructor(node, container, visualSrc) {
@@ -10,6 +10,7 @@ class Visualizer {
             overflow: "hidden",
         })
         this.iframe.src = "/extensions/comfyui-mixlab-nodes/" + visualSrc + ".html"
+        console.log('#Visualizer',container,this.iframe)
         container.appendChild(this.iframe)
     }
 
@@ -80,6 +81,8 @@ function createVisualizer(node, inputName, typeName, inputData, app) {
     node.addCustomWidget(widget)
 
     node.updateParameters = (params) => {
+        console.log('#updateParameters',params)
+        node.visualizer = new Visualizer(node, container, typeName)
         node.visualizer.updateVisual(params);
     }
 
@@ -121,9 +124,10 @@ function createVisualizer(node, inputName, typeName, inputData, app) {
 }
 
 function registerVisualizer(nodeType, nodeData, nodeClassName, typeName) {
+   
     if (nodeData.name == nodeClassName) {
-        console.log("[3D Visualizer] Registering node: " + nodeData.name)
-
+        
+        
         const onNodeCreated = nodeType.prototype.onNodeCreated
 
         nodeType.prototype.onNodeCreated = async function() {
@@ -136,7 +140,7 @@ function registerVisualizer(nodeType, nodeData, nodeClassName, typeName) {
             )
             let nodeName = `Preview3DNode_${Preview3DNode.length}`
 
-            console.log(`[Comfy3D] Create: ${nodeName}`)
+             
 
             const result = await createVisualizer.apply(this, [this, nodeName, typeName, {}, app])
 
@@ -159,12 +163,8 @@ function registerVisualizer(nodeType, nodeData, nodeClassName, typeName) {
 }
 
 app.registerExtension({
-    name: "Mr.ForExample.Visualizer.GS",
-
-    async init (app) {
-
-    },
-
+    name: "Me.Visualizer.GS",
+ 
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         registerVisualizer(nodeType, nodeData, "DepthViewer", "threeVisualizer")
     },

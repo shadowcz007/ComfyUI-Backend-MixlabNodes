@@ -3307,12 +3307,11 @@ class DepthViewer_:
     def __init__(self):
         self.saved_reference = []
         self.saved_depth = []
-        self.full_output_folder, 
-        self.filename, 
-        self.counter, 
-        self.subfolder, self.filename_prefix = folder_paths.get_save_image_path(
+
+        self.full_output_folder,self.filename,self.counter, self.subfolder, self.filename_prefix = folder_paths.get_save_image_path(
             "imagesave", 
             folder_paths.get_output_directory())
+
 
     RETURN_TYPES = ()
     OUTPUT_NODE = True
@@ -3334,10 +3333,10 @@ class DepthViewer_:
             filename_with_batch_num = self.filename.replace("%batch_num%", str(batch_number))
 
             image_file = f"{filename_with_batch_num}_{self.counter:05}_reference.png"
-            single_image.save(path.join(self.full_output_folder, image_file))
+            single_image.save(os.path.join(self.full_output_folder, image_file))
 
             depth_file = f"{filename_with_batch_num}_{self.counter:05}_depth.png"
-            single_depth.save(path.join(self.full_output_folder, depth_file))
+            single_depth.save(os.path.join(self.full_output_folder, depth_file))
 
             self.saved_reference.append({
                 "filename": image_file,

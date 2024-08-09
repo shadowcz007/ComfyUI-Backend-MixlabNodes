@@ -47,8 +47,6 @@
       return urlParams.get('id');
     }
 
-
-
     // 监听来自iframe的消息
     window.addEventListener('message', (event) => {
       const data = event.data;
@@ -64,23 +62,24 @@
           status: 'save',
           nodeId
         }, '*');
-        window.location.reload()
+        // window.location.reload()
       }
-      // console.log(data)
-      // if (data.from === 'p5.widget' && data.status === 'capture') {
-      //   window.parent.postMessage({
-      //     from: 'p5.widget',
-      //     status: 'capture',
-      //     frameCount: data.frameCount,
-      //     maxCount: data.maxCount,
-      //     nodeId
-      //   }, '*');
-      // }
+      if (data.from === 'p5.widget' && data.status === 'stop') {
+        
+        window.parent.postMessage({
+          from: 'p5.widget',
+          status: 'stop',
+          nodeId
+        }, '*');
+        // window.location.reload()
+      }
+
+ 
     });
 
 
   </script>
-  <script type="text/p5" data-height="500" data-preview-width="300">
+  <script type="text/p5" data-height="500" data-preview-width="300" data-autoplay>
 function setup() {
 createCanvas(100, 100);
 }

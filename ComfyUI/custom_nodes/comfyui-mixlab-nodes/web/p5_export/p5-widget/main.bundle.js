@@ -23670,7 +23670,7 @@
 /***/ (function(module, exports) {
 
 	"use strict";
-	exports.P5_VERSION = '0.4.23';
+	exports.P5_VERSION = '1.10.0';
 	exports.PREVIEW_WIDTH = 150;
 	exports.HEIGHT = 300;
 	exports.MAX_RUN_TIME = 1000;
@@ -23766,6 +23766,10 @@
 	        };
 	        this.handleStopClick = function () {
 	            _this.setState({ isPlaying: false });
+	            window.parent.postMessage({
+	                from: 'p5.widget',
+	                status: 'stop'
+	            }, '*');
 	        };
 	        this.handleUndoClick = function () {
 	            _this.refs.editor.undo();
@@ -34945,8 +34949,7 @@
 	        content = implicit_sketch_1.default(content);
 	        try {
 	            content = falafel_1.default(content, {}, loop_inserter_1.default(function (node) {
-	                return LOOP_CHECK_FUNC_NAME + "(" +
-	                    JSON.stringify(node.range) + ");";
+	                return LOOP_CHECK_FUNC_NAME + "(" + JSON.stringify(node.range) + ");";
 	            })).toString();
 	        }
 	        catch (e) {
@@ -35080,7 +35083,6 @@
 	        console.log('#Found draw function:', node);
 	        var hasCapturerStart_1 = false;
 	        var hasCapturerEnd_1 = false;
-	        // Traverse the function body to check for `capturer_start()` and `capturer_end()`
 	        (function checkCapturerCalls(bodyNode) {
 	            if (bodyNode.type === 'CallExpression' &&
 	                bodyNode.callee &&
@@ -40865,25 +40867,48 @@
 	"use strict";
 	function defaultInserter(name) {
 	    return function (node) {
-	        return name + "();";
+	        return name + '();';
 	    };
 	}
+	var LOOP_CHECK_FUNC_NAME = '__loopCheck';
 	function LoopInserter(fn) {
-	    if (typeof (fn) == "string")
-	        fn = defaultInserter(fn);
 	    return function (node) {
-	        if (node.type == 'WhileStatement' ||
-	            node.type == 'ForStatement' ||
-	            node.type == 'DoWhileStatement') {
-	            node.body.update('{ ' + fn(node) + node.body.source() + ' }');
-	            return true;
+	        if (node.type === 'ForStatement' ||
+	            node.type === 'WhileStatement' ||
+	            node.type === 'DoWhileStatement') {
+	            var loopCheckCode = {
+	                type: 'ExpressionStatement',
+	                expression: {
+	                    type: 'CallExpression',
+	                    callee: {
+	                        type: 'Identifier',
+	                        name: LOOP_CHECK_FUNC_NAME
+	                    },
+	                    arguments: [
+	                        {
+	                            type: 'Literal',
+	                            value: JSON.stringify(node.range)
+	                        }
+	                    ]
+	                }
+	            };
+	            if (node.body.type === 'BlockStatement') {
+	                // Insert the loop check at the beginning of the block
+	                node.body.body.unshift(loopCheckCode);
+	            }
+	            else {
+	                // Wrap the single statement body in a block and insert the loop check
+	                node.body = {
+	                    type: 'BlockStatement',
+	                    body: [loopCheckCode, node.body]
+	                };
+	            }
 	        }
-	        return false;
+	        return '';
 	    };
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = LoopInserter;
-	;
 
 
 /***/ }),

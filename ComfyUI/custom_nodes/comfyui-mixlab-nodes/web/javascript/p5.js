@@ -184,7 +184,8 @@ const p5InputNode = {
 
         // 监听来自iframe的消息
         const ms = async event => {
-          const data = event.data
+          const data = event.data;
+          console.log('#P5 Input #',data)
           if (
             data.from === 'p5.widget' &&
             data.status === 'save' &&
@@ -193,7 +194,7 @@ const p5InputNode = {
             data.nodeId == nodeId
           ) {
             const frames = data.frames
-            console.log(frames.length, nodeId)
+            
             //workflow会存储到local，会卡死
             framesWidget.value.images = []
             for (const f of frames) {

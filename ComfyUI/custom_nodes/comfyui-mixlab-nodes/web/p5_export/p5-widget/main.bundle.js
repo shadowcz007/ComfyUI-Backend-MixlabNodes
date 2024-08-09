@@ -23954,7 +23954,7 @@
 	    }
 	    Toolbar.prototype.render = function () {
 	        return (React.createElement("div", {className: "toolbar"}, React.createElement("a", {className: "p5-logo", href: "http://p5js.org/", target: "_blank"}, React.createElement("img", {src: "static/img/p5js-beta.svg", alt: "p5js.org"})), React.createElement("button", {onClick: this.props.onPlayClick}, React.createElement(OpenIconicMediaPlay, null), "Play"), this.props.onStopClick
-	            ? React.createElement("button", {onClick: this.props.onStopClick}, React.createElement(OpenIconicMediaStop, null), "Stop ", this.props.progress)
+	            ? React.createElement("button", {onClick: this.props.onStopClick}, React.createElement(OpenIconicMediaStop, null), "Stop")
 	            : null, this.props.onUndoClick
 	            ? React.createElement("button", {onClick: this.props.onUndoClick}, React.createElement(OpenIconicActionUndo, null), "Undo")
 	            : null, this.props.onRedoClick

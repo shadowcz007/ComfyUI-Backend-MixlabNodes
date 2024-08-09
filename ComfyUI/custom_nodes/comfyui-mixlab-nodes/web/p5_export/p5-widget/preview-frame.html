@@ -14,7 +14,7 @@
 
 
     var capturer_start = (t = 1) => {
-      if (frameCount === t) {
+      if (frameCount === t && capturer) {
         capturer.start();
       }
     }
@@ -22,7 +22,7 @@
 
     var capturer_end = (t = 24) => {
       // console.log(frameCount < t, frameCount, t)
-      if (frameCount < t) {
+      if (frameCount < t && capturer) {
         capturer.capture(canvas, t);
       } else if (capturer) {
         capturer.save((frames) => {

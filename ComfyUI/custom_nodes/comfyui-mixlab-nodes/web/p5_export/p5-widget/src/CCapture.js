@@ -265,12 +265,12 @@
   CCPNGEncoder.prototype = Object.create(CCTarEncoder.prototype)
 
   CCPNGEncoder.prototype.add = function (canvas) {
-    canvas.toBlob(
-      function (blob) {
-        CCTarEncoder.prototype.add.call(this, blob)
-      }.bind(this),
-      this.type
-    )
+    // canvas.toBlob(
+    //   function (blob) {
+    //     CCTarEncoder.prototype.add.call(this, blob)
+    //   }.bind(this),
+    //   this.type
+    // )
   }
 
   function CCJPEGEncoder (settings) {
@@ -640,6 +640,7 @@ CCGIFEncoder.prototype.save = function( callback ) {
     var ctxMotionBlur = canvasMotionBlur.getContext('2d')
     var bufferMotionBlur
     var imageData
+    var result = []
 
     _log('Step is set to ' + _settings.step + 'ms')
 
@@ -664,6 +665,14 @@ CCGIFEncoder.prototype.save = function( callback ) {
 
     _encoder.on('process', _process)
     _encoder.on('progress', _progress)
+
+    _encoder.start = () => {
+      result = []
+    }
+    _encoder.add = canvas => {
+      result.push(canvas.toDataURL())
+    }
+    _encoder.save = (cb) => cb(result)
 
     if ('performance' in window == false) {
       window.performance = {}

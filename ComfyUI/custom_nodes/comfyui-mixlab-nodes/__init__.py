@@ -802,7 +802,7 @@ async def mixlab_post_prompt(request):
     if len(apps)>0:
         # 取到prompt
         prompt=apps[0]['data']['output']
-        logging.info(prompt)
+        # logging.info(prompt)
         # 更新input_data到prompt里
         '''
           {

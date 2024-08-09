@@ -171,7 +171,7 @@ const p5InputNode = {
       let widget = node.widgets?.filter(w => w.name == 'image_base64')[0]
       let framesWidget = node.widgets?.filter(w => w.name == 'frames')[0]
       if (node.type === 'P5Input' && widget) {
-        console.log("#nodeCreated P5Input")
+        console.log('#nodeCreated P5Input')
         if (framesWidget && !framesWidget.value)
           framesWidget.value = { images: [] }
 
@@ -191,7 +191,7 @@ const p5InputNode = {
             data.from === 'p5.widget' &&
             data.status === 'save' &&
             data.frames &&
-            data.frames.length > 0 &&
+            data.frames.length >= 0 &&
             data.nodeId == nodeId &&
             data.id != framesWidget.value.id
           ) {

@@ -115,6 +115,7 @@
 	    global.addEventListener('error', function (e) {
 	        var message = e.message;
 	        var line = undefined;
+	        // console.log(message)
 	        if (loopChecker.wasTriggered) {
 	            message = 'Your loop is taking too long to run.';
 	            line = loopChecker.getLineNumber();

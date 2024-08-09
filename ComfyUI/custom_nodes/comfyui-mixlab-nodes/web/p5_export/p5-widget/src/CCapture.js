@@ -229,19 +229,21 @@
   }
 
   CCTarEncoder.prototype.save = function (callback) {
-    if (this.tape.save().length > 0) {
-      window.parent.postMessage(
-        {
-          frames: this.tape.save(),
-          from: 'p5.widget',
-          status: 'save'
-        },
-        '*'
-      )
-      this.tape.list = []
-    }
+    // if (this.tape.list.length > 0) {
+    //   window.parent.postMessage(
+    //     {
+    //       frames: this.tape.list,
+    //       from: 'p5.widget',
+    //       status: 'save',
+    //       encoder:true
+    //     },
+    //     '*'
+    //   )
+    //   this.tape.list = []
+    // }
 
-    //   callback( this.tape.save() );
+    callback(this.tape.save())
+    this.tape.list = []
   }
 
   CCTarEncoder.prototype.dispose = function () {
@@ -746,9 +748,9 @@ CCGIFEncoder.prototype.save = function( callback ) {
         _log('clear Interval')
         return null
       }
-      window.requestAnimationFrame = function (callback) {
-        _requestAnimationFrameCallbacks.push(callback)
-      }
+      // window.requestAnimationFrame = function (callback) {
+      //   _requestAnimationFrameCallbacks.push(callback)
+      // }
       window.performance.now = function () {
         return _performanceTime
       }
@@ -900,12 +902,6 @@ CCGIFEncoder.prototype.save = function( callback ) {
 
     function _capture (canvas, maxCount) {
       if (_capturing) {
-        _log(
-          '_capture _settings: ' +
-            _settings.motionBlurFrames +
-            '_' +
-            _intermediateFrameCount
-        )
         if (_settings.motionBlurFrames > 2) {
           _checkFrame(canvas)
           _blendFrame(canvas)
@@ -916,21 +912,20 @@ CCGIFEncoder.prototype.save = function( callback ) {
             _step()
           }
         } else {
+          // console.log("_encoder",_encoder)
           _encoder.add(canvas)
-          if (_frameCount < maxCount) {
-            _frameCount++
-            _log('Full Frame! ' + _frameCount + '_' + maxCount)
-            // 往外发送进度
-            window.parent.postMessage(
-              {
-                from: 'p5.widget',
-                status: 'capture',
-                frameCount: _frameCount,
-                maxCount
-              },
-              '*'
-            )
-          }
+          _frameCount++
+          _log('Full Frame! ' + _frameCount)
+          // 往外发送进度
+          window.parent.postMessage(
+            {
+              from: 'p5.widget',
+              status: 'capture',
+              frameCount: _frameCount,
+              maxCount
+            },
+            '*'
+          )
         }
       }
     }
@@ -949,7 +944,7 @@ CCGIFEncoder.prototype.save = function( callback ) {
       })
 
       _updateTime()
-      _log('Frame: ' + _frameCount + ' ' + _intermediateFrameCount)
+      _log('Frame: ' + _frameCount + ' ' + (_time - g_startTime))
 
       for (var j = 0; j < _timeouts.length; j++) {
         if (_time >= _timeouts[j].triggerTime) {
@@ -969,10 +964,10 @@ CCGIFEncoder.prototype.save = function( callback ) {
         }
       }
 
-      _requestAnimationFrameCallbacks.forEach(function (cb) {
-        _call(cb, _time - g_startTime)
-      })
-      _requestAnimationFrameCallbacks = []
+      // _requestAnimationFrameCallbacks.forEach(function (cb) {
+      //   _call(cb, _time - g_startTime)
+      // })
+      // _requestAnimationFrameCallbacks = []
     }
 
     function _save (callback) {

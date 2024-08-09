@@ -73,28 +73,22 @@
 	    }
 	    initialContent = initialContent.replace(/\r\n/g, '\n').trim();
 	    ReactDOM.render(React.createElement(app_1.default, {initialContent: initialContent, autosaver: new autosaver_1.SessionStorageAutosaver(id), baseSketchURL: baseSketchURL, p5version: p5version, previewWidth: previewWidth, maxRunTime: maxRunTime, autoplay: autoplay}), document.getElementById('app-holder'));
+	    // 监听来自iframe的消息
+	    window.addEventListener('message', function (event) {
+	        var data = event.data;
+	        // console.log("#main", data)
+	        if (data.from === 'p5.widget' && data.status === 'save') {
+	            var frames_1 = data.frames;
+	            window.parent.postMessage({
+	                frames: frames_1,
+	                from: 'p5.widget',
+	                status: 'save',
+	                _from: "main"
+	            }, '*');
+	        }
+	    });
 	}
 	window.addEventListener('load', start);
-	// 监听来自iframe的消息
-	window.addEventListener('message', function (event) {
-	    var data = event.data;
-	    if (data.from === 'p5.widget' && data.status === 'save') {
-	        var frames_1 = data.frames;
-	        window.parent.postMessage({
-	            frames: frames_1,
-	            from: 'p5.widget',
-	            status: 'save'
-	        }, '*');
-	    }
-	    // if (data.from === 'p5.widget' && data.status === 'capture') {
-	    //   window.parent.postMessage({
-	    //     from: 'p5.widget',
-	    //     status: 'capture',
-	    //     frameCount: data.frameCount,
-	    //     maxCount: data.maxCount,
-	    //   }, '*');
-	    // }
-	});
 
 
 /***/ }),
@@ -35001,6 +34995,7 @@
 	"use strict";
 	var esprima = __webpack_require__(204);
 	var parse = esprima.parse;
+	var LOOP_CHECK_FUNC_NAME = '__loopCheck';
 	function default_1(src, opts, fn) {
 	    if (typeof opts === 'function') {
 	        fn = opts;

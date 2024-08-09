@@ -51,8 +51,8 @@
     window.addEventListener('message', (event) => {
       const data = event.data;
       const nodeId = getIdFromUrl(window.location.href);
-
-      if (data.from === 'p5.widget' && data.status === 'save') {
+      // console.log('#p5html', data)
+      if (data.from === 'p5.widget' && data.status === 'save' && data._from == 'main') {
         const frames = data.frames;
         // 示例用法
         // const url = 'https://example.com/page?id=12345';
@@ -60,12 +60,13 @@
           frames,
           from: 'p5.widget',
           status: 'save',
-          nodeId
+          nodeId,
+          id:(new Date()).getTime()
         }, '*');
         // window.location.reload()
       }
       if (data.from === 'p5.widget' && data.status === 'stop') {
-        
+
         window.parent.postMessage({
           from: 'p5.widget',
           status: 'stop',
@@ -74,7 +75,7 @@
         // window.location.reload()
       }
 
- 
+
     });
 
 

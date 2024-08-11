@@ -855,11 +855,11 @@
 
                 // 遍历每个像素并修改透明通道
                 for (let i = 0; i < data.length; i += 4) {
-                    if (data[i + 3] === 0) { // 透明
+                    if (data[i + 3] < 255) { // 透明
                         data[i] = 0;     // R
-                        data[i + 1] = 0; // G
+                        data[i + 1] = 255; // G
                         data[i + 2] = 0; // B
-                        data[i + 3] = 255; // A
+                        data[i + 3] = 255 - data[i + 3]; // A
                     } else { // 不透明
                         data[i + 3] = 0; // 透明
                     }
@@ -907,8 +907,6 @@
             }
 
             maskDrawer.saveCallback = async (base64, width, height) => {
-                // console.log(base64);
-                editor.style.display = 'none';
 
                 let fileBlob = Command.base64ToBlob(base64)
                 // // 获取读取的文件内容，即 Blob 对象
@@ -959,6 +957,8 @@
 
                 document.body.querySelector('.app').style.display = 'flex'
                 document.body.querySelector('#author').style.display = 'block'
+                // console.log(base64);
+                editor.style.display = 'none';
             }
 
 
@@ -3648,7 +3648,7 @@
 
                 if (this.currentTool === 'brush') {
                     this.maskCtx.globalCompositeOperation = 'source-over';
-                    this.maskCtx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+                    this.maskCtx.strokeStyle = 'rgba(0, 255, 0, 0.7)';
                 } else {
                     this.maskCtx.globalCompositeOperation = 'destination-out';
                 }

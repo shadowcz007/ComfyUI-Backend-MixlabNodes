@@ -333,9 +333,8 @@ function convertImageToBlackBasedOnAlpha (image) {
     if (alpha !== 0) {
       // Set non-transparent pixels to black
       // 蒙版是黑色？
- 
       pixels[i] = 0 // Red
-      pixels[i + 1] = 0 // Green
+      pixels[i + 1] = 255 // Green
       pixels[i + 2] = 0 // Blue
     }
   }

@@ -14,16 +14,15 @@ This repository provides a backend release for ComfyUI with built-in plugins and
 1. 内置常用插件 **Built-in Plugins Package**: [ComfyUI-Backend-MixlabNodes](https://github.com/shadowcz007/ComfyUI-Backend-MixlabNodes)  
    **内置插件的ComfyUI包**：[ComfyUI-Backend-MixlabNodes](https://github.com/shadowcz007/ComfyUI-Backend-MixlabNodes)
 
-   
 
 2. Python环境支持修改 
 
-基于官方的[2.3.1+cu121 v0.0.1 环境 Python 3.11.8](https://github.com/comfyanonymous/ComfyUI/releases/download/v0.0.1/ComfyUI_windows_portable_nvidia.7z)。**Python环境包**：解压后把后缀版本号去掉，放到内置插件的ComfyUI包里，链接：[下载链接](https://pan.baidu.com/s/1lx12WLxgypTQuvhW1TfNmw?pwd=MAI0)
+基于官方的[2.3.1+cu121 v0.0.1 环境 Python 3.11.8](https://github.com/comfyanonymous/ComfyUI/releases/download/v0.0.1/ComfyUI_windows_portable_nvidia.7z)。**Python环境包**：解压后把后缀版本号去掉，放到内置插件的ComfyUI包里，链接：[下载链接](https://pan.baidu.com/s/1hRUGxwNaPK-d3MOpCNF_pw?pwd=MAI0 )
 
 Python环境位置修改：将Python环境路径写入 `config/python_path.txt`。
 
 
-**Python Environment Package**: Extract, remove the version suffix, and place it in the built-in plugins package. [Download Link](https://pan.baidu.com/s/1lx12WLxgypTQuvhW1TfNmw?pwd=MAI0)  
+**Python Environment Package**: Extract, remove the version suffix, and place it in the built-in plugins package. [Download Link](https://pan.baidu.com/s/1hRUGxwNaPK-d3MOpCNF_pw?pwd=MAI0 )  
 
 Based on the official [2.3.1+cu121 v0.0.1 Environment Python 3.11.8](https://github.com/comfyanonymous/ComfyUI/releases/download/v0.0.1/ComfyUI_windows_portable_nvidia.7z).
 

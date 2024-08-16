@@ -609,6 +609,8 @@ async def static_file_handler(request):
             content_type = 'text/css'
         elif filename.endswith('.html'):
             content_type = 'text/html'
+        elif filename.endswith('.svg'):
+            content_type = 'image/svg+xml'
         else:
             content_type = 'application/octet-stream'
         

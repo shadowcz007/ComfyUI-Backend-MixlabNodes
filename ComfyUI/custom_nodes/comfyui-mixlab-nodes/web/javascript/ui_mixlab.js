@@ -196,23 +196,35 @@ async function createMenu () {
 
 let isScriptLoaded = {}
 
-function loadExternalScript (url) {
+function loadExternalScript(url) {
   return new Promise((resolve, reject) => {
     if (isScriptLoaded[url]) {
-      resolve()
-      return
+      resolve();
+      return;
     }
 
-    const script = document.createElement('script')
-    script.src = url
-    script.onload = () => {
-      isScriptLoaded[url] = true
-      resolve()
+    const existingScript = document.querySelector(`script[src="${url}"]`);
+    if (existingScript) {
+      existingScript.onload = () => {
+        isScriptLoaded[url] = true;
+        resolve();
+      };
+      existingScript.onerror = reject;
+      return;
     }
-    script.onerror = reject
-    document.head.appendChild(script)
-  })
+
+    const script = document.createElement('script');
+    script.src = url;
+    script.onload = () => {
+      isScriptLoaded[url] = true;
+      resolve();
+    };
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
 }
+
+
 
 //
 

@@ -61,7 +61,7 @@ function get_position_style (ctx, widget_width, y, node_height) {
   return {
     transformOrigin: '0 0',
     transform: transform,
-    left: `0`,
+    left: `60px`,
     top: `0`,
     cursor: 'pointer',
     position: 'absolute',

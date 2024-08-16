@@ -145,6 +145,32 @@ function resizeImage (base64Image) {
   })
 }
 
+const createMixlabBtn=()=>{
+  const appsButton = document.createElement('button')
+  appsButton.id = 'mixlab_chatbot_by_llamacpp'
+  appsButton.className="comfyui-button"
+  appsButton.textContent = '♾️Mixlab'
+
+  // appsButton.onclick = () =>
+  appsButton.onclick = async () => {
+    // if (window._mixlab_llamacpp&&window._mixlab_llamacpp.model&&window._mixlab_llamacpp.model.length>0) {
+    //   //显示运行的模型
+    //   createModelsModal([
+    //     window._mixlab_llamacpp.url,
+    //     window._mixlab_llamacpp.model
+    //   ])
+    // } else {
+    //   // let ms = await get_llamafile_models()
+    //   // ms = ms.filter(m => !m.match('-mmproj-'))
+    //   // if (ms.length > 0) createModelsModal(ms)
+    // }
+    createModelsModal([
+    
+    ])
+  }
+  return appsButton
+}
+
 // 菜单入口
 async function createMenu () {
   const menu = document.querySelector('.comfy-menu')
@@ -156,30 +182,18 @@ async function createMenu () {
   `
   menu.append(separator)
 
-  if (!menu.querySelector('#mixlab_chatbot_by_llamacpp')) {
-    const appsButton = document.createElement('button')
-    appsButton.id = 'mixlab_chatbot_by_llamacpp'
-    appsButton.textContent = '♾️Mixlab'
+  
 
-    // appsButton.onclick = () =>
-    appsButton.onclick = async () => {
-      // if (window._mixlab_llamacpp&&window._mixlab_llamacpp.model&&window._mixlab_llamacpp.model.length>0) {
-      //   //显示运行的模型
-      //   createModelsModal([
-      //     window._mixlab_llamacpp.url,
-      //     window._mixlab_llamacpp.model
-      //   ])
-      // } else {
-      //   // let ms = await get_llamafile_models()
-      //   // ms = ms.filter(m => !m.match('-mmproj-'))
-      //   // if (ms.length > 0) createModelsModal(ms)
-      // }
-      createModelsModal([
-      
-      ])
+  if(menu.style.display==="none"&&document.querySelector('.comfyui-menu-push')){
+    //新版ui
+    document.querySelector('.comfyui-menu-push').append(createMixlabBtn())
+  }else{
+    if (!menu.querySelector('#mixlab_chatbot_by_llamacpp')) {
+      menu.append(createMixlabBtn())
     }
-    menu.append(appsButton)
   }
+
+ 
 }
 
 let isScriptLoaded = {}

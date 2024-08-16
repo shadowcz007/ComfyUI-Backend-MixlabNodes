@@ -12,6 +12,7 @@ This ui will let you design and execute advanced stable diffusion pipelines usin
 ## Features
 - Nodes/graph/flowchart interface to experiment and create complex Stable Diffusion workflows without needing to code anything.
 - Fully supports SD1.x, SD2.x, [SDXL](https://comfyanonymous.github.io/ComfyUI_examples/sdxl/), [Stable Video Diffusion](https://comfyanonymous.github.io/ComfyUI_examples/video/), [Stable Cascade](https://comfyanonymous.github.io/ComfyUI_examples/stable_cascade/), [SD3](https://comfyanonymous.github.io/ComfyUI_examples/sd3/) and [Stable Audio](https://comfyanonymous.github.io/ComfyUI_examples/audio/)
+- [Flux](https://comfyanonymous.github.io/ComfyUI_examples/flux/)
 - Asynchronous Queue system
 - Many optimizations: Only re-executes the parts of the workflow that changes between executions.
 - Smart memory management: can automatically run models on GPUs with as low as 1GB vram.
@@ -163,20 +164,6 @@ You can install ComfyUI in Apple Mac silicon (M1 or M2) with any recent macOS ve
 #### DirectML (AMD Cards on Windows)
 
 ```pip install torch-directml``` Then you can launch ComfyUI with: ```python main.py --directml```
-
-### I already have another UI for Stable Diffusion installed do I really have to install all of these dependencies?
-
-You don't. If you have another UI installed and working with its own python venv you can use that venv to run ComfyUI. You can open up your favorite terminal and activate it:
-
-```source path_to_other_sd_gui/venv/bin/activate```
-
-or on Windows:
-
-With Powershell: ```"path_to_other_sd_gui\venv\Scripts\Activate.ps1"```
-
-With cmd.exe: ```"path_to_other_sd_gui\venv\Scripts\activate.bat"```
-
-And then you can use that terminal to run ComfyUI without installing any dependencies. Note that the venv folder might be called something else depending on the SD UI.
 
 # Running
 

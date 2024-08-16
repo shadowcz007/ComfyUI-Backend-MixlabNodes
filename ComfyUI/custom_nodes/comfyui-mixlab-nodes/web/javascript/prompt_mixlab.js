@@ -3,7 +3,7 @@ import { api } from '../../../scripts/api.js'
 import { ComfyWidgets } from '../../../scripts/widgets.js'
 import { $el } from '../../../scripts/ui.js'
 
-import PhotoSwipeLightbox from '/extensions/comfyui-mixlab-nodes/lib/photoswipe-lightbox.esm.min.js'
+import PhotoSwipeLightbox from '/mixlab/app/lib/photoswipe-lightbox.esm.min.js'
 function loadCSS (url) {
   var link = document.createElement('link')
   link.rel = 'stylesheet'
@@ -40,14 +40,14 @@ function loadCSS (url) {
   // Append the style element to the document head
   document.head.appendChild(style)
 }
-loadCSS('/extensions/comfyui-mixlab-nodes/lib/photoswipe.min.css')
+loadCSS('/mixlab/app/lib/photoswipe.min.css')
 
 function initLightBox () {
   const lightbox = new PhotoSwipeLightbox({
     gallery: '.prompt_image_output',
     children: 'a',
     pswpModule: () =>
-      import('/extensions/comfyui-mixlab-nodes/lib/photoswipe.esm.min.js')
+      import('/mixlab/app/lib/photoswipe.esm.min.js')
   })
 
   lightbox.on('uiRegister', function () {
@@ -100,7 +100,10 @@ function get_position_style (ctx, widget_width, y, node_height) {
   return {
     transformOrigin: '0 0',
     transform: transform,
-    left: '60px',
+    left:
+    document.querySelector('.comfy-menu').style.display === 'none'
+      ? `60px`
+      : `0`,
     top: `0`,
     cursor: 'pointer',
     position: 'absolute',

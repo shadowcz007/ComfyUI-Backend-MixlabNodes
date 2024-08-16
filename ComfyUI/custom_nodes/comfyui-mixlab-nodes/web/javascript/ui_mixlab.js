@@ -182,8 +182,6 @@ async function createMenu () {
   `
   menu.append(separator)
 
-  
-
   if(menu.style.display==="none"&&document.querySelector('.comfyui-menu-push')){
     //新版ui
     document.querySelector('.comfyui-menu-push').append(createMixlabBtn())
@@ -248,7 +246,7 @@ function createChart (chartDom, nodes) {
 
 async function createNodesCharts () {
   await loadExternalScript(
-    '/extensions/comfyui-mixlab-nodes/lib/echarts.min.js'
+    '/mixlab/app/lib/echarts.min.js'
   )
   const templates = await loadTemplate()
   var nodes = {}
@@ -680,7 +678,10 @@ function get_position_style (ctx, widget_width, y, node_height) {
   return {
     transformOrigin: '0 0',
     transform: transform,
-    left: `0`,
+    left:
+    document.querySelector('.comfy-menu').style.display === 'none'
+      ? `60px`
+      : `0`,
     top: `0`,
     cursor: 'pointer',
     position: 'absolute',

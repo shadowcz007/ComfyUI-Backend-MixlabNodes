@@ -194,7 +194,6 @@ async function shareScreen (
   }
 }
 
- 
 async function compareImages (threshold, previousImage, currentImage) {
   // 将 base64 转换为 Image 对象
   var previousImg = await createImage(previousImage)
@@ -526,17 +525,12 @@ app.registerExtension({
           type: 'HTML', // whatever
           name: 'sreen_share', // whatever
           draw (ctx, node, widget_width, y, widget_height) {
-            // console.log('ScreenSHare', y, widget_height)
+            // console.log('ScreenSHare', node)
             Object.assign(
               this.card.style,
-              get_position_style(
-                ctx,
-                widget_width,
-                widget_height * 5,
-                node.size[1],
-                40
-              )
+              get_position_style(ctx, widget_width, y, node.size[1], 40)
             )
+ 
           }
         }
 
@@ -976,12 +970,13 @@ async function setArea (src) {
   div.innerHTML = `
     <div id='ml_overlay' style='position: absolute;top:0;background: #251f1fc4;
     height: 100vh;
-    z-index:999999;
+    z-index:99999999999999;
     width: 100%;'>
       <img id='ml_video' style='position: absolute; 
       height: ${displayHeight}px;user-select: none; 
       -webkit-user-drag: none;
       outline: 2px solid #eaeaea;
+      left: 0;
       box-shadow: 8px 9px 17px #575757;' />
       <div id='ml_selection' style='position: absolute; 
       border: 2px dashed red; 

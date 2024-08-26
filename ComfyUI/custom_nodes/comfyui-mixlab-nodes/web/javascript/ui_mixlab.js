@@ -11,7 +11,31 @@ import { smart_init, addSmartMenu } from './smart_connect.js'
 
 import { completion_ } from './chat.js'
 
-import { getLocalData, saveLocalData, updateLLMAPIKey } from './common.js'
+import {
+  getLocalData,
+  saveLocalData,
+  updateLLMAPIKey,
+  convertImageUrlToBase64,
+  get_nodes_map,
+  injectCSS,
+  loadCSS,
+  loadExternalScript
+} from './common.js'
+
+injectCSS(`
+  .help_link {
+    background: linear-gradient(rgb(110 110 110 / 50%), rgba(255, 255, 0, 0));
+    background-size: 200% 200%;
+    transition: background-position 0.5s;
+    text-decoration: none;
+  }
+
+  .help_link:hover {
+      background-position: right bottom;
+  }`)
+
+const BIZYAIR_SERVER_ADDRESS = 'https://api.siliconflow.cn'
+const BIZYAIR_MODEL = '01-ai/Yi-1.5-9B-Chat-16K'
 
 function showTextByLanguage (key, json) {
   // 获取浏览器语言
@@ -30,40 +54,19 @@ function showTextByLanguage (key, json) {
 //系统prompt
 // const systemPrompt = `You are a prompt creator, your task is to create prompts for the user input request, the prompts are image descriptions that include keywords for (an adjective, type of image, framing/composition, subject, subject appearance/action, environment, lighting situation, details of the shoot/illustration, visuals aesthetics and artists), brake keywords by comas, provide high quality, non-verboose, coherent, brief, concise, and not superfluous prompts, the subject from the input request must be included verbatim on the prompt,the prompt is english`
 
-let tool = {
-  name: 'create_prompt',
-  description:
-    'Create a prompt with a given subject, content, and style based on user input for image descriptions.',
-  parameter: {
-    type: 'object',
-    properties: {
-      subject: {
-        type: 'string',
-        description:
-          'The subject of the prompt, included verbatim from the input request.',
-        required: true
-      },
-      content: {
-        type: 'string',
-        description:
-          'The content of the prompt, primarily focusing on the scene and objects, including keywords for adjective, type of image, framing/composition, subject appearance/action, and environment.',
-        required: true
-      },
-      style: {
-        type: 'string',
-        description:
-          'The style of the prompt, including lighting situation, details of the shoot/illustration, visual aesthetics, and artists. Ensure it is high quality, non-verbose, coherent, brief, concise, and not superfluous.',
-        required: true
-      }
-    }
-  }
-}
+const systemPrompt = `
+Prompt:
 
-const systemPrompt = `You are a helpful assistant with access to the following functions. Use them if required - ${JSON.stringify(
-  tool,
-  null,
-  2
-)}`
+Describe a scene with a specific theme in fluent and highly detailed English, focusing on the content and style. The description should be within 100 words.
+
+Theme: [Insert Theme Here]
+
+Example:
+
+Theme: Sunset
+
+The sun sets in a blaze of orange and pink, casting a warm glow over a tranquil lake. Silhouetted trees line the shore, their reflections shimmering in the water. A lone figure sits at the end of a wooden pier, feet dangling above the mirrored surface, lost in thought. The scene exudes peacefulness and quiet beauty.
+`
 
 if (!localStorage.getItem('_mixlab_system_prompt')) {
   localStorage.setItem('_mixlab_system_prompt', systemPrompt)
@@ -204,34 +207,6 @@ async function createMenu () {
 }
 
 let isScriptLoaded = {}
-
-function loadExternalScript (url) {
-  return new Promise((resolve, reject) => {
-    if (isScriptLoaded[url]) {
-      resolve()
-      return
-    }
-
-    const existingScript = document.querySelector(`script[src="${url}"]`)
-    if (existingScript) {
-      existingScript.onload = () => {
-        isScriptLoaded[url] = true
-        resolve()
-      }
-      existingScript.onerror = reject
-      return
-    }
-
-    const script = document.createElement('script')
-    script.src = url
-    script.onload = () => {
-      isScriptLoaded[url] = true
-      resolve()
-    }
-    script.onerror = reject
-    document.head.appendChild(script)
-  })
-}
 
 //
 
@@ -461,20 +436,6 @@ function deepEqual (obj1, obj2) {
   return true
 }
 
-async function get_nodes_map () {
-  let api_host = `${window.location.hostname}:${window.location.port}`
-  let api_base = ''
-  let url = `${window.location.protocol}//${api_host}${api_base}`
-
-  const res = await fetch(`${url}/mixlab/nodes_map`, {
-    method: 'POST',
-    body: JSON.stringify({
-      data: 'json'
-    })
-  })
-  return await res.json()
-}
-
 function get_url () {
   let api_host = `${window.location.hostname}:${window.location.port}`
   let api_base = ''
@@ -515,33 +476,9 @@ async function get_my_app (filename = null, category = '') {
   return data
 }
 
-function loadCSS (url) {
-  var link = document.createElement('link')
-  link.rel = 'stylesheet'
-  link.type = 'text/css'
-  link.href = url
-  document.getElementsByTagName('head')[0].appendChild(link)
-}
-
 var cssURL =
   'https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown-light.min.css'
 loadCSS(cssURL)
-
-function injectCSS (css) {
-  // 检查页面中是否已经存在具有相同内容的style标签
-  const existingStyle = document.querySelector('style')
-  if (existingStyle && existingStyle.textContent === css) {
-    return // 如果已经存在相同的样式，则不进行注入
-  }
-
-  // 创建一个新的style标签，并将CSS内容注入其中
-  const style = document.createElement('style')
-  style.textContent = css
-
-  // 将style标签插入到页面的head元素中
-  const head = document.querySelector('head')
-  head.appendChild(style)
-}
 
 injectCSS(`::-webkit-scrollbar {
   width: 2px;
@@ -601,46 +538,20 @@ injectCSS(`::-webkit-scrollbar {
  
 `)
 
-async function getCustomnodeMappings (mode = 'url') {
-  // mode = "local";
-  let api_host = `${window.location.hostname}:${window.location.port}`
-  let api_base = ''
-  let url = `${window.location.protocol}//${api_host}${api_base}`
-
+async function getCustomnodeMappings () {
   let nodes = {}
-
-  const data = (await get_nodes_map()).data
-
-  for (let url in data) {
-    let n = data[url]
+  if (!window._nodes_maps) {
+    const data = (await get_nodes_map()).data
+    window._nodes_maps = data
+  }
+  console.log('#getCustomnodeMappings', window._nodes_maps)
+  for (let url in window._nodes_maps) {
+    let n = window._nodes_maps[url]
     for (let node of n[0]) {
       // if(node=='CLIPSeg')console.log('#CLIPSeg',n)
       nodes[node] = { url, title: n[1].title_aux }
     }
   }
-
-  // try {
-  //   const response = await fetch(`${url}/customnode/getmappings?mode=${mode}`)
-  //   const data = await response.json()
-  //   for (let url in data) {
-  //     let n = data[url]
-  //     for (let node of n[0]) {
-  //       // if(node=='CLIPSeg')console.log('#CLIPSeg',n)
-  //       nodes[node] = { url, title: n[1].title_aux }
-  //     }
-  //   }
-  // } catch (error) {
-  //   const data = (await get_nodes_map()).data
-
-  //   for (let url in data) {
-  //     let n = data[url]
-  //     for (let node of n[0]) {
-  //       // if(node=='CLIPSeg')console.log('#CLIPSeg',n)
-  //       nodes[node] = { url, title: n[1].title_aux }
-  //     }
-  //   }
-  // }
-
   return nodes
 }
 
@@ -651,10 +562,17 @@ const missingNodeGithub = (missingNodeTypes, nodesMap) => {
     if (nodesMap[n]) {
       let title = nodesMap[n].title
       if (!ts[title]) {
+        const link = nodesMap[n].url
+        // 判断链接是否为GitHub仓库链接
+        const githubRegex = /^https:\/\/github\.com\/(?:.*?\/)?([^/]+)\/.+$/
+
+        const author = link.match(githubRegex)[1]
+        console.log(`(作者: ${author})`)
         ts[title] = {
           title,
           nodes: {},
-          url: nodesMap[n].url
+          url: link,
+          author
         }
       }
       ts[title].nodes[n] = 1
@@ -670,50 +588,45 @@ const missingNodeGithub = (missingNodeTypes, nodesMap) => {
 
   return Array.from(Object.values(ts), n => {
     const url = n.url
-    return `<li style="color: white;
-   background: black;
+    return `<a 
+      href="${url}" 
+    target="_blank"
+    title="${url}"
+    style="color: white;
    padding: 8px;
-   font-size: 12px;">${n.title}<a href="${url}" target="_blank"> 🔗</a></li>`
+   font-size: 16px;
+   display: flex;
+     flex-direction:${!n.author ? 'row' : 'column'};
+    " 
+    class="help_link"
+
+    >${n.title}
+    <div 
+    style="display: flex; 
+     flex-direction: row;
+     align-items: center;
+     ${!n.author ? 'line-height: 4px;' : ''}
+    "
+    >
+   ${
+     n.author
+       ? `
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" width="24" height="24"/>
+      <p style="line-height: 14px;
+    color: white;
+    margin-left: 12px;
+}">Author:${n.author}</p>
+      `
+       : '🔍'
+   }
+  </div></a>`
   })
 }
 
 let nodesMap
 
-function get_position_style (ctx, widget_width, y, node_height) {
-  const MARGIN = 4 // the margin around the html element
-
-  /* Create a transform that deals with all the scrolling and zooming */
-  const elRect = ctx.canvas.getBoundingClientRect()
-  const transform = new DOMMatrix()
-    .scaleSelf(
-      elRect.width / ctx.canvas.width,
-      elRect.height / ctx.canvas.height
-    )
-    .multiplySelf(ctx.getTransform())
-    .translateSelf(MARGIN, MARGIN + y)
-
-  return {
-    transformOrigin: '0 0',
-    transform: transform,
-    left:
-      document.querySelector('.comfy-menu').style.display === 'none'
-        ? `60px`
-        : `0`,
-    top: `0`,
-    cursor: 'pointer',
-    position: 'absolute',
-    maxWidth: `${widget_width - MARGIN * 2}px`,
-    // maxHeight: `${node_height - MARGIN * 2}px`, // we're assuming we have the whole height of the node
-    width: `${widget_width - MARGIN * 2}px`,
-    // height: `${node_height * 0.3 - MARGIN * 2}px`,
-    // background: '#EEEEEE',
-    display: 'flex',
-    flexDirection: 'column',
-    // alignItems: 'center',
-    justifyContent: 'space-around'
-  }
-}
-
+// Enhanced navigation to GitHub for missing node search upon graph load.
+// 更好地错误提示，找到GitHub原仓库地址
 app.showMissingNodesError = async function (
   missingNodeTypes,
   hasAddedNodes = true
@@ -721,24 +634,10 @@ app.showMissingNodesError = async function (
   nodesMap =
     nodesMap && Object.keys(nodesMap).length > 0
       ? nodesMap
-      : await getCustomnodeMappings('url')
+      : await getCustomnodeMappings()
 
-  // console.log('#nodesMap', nodesMap)
-  // console.log('###MIXLAB', missingNodeTypes, hasAddedNodes)
   this.ui.dialog.show(
-    `<a style="color: white;
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    font-family: sans-serif;
-  }"
-  href="https://discord.gg/cXs9vZSqeK"  target="_blank">${showTextByLanguage(
-    'Welcome to Mixlab nodes discord, seeking help.',
-    {
-      'Welcome to Mixlab nodes discord, seeking help.':
-        '寻求帮助，加入Mixlab nodes交流频道'
-    }
-  )}</a><br><br>${showTextByLanguage(
+    `${showTextByLanguage(
       'When loading the graph, the following node types were not found:',
       {
         'When loading the graph, the following node types were not found:':
@@ -746,73 +645,34 @@ app.showMissingNodesError = async function (
       }
     )}
   
-   <ul>${missingNodeGithub(missingNodeTypes, nodesMap).join('')}</ul>${
-      hasAddedNodes ? '' : ''
-    }`
+   <ul class="comfy-missing-nodes">${missingNodeGithub(
+     missingNodeTypes,
+     nodesMap
+   ).join('')}</ul>${hasAddedNodes ? '' : ''} 
+   <br><br><a 
+    style="color: #dedede;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-family: sans-serif;
+    text-decoration: none;
+      "
+    class="help_link"
+    href="https://discord.gg/cXs9vZSqeK"  target="_blank">${showTextByLanguage(
+      'Welcome to Mixlab nodes discord, seeking help.',
+      {
+        'Welcome to Mixlab nodes discord, seeking help.':
+          '寻求帮助，加入Mixlab nodes交流频道'
+      }
+    )}</a>
+    `
   )
   this.logging.addEntry('Comfy.App', 'warn', {
     MissingNodes: missingNodeTypes
   })
 }
 
-// app.registerExtension({
-//   name: 'Comfy.MDNote',
-//   registerCustomNodes () {
-//     class NoteNode {
-//       // color = LGraphCanvas.node_colors.yellow.color
-//       // bgcolor = LGraphCanvas.node_colors.yellow.bgcolor
-//       // groupcolor = LGraphCanvas.node_colors.yellow.groupcolor
-//       constructor () {
-//         if (!this.properties) {
-//           this.properties = {}
-//           this.properties.text = ''
-//         }
-//         console.log('NoteNode1', this)
-
-//         const widget = {
-//           type: 'div',
-//           name: 'input_color',
-//           draw (ctx, node, widget_width, y, widget_height) {
-//             Object.assign(
-//               this.div.style,
-//               get_position_style(
-//                 ctx,
-//                 widget_width,
-//                 44,
-//                 node.size[1]
-//               )
-//             )
-//           }
-//         }
-
-//         widget.div = $el('div', {});
-//         widget.div.innerText='1111'
-
-//         document.body.appendChild(widget.div)
-
-//         this.addCustomWidget(widget)
-
-//         this.serialize_widgets = true
-//         this.isVirtualNode = true
-//       }
-//     }
-
-//     // Load default visibility
-
-//     LiteGraph.registerNodeType(
-//       'MDNote',
-//       Object.assign(NoteNode, {
-//         title_mode: LiteGraph.NORMAL_TITLE,
-//         title: 'MDNote',
-//         collapsable: true
-//       })
-//     )
-
-//     NoteNode.category = '♾️Mixlab/utils'
-//   },
-
-// })
-
+// 读取仓库说明
 async function fetchReadmeContent (url) {
   try {
     // var repo = 'owner/repo'; // 仓库的拥有者和名称
@@ -833,30 +693,7 @@ async function fetchReadmeContent (url) {
   }
 }
 
-async function startLLM (model) {
-  let res = await start_llama(model)
-  window._mixlab_llamacpp = res || { model: [] }
-
-  localStorage.setItem('_mixlab_llama_select', res?.model || '')
-
-  if (
-    document.body.querySelector('#mixlab_chatbot_by_llamacpp') &&
-    window._mixlab_llamacpp?.url
-  ) {
-    document.body
-      .querySelector('#mixlab_chatbot_by_llamacpp')
-      .setAttribute('title', window._mixlab_llamacpp.url)
-  }
-  if (
-    document.body.querySelector('#llm_status_btn') &&
-    window._mixlab_llamacpp
-  ) {
-    document.body.querySelector('#llm_status_btn').innerText =
-      window._mixlab_llamacpp.model
-  }
-}
-
-function createInputOfLabel(labelText,key,id){
+function createInputOfLabel (labelText, key, id) {
   const label = document.createElement('p')
   label.innerText = labelText
 
@@ -871,7 +708,8 @@ function createInputOfLabel(labelText,key,id){
   width: 150px;
   margin-left: 12px;`
 
-  input.value = getLocalData(key)["-"] ||Object.values(getLocalData(key))[0] || 'by Mixlab'
+  input.value =
+    getLocalData(key)['-'] || Object.values(getLocalData(key))[0] || 'by Mixlab'
 
   input.addEventListener('change', e => {
     e.stopPropagation()
@@ -879,14 +717,13 @@ function createInputOfLabel(labelText,key,id){
 
     saveLocalData(key, '-', input.value)
   })
- 
 
-  const div=document.createElement('div');
-  div.style=`display: flex;
+  const div = document.createElement('div')
+  div.style = `display: flex;
     justify-content: flex-start;
     align-items: baseline;padding: 0 18px;`
- 
-    div.addEventListener('click', e => {
+
+  div.addEventListener('click', e => {
     e.stopPropagation()
   })
 
@@ -994,7 +831,21 @@ function createModelsModal (models, llmKey) {
   align-items: center;
   font-size: 12px;`
   batchPageBtn.innerHTML = `<a href="${get_url()}/mixlab/app" target="_blank" style="color: var(--input-text);
-  background-color: var(--comfy-input-bg);">App</a>`
+  background-color: var(--comfy-input-bg);font-size: 16px;">MixLab App</a>`
+
+  const siliconflowHelp = document.createElement('a')
+  siliconflowHelp.textContent =
+    showTextByLanguage('Use Siliconflow', {
+      'Use Siliconflow': '使用硅基流动'
+    }) +
+    '\n' +
+    showTextByLanguage('Or Local LLM', {
+      'Or Local LLM': '或者本地LLM'
+    })
+  siliconflowHelp.style = `color: var(--input-text);
+  background-color: var(--comfy-input-bg);margin-top:14px;font-size: 16px;`
+  siliconflowHelp.href = 'https://cloud.siliconflow.cn/s/mixlabs'
+  siliconflowHelp.target = '_blank'
 
   const title = document.createElement('p')
   title.innerText = 'Mixlab Nodes'
@@ -1010,6 +861,8 @@ function createModelsModal (models, llmKey) {
   flex-direction: column; `
   left_d.appendChild(title)
   left_d.appendChild(batchPageBtn)
+  left_d.appendChild(siliconflowHelp)
+
   headTitleElement.appendChild(left_d)
 
   //重启
@@ -1057,13 +910,27 @@ function createModelsModal (models, llmKey) {
   var modalContent = document.createElement('div')
   modalContent.classList.add('modal-content')
 
-  let llmKeyDiv=createInputOfLabel('LLM Key','_mixlab_llm_api_key',"-")
+  let llmKeyDiv = createInputOfLabel('LLM Key', '_mixlab_llm_api_key', '-')
 
-  saveLocalData("_mixlab_llm_api_url","-","https://api.siliconflow.cn/v1")
-  let llmAPIDiv=createInputOfLabel('LLM API','_mixlab_llm_api_url',"-")
+  if (!getLocalData('_mixlab_llm_api_url')['-']) {
+    saveLocalData('_mixlab_llm_api_url', '-', BIZYAIR_SERVER_ADDRESS)
+  }
 
-  modalContent.appendChild(llmKeyDiv);
+  let llmAPIDiv = createInputOfLabel('LLM API', '_mixlab_llm_api_url', '-')
+
+  if (!getLocalData('_mixlab_llm_model_name')['-']) {
+    saveLocalData('_mixlab_llm_model_name', '-', BIZYAIR_MODEL)
+  }
+
+  let llmModelDiv = createInputOfLabel(
+    'LLM Model',
+    '_mixlab_llm_model_name',
+    '-'
+  )
+
+  modalContent.appendChild(llmKeyDiv)
   modalContent.appendChild(llmAPIDiv)
+  modalContent.appendChild(llmModelDiv)
 
   var inputForSystemPrompt = document.createElement('textarea')
   inputForSystemPrompt.className = 'comfy-multiline-input'
@@ -1081,23 +948,6 @@ function createModelsModal (models, llmKey) {
 
   modalContent.appendChild(inputForSystemPrompt)
 
-  if (!window._mixlab_llamacpp || window._mixlab_llamacpp?.model?.length == 0) {
-    for (const m of models) {
-      let d = document.createElement('div')
-      d.innerText = `${showTextByLanguage('Run', {
-        Run: '运行'
-      })} ${m}`
-      d.className = `mix_tag`
-
-      d.addEventListener('click', async e => {
-        e.stopPropagation()
-        div.remove()
-        // startLLM(m)
-      })
-
-      // modalContent.appendChild(d)
-    }
-  }
   modal.appendChild(modalContent)
 
   const helpInfo = document.createElement('a')
@@ -1427,19 +1277,6 @@ function drawBadge (node, orig, restArgs) {
   return r
 }
 
-function convertImageUrlToBase64 (imageUrl) {
-  return fetch(imageUrl)
-    .then(response => response.blob())
-    .then(blob => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result)
-        reader.onerror = reject
-        reader.readAsDataURL(blob)
-      })
-    })
-}
-
 async function getSelectImageNode () {
   var nodes = app.canvas.selected_nodes
   let imageNode = null
@@ -1457,23 +1294,23 @@ app.registerExtension({
   name: 'Comfy.Mixlab.ui',
   init () {
     //是否要自动加载模型
-    if (localStorage.getItem('_mixlab_auto_llama_open')) {
-      let model = localStorage.getItem('_mixlab_llama_select')
-      start_llama(model).then(res => {
-        window._mixlab_llamacpp = res
-        document.body
-          .querySelector('#mixlab_chatbot_by_llamacpp')
-          .setAttribute('title', res.url)
-      })
-    } else {
-      // startLLM('')
-    }
+    // if (localStorage.getItem('_mixlab_auto_llama_open')) {
+    //   let model = localStorage.getItem('_mixlab_llama_select')
+    //   start_llama(model).then(res => {
+    //     window._mixlab_llamacpp = res
+    //     document.body
+    //       .querySelector('#mixlab_chatbot_by_llamacpp')
+    //       .setAttribute('title', res.url)
+    //   })
+    // } else {
+    //   // startLLM('')
+    // }
 
     LGraphCanvas.prototype.helpAboutNode = async function (node) {
       nodesMap =
         nodesMap && Object.keys(nodesMap).length > 0
           ? nodesMap
-          : await getCustomnodeMappings('url')
+          : await getCustomnodeMappings()
 
       console.log(
         '%c### node & node map',
@@ -1485,6 +1322,7 @@ app.registerExtension({
       let repo = nodesMap[node.type]
       if (repo) {
         let markdown = await fetchReadmeContent(repo.url)
+        await loadExternalScript('/mixlab/app/lib/showdown.min.js')
         createModal(repo.url, markdown, repo.title)
       }
     }
@@ -1503,7 +1341,6 @@ app.registerExtension({
     smart_init()
 
     LGraphCanvas.prototype.text2text = async function (node) {
-
       let widget = node.widgets.filter(
         w => w.name === 'text' && typeof w.value == 'string'
       )[0]
@@ -1518,9 +1355,12 @@ app.registerExtension({
         let jsonStr = ''
         try {
           await completion_(
-            getLocalData('_mixlab_llm_api_key')['-']||Object.values(getLocalData('_mixlab_llm_api_key'))[0],
-            getLocalData("_mixlab_llm_api_url")['-']||Object.values(getLocalData("_mixlab_llm_api_url"))[0],
- 
+            getLocalData('_mixlab_llm_api_key')['-'] ||
+              Object.values(getLocalData('_mixlab_llm_api_key'))[0],
+            getLocalData('_mixlab_llm_api_url')['-'] ||
+              Object.values(getLocalData('_mixlab_llm_api_url'))[0],
+            getLocalData('_mixlab_llm_model_name')['-'] ||
+              Object.values(getLocalData('_mixlab_llm_model_name'))[0],
             [
               {
                 role: 'system',
@@ -1530,60 +1370,16 @@ app.registerExtension({
             ],
             controller,
             t => {
-              // console.log(t)
-              widget.value += t
-              jsonStr += t
+              let content = t.data?.choices[0]?.delta?.content || ''
+
+              console.log(content)
+              widget.value += content
+              // jsonStr += content
             }
           )
         } catch (error) {
-          //是否要自动加载模型
-          if (localStorage.getItem('_mixlab_auto_llama_open')) {
-            let model = localStorage.getItem('_mixlab_llama_select')
-            start_llama(model).then(async res => {
-              window._mixlab_llamacpp = res
-              document.body
-                .querySelector('#mixlab_chatbot_by_llamacpp')
-                .setAttribute('title', res.url)
-
-              await completion_(
-                window._mixlab_llamacpp.url + '/v1/chat/completions',
-                [
-                  {
-                    role: 'system',
-                    content: localStorage.getItem('_mixlab_system_prompt')
-                  },
-                  { role: 'user', content: userInput }
-                ],
-                controller,
-                t => {
-                  console.log(t)
-                  widget.value += t
-                  jsonStr += t
-                }
-              )
-            })
-          }
+          console.log(error)
         }
-
-        // let json = jsonStr
-        // widget.value = widget.value.trim()+json
-        // console.log(jsonStr)
-        // try {
-        //   json = JSON.parse(jsonStr.trim())
-        // } catch (error) {
-           
-        //   try {
-        //     json = JSON.parse(jsonStr.trim() + '}')
-        //   } catch (error) {
-            
-        //   }
-        // }
-
-        // if (json) {
-        //   widget.value = [json.subject, json.content, json.style].join('\n')
-        // } else {
-        //   widget.value = widget.value.trim()
-        // }
       }
     }
 
@@ -1611,79 +1407,76 @@ app.registerExtension({
         widget.value += '\n'
 
         try {
-          await completion_(
-            window._mixlab_llamacpp.url + '/v1/chat/completions',
-            [
-              {
-                role: 'system',
-                content: localStorage.getItem('_mixlab_system_prompt')
-              },
-              // { role: 'user', content: userInput }
-
-              {
-                role: 'user',
-                content: [
-                  {
-                    type: 'image_url',
-                    image_url: {
-                      url: imageBase64
-                    }
-                  },
-                  { type: 'text', text: 'What’s in this image?' }
-                ]
-              }
-            ],
-            controller,
-            t => {
-              // console.log(t)
-              widget.value += t
-
-              NoteNode.size[1] = widget.element.scrollHeight + 20
-              widget.computedHeight = NoteNode.size[1]
-              app.canvas.centerOnNode(NoteNode)
-            }
-          )
+          // await completion_(
+          //   window._mixlab_llamacpp.url + '/v1/chat/completions',
+          //   [
+          //     {
+          //       role: 'system',
+          //       content: localStorage.getItem('_mixlab_system_prompt')
+          //     },
+          //     // { role: 'user', content: userInput }
+          //     {
+          //       role: 'user',
+          //       content: [
+          //         {
+          //           type: 'image_url',
+          //           image_url: {
+          //             url: imageBase64
+          //           }
+          //         },
+          //         { type: 'text', text: 'What’s in this image?' }
+          //       ]
+          //     }
+          //   ],
+          //   controller,
+          //   t => {
+          //     // console.log(t)
+          //     widget.value += t
+          //     NoteNode.size[1] = widget.element.scrollHeight + 20
+          //     widget.computedHeight = NoteNode.size[1]
+          //     app.canvas.centerOnNode(NoteNode)
+          //   }
+          // )
         } catch (error) {
           //是否要自动加载模型
-          if (localStorage.getItem('_mixlab_auto_llama_open')) {
-            let model = localStorage.getItem('_mixlab_llama_select')
-            start_llama(model).then(async res => {
-              window._mixlab_llamacpp = res
-              document.body
-                .querySelector('#mixlab_chatbot_by_llamacpp')
-                .setAttribute('title', res.url)
-
-              await completion_(
-                window._mixlab_llamacpp.url + '/v1/chat/completions',
-                [
-                  {
-                    role: 'system',
-                    content: localStorage.getItem('_mixlab_system_prompt')
-                  },
-                  {
-                    role: 'user',
-                    content: [
-                      {
-                        type: 'image_url',
-                        image_url: {
-                          url: imageBase64
-                        }
-                      },
-                      { type: 'text', text: 'What’s in this image?' }
-                    ]
-                  }
-                ],
-                controller,
-                t => {
-                  // console.log(t)
-                  widget.value += t
-                  NoteNode.size[1] = widget.element.scrollHeight + 20
-                  widget.computedHeight = NoteNode.size[1]
-                  app.canvas.centerOnNode(NoteNode)
-                }
-              )
-            })
-          }
+          // if (localStorage.getItem('_mixlab_auto_llama_open')) {
+          //   let model = localStorage.getItem('_mixlab_llama_select')
+          //   start_llama(model).then(async res => {
+          //     window._mixlab_llamacpp = res
+          //     document.body
+          //       .querySelector('#mixlab_chatbot_by_llamacpp')
+          //       .setAttribute('title', res.url)
+          //     await completion_(
+          //       window._mixlab_llamacpp.url + '/v1/chat/completions',
+          //       [
+          //         {
+          //           role: 'system',
+          //           content: localStorage.getItem('_mixlab_system_prompt')
+          //         },
+          //         {
+          //           role: 'user',
+          //           content: [
+          //             {
+          //               type: 'image_url',
+          //               image_url: {
+          //                 url: imageBase64
+          //               }
+          //             },
+          //             { type: 'text', text: 'What’s in this image?' }
+          //           ]
+          //         }
+          //       ],
+          //       controller,
+          //       t => {
+          //         // console.log(t)
+          //         widget.value += t
+          //         NoteNode.size[1] = widget.element.scrollHeight + 20
+          //         widget.computedHeight = NoteNode.size[1]
+          //         app.canvas.centerOnNode(NoteNode)
+          //       }
+          //     )
+          //   })
+          // }
         }
 
         widget.value = widget.value.trim()
@@ -1864,14 +1657,21 @@ app.registerExtension({
         )
 
         let text_input = node.inputs?.filter(
-          inp => inp.name == 'text' && (inp.type == 'STRING' )
+          inp => inp.name == 'text' && inp.type == 'STRING'
         )
-     
+
+        const llm_api_key =
+            getLocalData('_mixlab_llm_api_key')['-'] ||
+            Object.values(getLocalData('_mixlab_llm_api_key'))[0],
+          llm_api_url =
+            getLocalData('_mixlab_llm_api_url')['-'] ||
+            Object.values(getLocalData('_mixlab_llm_api_url'))[0]
+
         if (
-         
           text_widget &&
           text_widget.length == 1 &&
-          false &&
+          llm_api_key &&
+          llm_api_url &&
           node.type != 'ShowTextForGPT'
         ) {
           opts.push({
@@ -1955,127 +1755,127 @@ app.registerExtension({
       // Add canvas menu options
       const orig = LGraphCanvas.prototype.getCanvasMenuOptions
 
-      const apps = await get_my_app()
-      if (!apps) return
+      // const apps = await get_my_app()
+      // if (!apps) return
 
-      console.log('apps', apps)
+      // console.log('apps', apps)
 
-      let apps_map = { 0: [] }
+      // let apps_map = { 0: [] }
 
-      for (const app of apps) {
-        if (app.category) {
-          if (!apps_map[app.category]) apps_map[app.category] = []
-          apps_map[app.category].push(app)
-        } else {
-          apps_map['0'].push(app)
-        }
-      }
+      // for (const app of apps) {
+      //   if (app.category) {
+      //     if (!apps_map[app.category]) apps_map[app.category] = []
+      //     apps_map[app.category].push(app)
+      //   } else {
+      //     apps_map['0'].push(app)
+      //   }
+      // }
 
       let apps_opts = []
-      for (const category in apps_map) {
-        // console.log('category', typeof category)
-        if (category === '0') {
-          apps_opts.push(
-            ...Array.from(apps_map[category], a => {
-              // console.log('#1级',a)
-              return {
-                content: `${a.name}_${a.version}`,
-                has_submenu: false,
-                callback: async () => {
-                  try {
-                    let ddd = await get_my_app(a.filename)
-                    if (!ddd) return
-                    let item = ddd[0]
-                    if (item) {
-                      if (item.author) {
-                        // 有作者信息
-                        if (item.author.avatar)
-                          localStorage.setItem(
-                            '_mixlab_author_avatar',
-                            item.author.avatar
-                          )
-                        if (item.author.name)
-                          localStorage.setItem(
-                            '_mixlab_author_name',
-                            item.author.name
-                          )
+      // for (const category in apps_map) {
+      //   // console.log('category', typeof category)
+      //   if (category === '0') {
+      //     apps_opts.push(
+      //       ...Array.from(apps_map[category], a => {
+      //         // console.log('#1级',a)
+      //         return {
+      //           content: `${a.name}_${a.version}`,
+      //           has_submenu: false,
+      //           callback: async () => {
+      //             try {
+      //               let ddd = await get_my_app(a.filename)
+      //               if (!ddd) return
+      //               let item = ddd[0]
+      //               if (item) {
+      //                 if (item.author) {
+      //                   // 有作者信息
+      //                   if (item.author.avatar)
+      //                     localStorage.setItem(
+      //                       '_mixlab_author_avatar',
+      //                       item.author.avatar
+      //                     )
+      //                   if (item.author.name)
+      //                     localStorage.setItem(
+      //                       '_mixlab_author_name',
+      //                       item.author.name
+      //                     )
 
-                        if (item.author.link)
-                          localStorage.setItem(
-                            '_mixlab_author_link',
-                            item.author.link
-                          )
-                      }
+      //                   if (item.author.link)
+      //                     localStorage.setItem(
+      //                       '_mixlab_author_link',
+      //                       item.author.link
+      //                     )
+      //                 }
 
-                      // console.log(item.data)
-                      app.loadGraphData(item.data)
-                      setTimeout(() => {
-                        const node = app.graph._nodes_in_order[0]
-                        if (!node) return
-                        app.canvas.centerOnNode(node)
-                        app.canvas.setZoom(0.5)
-                      }, 1000)
-                    }
-                  } catch (error) {}
-                }
-              }
-            })
-          )
-        } else {
-          // 二级
-          apps_opts.push({
-            content: '🚀 ' + category,
-            has_submenu: true,
-            disabled: false,
-            submenu: {
-              options: Array.from(apps_map[category], a => {
-                // console.log('#二级',a)
-                return {
-                  content: `${a.name}_${a.version}`,
-                  callback: async () => {
-                    try {
-                      let ddd = await get_my_app(a.filename, a.category)
+      //                 // console.log(item.data)
+      //                 app.loadGraphData(item.data)
+      //                 setTimeout(() => {
+      //                   const node = app.graph._nodes_in_order[0]
+      //                   if (!node) return
+      //                   app.canvas.centerOnNode(node)
+      //                   app.canvas.setZoom(0.5)
+      //                 }, 1000)
+      //               }
+      //             } catch (error) {}
+      //           }
+      //         }
+      //       })
+      //     )
+      //   } else {
+      //     // 二级
+      //     apps_opts.push({
+      //       content: '🚀 ' + category,
+      //       has_submenu: true,
+      //       disabled: false,
+      //       submenu: {
+      //         options: Array.from(apps_map[category], a => {
+      //           // console.log('#二级',a)
+      //           return {
+      //             content: `${a.name}_${a.version}`,
+      //             callback: async () => {
+      //               try {
+      //                 let ddd = await get_my_app(a.filename, a.category)
 
-                      if (!ddd) return
-                      let item = ddd[0]
-                      if (item) {
-                        console.log(item)
-                        if (item.author) {
-                          // 有作者信息
-                          if (item.author.avatar)
-                            localStorage.setItem(
-                              '_mixlab_author_avatar',
-                              item.author.avatar
-                            )
-                          if (item.author.name)
-                            localStorage.setItem(
-                              '_mixlab_author_name',
-                              item.author.name
-                            )
-                          if (item.author.link)
-                            localStorage.setItem(
-                              '_mixlab_author_link',
-                              item.author.link
-                            )
-                        }
+      //                 if (!ddd) return
+      //                 let item = ddd[0]
+      //                 if (item) {
+      //                   console.log(item)
+      //                   if (item.author) {
+      //                     // 有作者信息
+      //                     if (item.author.avatar)
+      //                       localStorage.setItem(
+      //                         '_mixlab_author_avatar',
+      //                         item.author.avatar
+      //                       )
+      //                     if (item.author.name)
+      //                       localStorage.setItem(
+      //                         '_mixlab_author_name',
+      //                         item.author.name
+      //                       )
+      //                     if (item.author.link)
+      //                       localStorage.setItem(
+      //                         '_mixlab_author_link',
+      //                         item.author.link
+      //                       )
+      //                   }
 
-                        // console.log(item.data)
-                        app.loadGraphData(item.data)
-                        setTimeout(() => {
-                          const node = app.graph._nodes_in_order[0]
-                          if (!node) return
-                          app.canvas.centerOnNode(node)
-                          app.canvas.setZoom(0.5)
-                        }, 1000)
-                      }
-                    } catch (error) {}
-                  }
-                }
-              })
-            }
-          })
-        }
-      }
+      //                   // console.log(item.data)
+      //                   app.loadGraphData(item.data)
+      //                   setTimeout(() => {
+      //                     const node = app.graph._nodes_in_order[0]
+      //                     if (!node) return
+      //                     app.canvas.centerOnNode(node)
+      //                     app.canvas.setZoom(0.5)
+      //                   }, 1000)
+      //                 }
+      //               } catch (error) {}
+      //             }
+      //           }
+      //         })
+      //       }
+      //     })
+      //   }
+      // }
 
       // console.log('apps',apps_map, apps_opts,apps)
       LGraphCanvas.prototype.getCanvasMenuOptions = function () {
@@ -2090,7 +1890,7 @@ app.registerExtension({
               nodesMap =
                 nodesMap && Object.keys(nodesMap).length > 0
                   ? nodesMap
-                  : await getCustomnodeMappings('url')
+                  : await getCustomnodeMappings()
 
               const nodesDiv = document.createDocumentFragment()
               const nodes = (await app.graphToPrompt()).output

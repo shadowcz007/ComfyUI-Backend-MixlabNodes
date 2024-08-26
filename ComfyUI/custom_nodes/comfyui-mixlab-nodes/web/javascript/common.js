@@ -8,6 +8,19 @@ export function getUrl () {
   return url
 }
 
+// 获得插件/节点的索引数据
+export async function get_nodes_map () {
+  let url = getUrl()
+
+  const res = await fetch(`${url}/mixlab/nodes_map`, {
+    method: 'POST',
+    body: JSON.stringify({
+      data: 'json'
+    })
+  })
+  return await res.json()
+}
+
 // 更新或者获取key
 export const updateLLMAPIKey = async key => {
   try {
@@ -55,16 +68,23 @@ export function getObjectInfo () {
   })
 }
 
-export function get_position_style (ctx, widget_width, y, node_height) {
+export function get_position_style (
+  ctx,
+  widget_width,
+  y,
+  node_height,
+  left = 44
+) {
   const MARGIN = 0 // the margin around the html element
 
   /* Create a transform that deals with all the scrolling and zooming */
   const elRect = ctx.canvas.getBoundingClientRect()
+
+  const scaleX = elRect.width / ctx.canvas.width
+  const scaleY = elRect.height / ctx.canvas.height
+
   const transform = new DOMMatrix()
-    .scaleSelf(
-      elRect.width / ctx.canvas.width,
-      elRect.height / ctx.canvas.height
-    )
+    .scaleSelf(scaleX, scaleY)
     .multiplySelf(ctx.getTransform())
     .translateSelf(MARGIN, MARGIN + y)
 
@@ -73,14 +93,14 @@ export function get_position_style (ctx, widget_width, y, node_height) {
     transform: transform,
     left:
       document.querySelector('.comfy-menu').style.display === 'none'
-        ? `60px`
+        ? `${left}px`
         : `0`,
     top: `0`,
     cursor: 'pointer',
     position: 'absolute',
     maxWidth: `${widget_width - MARGIN * 2}px`,
     // maxHeight: `${node_height - MARGIN * 2}px`, // we're assuming we have the whole height of the node
-    // width: `${widget_width - MARGIN * 2}px`,
+    width: `${widget_width - MARGIN * 2}px`,
     height: `${node_height * 0.3 - MARGIN * 2}px`,
     // background: '#EEEEEE',
     display: 'flex',
@@ -90,6 +110,32 @@ export function get_position_style (ctx, widget_width, y, node_height) {
     zIndex: 99
   }
 }
+
+export function loadCSS (url) {
+  var link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.type = 'text/css'
+  link.href = url
+  document.getElementsByTagName('head')[0].appendChild(link)
+}
+
+
+export function injectCSS (css) {
+  // 检查页面中是否已经存在具有相同内容的style标签
+  const existingStyle = document.querySelector('style')
+  if (existingStyle && existingStyle.textContent === css) {
+    return // 如果已经存在相同的样式，则不进行注入
+  }
+
+  // 创建一个新的style标签，并将CSS内容注入其中
+  const style = document.createElement('style')
+  style.textContent = css
+
+  // 将style标签插入到页面的head元素中
+  const head = document.querySelector('head')
+  head.appendChild(style)
+}
+
 
 export function loadExternalScript (url, type) {
   return new Promise((resolve, reject) => {
@@ -149,6 +195,19 @@ export function createImage (url) {
     im.onload = () => res(im)
     im.src = url
   })
+}
+
+export function convertImageUrlToBase64 (imageUrl) {
+  return fetch(imageUrl)
+    .then(response => response.blob())
+    .then(blob => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+    })
 }
 
 export const getLocalData = key => {

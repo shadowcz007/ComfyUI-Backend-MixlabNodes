@@ -1,4 +1,4 @@
-import { getUrl } from "./common.js"
+import { getUrl } from './common.js'
 
 async function* completion (url, messages, controller) {
   let data = {
@@ -93,45 +93,54 @@ async function* completion (url, messages, controller) {
   return content
   // return (await response.json()).content
 }
-
-export async function completion_ (apiKey,url, messages, controller, callback) {
-  // let request = await completion(url, messages, controller)
-  let request=await chatCompletion(apiKey,url, messages, controller)
+export async function completion_ (
+  apiKey,
+  url,
+  model_name,
+  messages,
+  controller,
+  callback
+) {
+  let request = await chatCompletion(
+    apiKey,
+    url,
+    model_name,
+    messages,
+    controller
+  )
   for await (const chunk of request) {
-    let content = chunk.data.choices[0].delta.content || ''
-    if (chunk.data.choices[0].role == 'assistant') {
-      //开始
-      content = ''
-    }
-
-    if (callback) callback(content)
+    if (callback) callback(chunk)
   }
 }
 
+export async function* chatCompletion (
+  apiKey,
+  api_url,
+  model_name,
+  messages,
+  controller
+) {
+  const mixlabAPI = `${getUrl()}/chat/completions`
 
-
-export async function* chatCompletion(apiKey, url,messages,controller){
-  // const apiKey = 'YOUR_API_KEY'
-  url = `${getUrl()}/chat/completions`
-  
   const requestBody = {
-    model: '01-ai/Yi-1.5-9B-Chat-16K',
     messages: messages,
     stream: true,
-    key:apiKey
+    key: apiKey,
+    model_name: model_name,
+    api_url
   }
 
-  let response=await fetch(url, {
+  let response = await fetch(mixlabAPI, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-      signal: controller.signal
+      'Content-Type': 'application/json'
+      // Authorization: `Bearer ${apiKey}`
     },
     body: JSON.stringify(requestBody),
-    mode: 'cors' // This is to ensure the request is made with CORS
-  }) 
-  
+    mode: 'cors', // This is to ensure the request is made with CORS
+    signal: controller.signal
+  })
+
   const reader = response.body.getReader()
   const decoder = new TextDecoder()
 
@@ -145,10 +154,7 @@ export async function* chatCompletion(apiKey, url,messages,controller){
       if (result.done) {
         break
       }
-
-      // Add any leftover data to the current chunk of data
       const text = leftover + decoder.decode(result.value)
-
       // Check if the last character is a line break
       const endsWithLineBreak = text.endsWith('\n')
 
@@ -172,10 +178,10 @@ export async function* chatCompletion(apiKey, url,messages,controller){
           // since we know this is llama.cpp, let's just decode the json in data
           if (result.data) {
             result.data = JSON.parse(result.data)
-            console.log('#result.data',result.data)
+            
 
             content += result.data.choices[0].delta?.content || ''
-
+            // console.log('#result.content',content)
             // yield
             yield result
 
@@ -192,7 +198,7 @@ export async function* chatCompletion(apiKey, url,messages,controller){
       }
     }
   } catch (e) {
-    console.error('llama error: ', e)
+    console.error('chat error: ', e)
     throw e
   } finally {
     controller.abort()

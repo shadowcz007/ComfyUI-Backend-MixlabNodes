@@ -40,3 +40,4 @@ comfyui:
   ultralytics: models/ultralytics/
   sams: models/sams/
   t5: models/t5/
+  catvton: models/catvton/

@@ -45,6 +45,7 @@ cpu_state = CPUState.GPU
 total_vram = 0
 
 xpu_available = False
+torch_version = ""
 try:
     torch_version = torch.version.__version__
     xpu_available = (int(torch_version[0]) < 2 or (int(torch_version[0]) == 2 and int(torch_version[2]) <= 4)) and torch.xpu.is_available()
@@ -405,6 +406,8 @@ def unload_model_clones(model, unload_weights_only=True, force_unload=True):
     if not force_unload:
         if unload_weights_only and unload_weight == False:
             return None
+    else:
+        unload_weight = True
 
     for i in to_unload:
         logging.debug("unload clone {} {}".format(i, unload_weight))

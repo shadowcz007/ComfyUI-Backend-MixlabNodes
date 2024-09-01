@@ -7,6 +7,9 @@ import folder_paths
 import time
 from comfy.cli_args import args
 
+from app.logger import setup_logger
+setup_logger(verbose=args.verbose)
+
 
 # 去除
 del folder_paths.folder_names_and_paths["custom_nodes"]
@@ -31,6 +34,8 @@ current_directory = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, current_directory)
 
 folder_paths.folder_names_and_paths["custom_nodes"] = ([os.path.join(current_directory,"custom_nodes")], set())
+
+
 
 
 def execute_prestartup_script():
@@ -73,7 +78,7 @@ def execute_prestartup_script():
             print("{:6.1f} seconds{}:".format(n[0], import_message), n[1])
         print()
 
-# execute_prestartup_script()
+execute_prestartup_script()
 
 
 # Main code
@@ -267,6 +272,7 @@ if __name__ == "__main__":
     folder_paths.add_model_folder_path("checkpoints", os.path.join(folder_paths.get_output_directory(), "checkpoints"))
     folder_paths.add_model_folder_path("clip", os.path.join(folder_paths.get_output_directory(), "clip"))
     folder_paths.add_model_folder_path("vae", os.path.join(folder_paths.get_output_directory(), "vae"))
+    folder_paths.add_model_folder_path("diffusion_models", os.path.join(folder_paths.get_output_directory(), "diffusion_models"))
 
     if args.input_directory:
         input_dir = os.path.abspath(args.input_directory)

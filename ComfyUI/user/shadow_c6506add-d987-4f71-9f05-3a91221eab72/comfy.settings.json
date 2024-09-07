@@ -2,6 +2,6 @@
     "pysssss.ShowImageOnMenu": false,
     "Comfy.ColorPalette": "arc",
     "Comfy.DevMode": true,
-    "Comfy.UseNewMenu": "Top",
+    "Comfy.UseNewMenu": "Disabled",
     "Comfy.DisableSliders": false
 }

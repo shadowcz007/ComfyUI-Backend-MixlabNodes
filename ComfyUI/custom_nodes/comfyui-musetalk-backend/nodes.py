@@ -92,6 +92,8 @@ class MuseModelConfig:
         self.latent_format = comfy.latent_formats.SD15
         self.manual_cast_dtype = None
         self.sampling_settings = {}
+        self.custom_operations = None
+        self.memory_usage_factor = 0.5
 
 class UNETLoader_MuseTalk:
     @classmethod

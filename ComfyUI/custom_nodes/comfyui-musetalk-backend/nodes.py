@@ -229,21 +229,38 @@ class audio_file_to_audio_tensor:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-            "audio_file_path": ("STRING",  {"forceInput": True}),
+            "audio": ("AUDIO",  {"forceInput": True}),
             "target_sample_rate": ("INT", {"default": 16000, "min": 0, "max": 48000}),
             "target_channels": ("INT", {"default": 1, "min": 1, "max": 2}),
              },
     
         }
 
-    RETURN_TYPES = ("VCAUDIOTENSOR", "INT",)
+    RETURN_TYPES = ("AUDIO", "INT",)
     RETURN_NAMES = ("audio_tensor", "audio_dur",)
     FUNCTION = "process"
     CATEGORY = "VoiceCraft"
 
-    def process(self, audio_file_path, target_sample_rate, target_channels):
-        
-        audio_tensor, sample_rate = torchaudio.load(audio_file_path)
+    def process(self, audio, target_sample_rate, target_channels):
+        # 判断是否是 Tensor 类型
+        is_tensor = not isinstance(audio, dict)
+        # print('#判断是否是 Tensor 类型',is_tensor,audio)
+        if not is_tensor and 'waveform' in audio and 'sample_rate' in audio:
+            # {'waveform': tensor([], size=(1, 1, 0)), 'sample_rate': 44100}
+            is_tensor=True
+
+        audio_file_path=None
+        if "audio_path" in audio and is_tensor==False: 
+            audio_file_path=audio["audio_path"]
+
+        if is_tensor==True:
+            audio_tensor=audio['waveform']
+            sample_rate=audio["sample_rate"]
+        elif audio_file_path!=None:
+            audio_tensor, sample_rate = torchaudio.load(audio_file_path)
+
+        # audio_tensor, sample_rate = torchaudio.load(audio["audio_path"])
+
         assert audio_tensor.shape[0] in [1, 2], "Audio must be mono or stereo."
         if target_channels == 1:
             audio_tensor = audio_tensor.mean(0, keepdim=True)
@@ -254,8 +271,11 @@ class audio_file_to_audio_tensor:
             audio_tensor = audio_tensor.expand(target_channels, -1)
         resampled_audio_tensor = torchaudio.functional.resample(audio_tensor, sample_rate, target_sample_rate)
         audio_dur = audio_tensor.shape[1] / target_sample_rate
-        
-        return (resampled_audio_tensor, audio_dur,)
+        print('resampled_audio_tensor',resampled_audio_tensor.shape,resampled_audio_tensor.squeeze(0).shape)
+        return ({
+          "waveform":  resampled_audio_tensor,
+          "sample_rate":target_sample_rate
+        }, audio_dur,)
 
 
 
@@ -264,7 +284,7 @@ class whisper_to_features:
     def INPUT_TYPES(s):
         return {
             "required": { 
-                "audio_tensor" : ("VCAUDIOTENSOR",),
+                "audio" : ("AUDIO",),
                 "fps": ("INT", {"default": 25, "min": 1, "max": 200, "step": 1}),
             }
         }
@@ -274,7 +294,12 @@ class whisper_to_features:
     FUNCTION = "whispertranscribe"
     CATEGORY = "VoiceCraft"
 
-    def whispertranscribe(self, audio_tensor, fps):
+    def whispertranscribe(self, audio, fps):
+
+        audio_tensor=audio['waveform']
+        if len(audio_tensor.shape)==3:
+            audio_tensor=audio_tensor.squeeze(0)
+
         from .musetalk.whisper.model import Whisper, ModelDimensions
         device = mm.get_torch_device()
 

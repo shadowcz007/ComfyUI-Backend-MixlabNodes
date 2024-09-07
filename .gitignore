@@ -7,6 +7,6 @@ python_embeded.zip
 ComfyUI\input\*
 ComfyUI\output\*
 ComfyUI\temp\*
+ComfyUI\user\*
 llama.log
 *.7z
-ComfyUI/user

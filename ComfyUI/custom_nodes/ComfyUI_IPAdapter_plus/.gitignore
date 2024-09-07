@@ -1,4 +1,0 @@
-/__pycache__/
-/models/*.bin
-/models/*.safetensors
-.directory

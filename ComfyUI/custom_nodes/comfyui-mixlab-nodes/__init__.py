@@ -1397,12 +1397,12 @@ try:
 except Exception as e:
     logging.info('MiniCPMNode.available False' )
 
-
+from .nodes.scenedetectNode import ScenedetectNode_,SceneInfoNode
 try:
-    from .nodes.scenedetect import scenedetectNode,SceneInfoNode
+    
     logging.info('Scenedetect.available')
 
-    NODE_CLASS_MAPPINGS['ScenedetectNode_']=scenedetectNode
+    NODE_CLASS_MAPPINGS['ScenedetectNode_']=ScenedetectNode_
     NODE_CLASS_MAPPINGS['SceneInfoNode']=SceneInfoNode
     NODE_DISPLAY_NAME_MAPPINGS["ScenedetectNode_"]= "Video Scene Detect"
     NODE_DISPLAY_NAME_MAPPINGS["SceneInfoNode"]= "Scene Info"

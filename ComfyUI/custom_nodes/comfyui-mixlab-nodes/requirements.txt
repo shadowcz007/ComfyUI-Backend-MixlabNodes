@@ -22,3 +22,5 @@ json-repair
 
 bitsandbytes
 accelerate
+
+scenedetect[opencv-headless]

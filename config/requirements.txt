@@ -81,3 +81,9 @@ flash-attn
 
 tensorrt>=10.0.1
 onnx
+
+json-repair
+
+bitsandbytes
+accelerate
+scenedetect[opencv-headless]

@@ -1397,9 +1397,9 @@ try:
 except Exception as e:
     logging.info('MiniCPMNode.available False' )
 
-from .nodes.scenedetectNode import ScenedetectNode_,SceneInfoNode
+
 try:
-    
+    from .nodes.scenedetectNode import ScenedetectNode_,SceneInfoNode
     logging.info('Scenedetect.available')
 
     NODE_CLASS_MAPPINGS['ScenedetectNode_']=ScenedetectNode_

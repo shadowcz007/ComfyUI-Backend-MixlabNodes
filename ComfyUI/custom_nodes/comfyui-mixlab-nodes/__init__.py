@@ -1401,7 +1401,6 @@ except Exception as e:
 try:
     from .nodes.scenedetectNode import ScenedetectNode_,SceneInfoNode
     logging.info('Scenedetect.available')
-
     NODE_CLASS_MAPPINGS['ScenedetectNode_']=ScenedetectNode_
     NODE_CLASS_MAPPINGS['SceneInfoNode']=SceneInfoNode
     NODE_DISPLAY_NAME_MAPPINGS["ScenedetectNode_"]= "Video Scene Detect"
@@ -1409,6 +1408,23 @@ try:
 
 except Exception as e:
     logging.info('Scenedetect.available False' )
+
+
+try:
+    from .nodes.FishSpeech import LoadVQGAN,AudioToPrompt,Prompt2Semantic,Semantic2Audio
+    logging.info('FishSpeech.available')
+    NODE_CLASS_MAPPINGS['LoadVQGAN']=LoadVQGAN 
+    NODE_CLASS_MAPPINGS['AudioToPrompt']=AudioToPrompt
+    NODE_CLASS_MAPPINGS['Prompt2Semantic']=Prompt2Semantic
+    NODE_CLASS_MAPPINGS['Semantic2Audio']=Semantic2Audio
+    NODE_DISPLAY_NAME_MAPPINGS["LoadVQGAN"]= "Load VQGAN" 
+    NODE_DISPLAY_NAME_MAPPINGS["AudioToPrompt"]= "Audio To Prompt"
+    NODE_DISPLAY_NAME_MAPPINGS["Prompt2Semantic"]= "Prompt To Semantic"
+    NODE_DISPLAY_NAME_MAPPINGS["Semantic2Audio"]= "Semantic To Audio"
+
+except Exception as e:
+    logging.info('FishSpeech.available False' )
+
 
 
 logging.info('\033[93m -------------- \033[0m')

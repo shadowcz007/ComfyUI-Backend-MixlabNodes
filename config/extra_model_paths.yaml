@@ -42,3 +42,4 @@ comfyui:
   t5: models/t5/
   catvton: models/catvton/
   segformer: models/segformer/
+  fish_speech: models/fish_speech/

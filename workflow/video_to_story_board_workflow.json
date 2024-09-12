@@ -1,0 +1,1917 @@
+{
+  "last_node_id": 69,
+  "last_link_id": 126,
+  "nodes": [
+    {
+      "id": 3,
+      "type": "ShowTextForGPT",
+      "pos": [
+        1186,
+        -280
+      ],
+      "size": {
+        "0": 364.06817626953125,
+        "1": 341.9371032714844
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 3,
+          "widget": {
+            "name": "text"
+          }
+        },
+        {
+          "name": "output_dir",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "output_dir"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ShowTextForGPT"
+      },
+      "widgets_values": [
+        "",
+        "",
+        "17"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "TESTNODE_",
+      "pos": [
+        1203,
+        117
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "ANY",
+          "type": "*",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "*",
+          "type": "*",
+          "links": [
+            3
+          ],
+          "shape": 6,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TESTNODE_"
+      }
+    },
+    {
+      "id": 34,
+      "type": "ImageToMask",
+      "pos": [
+        2788,
+        741
+      ],
+      "size": {
+        "0": 210,
+        "1": 58
+      },
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            57
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageToMask"
+      },
+      "widgets_values": [
+        "red"
+      ]
+    },
+    {
+      "id": 35,
+      "type": "InvertMask",
+      "pos": [
+        2782,
+        862
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 57
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            58,
+            67
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "InvertMask"
+      }
+    },
+    {
+      "id": 36,
+      "type": "SwitchByIndex",
+      "pos": [
+        2047,
+        1170
+      ],
+      "size": {
+        "0": 315,
+        "1": 102
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "A",
+          "type": "*",
+          "link": 87
+        },
+        {
+          "name": "B",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "list",
+          "type": "*",
+          "links": [
+            64
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SwitchByIndex"
+      },
+      "widgets_values": [
+        0,
+        "on"
+      ]
+    },
+    {
+      "id": 45,
+      "type": "TESTNODE_",
+      "pos": [
+        2528,
+        1015
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "ANY",
+          "type": "*",
+          "link": 80
+        }
+      ],
+      "outputs": [
+        {
+          "name": "*",
+          "type": "*",
+          "links": [
+            81
+          ],
+          "shape": 6,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TESTNODE_"
+      }
+    },
+    {
+      "id": 38,
+      "type": "MultiplicationNode",
+      "pos": [
+        3090,
+        1025
+      ],
+      "size": {
+        "0": 315,
+        "1": 102
+      },
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "numberA",
+          "type": "*",
+          "link": 71
+        },
+        {
+          "name": "add_by",
+          "type": "FLOAT",
+          "link": 81,
+          "widget": {
+            "name": "add_by"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            72
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MultiplicationNode"
+      },
+      "widgets_values": [
+        1,
+        48
+      ]
+    },
+    {
+      "id": 33,
+      "type": "NoiseImage",
+      "pos": [
+        2521,
+        626
+      ],
+      "size": {
+        "0": 210,
+        "1": 314
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 65,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": 82,
+          "widget": {
+            "name": "height"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            54,
+            55,
+            66
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "NoiseImage"
+      },
+      "widgets_values": [
+        512,
+        48,
+        0,
+        "#000000"
+      ]
+    },
+    {
+      "id": 46,
+      "type": "ResizeImageMixlab",
+      "pos": [
+        1609,
+        1405
+      ],
+      "size": {
+        "0": 315,
+        "1": 214
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 123
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image list",
+          "type": "IMAGE",
+          "links": [
+            86,
+            87
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "average_image",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "average_hex",
+          "type": "STRING",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ResizeImageMixlab"
+      },
+      "widgets_values": [
+        513,
+        512,
+        "width",
+        "off",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "ResizeImageMixlab",
+      "pos": [
+        721,
+        251
+      ],
+      "size": {
+        "0": 315,
+        "1": 214
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 122
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image list",
+          "type": "IMAGE",
+          "links": [
+            23
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "average_image",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "average_hex",
+          "type": "STRING",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ResizeImageMixlab"
+      },
+      "widgets_values": [
+        481,
+        512,
+        "width",
+        "off",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "id": 42,
+      "type": "IntNumber",
+      "pos": [
+        2043,
+        956
+      ],
+      "size": {
+        "0": 315,
+        "1": 130
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            80,
+            82,
+            83,
+            84
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IntNumber"
+      },
+      "widgets_values": [
+        48,
+        0,
+        48,
+        1
+      ]
+    },
+    {
+      "id": 47,
+      "type": "PreviewImage",
+      "pos": [
+        2772,
+        290
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 88
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 37,
+      "type": "NewLayer",
+      "pos": [
+        3302,
+        633
+      ],
+      "size": {
+        "0": 210,
+        "1": 262
+      },
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "*",
+          "link": 66
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 67
+        },
+        {
+          "name": "layers",
+          "type": "LAYER",
+          "link": 69
+        },
+        {
+          "name": "canvas",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "y",
+          "type": "INT",
+          "link": 72,
+          "widget": {
+            "name": "y"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 79,
+          "widget": {
+            "name": "width"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "layers",
+          "type": "LAYER",
+          "links": [
+            70
+          ],
+          "shape": 6,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "NewLayer"
+      },
+      "widgets_values": [
+        0,
+        0,
+        512,
+        512,
+        0,
+        "width",
+        ""
+      ]
+    },
+    {
+      "id": 24,
+      "type": "ImagePadForOutpaint",
+      "pos": [
+        2042,
+        646
+      ],
+      "size": {
+        "0": 315,
+        "1": 174
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 86
+        },
+        {
+          "name": "top",
+          "type": "INT",
+          "link": 83,
+          "widget": {
+            "name": "top"
+          }
+        },
+        {
+          "name": "bottom",
+          "type": "INT",
+          "link": 84,
+          "widget": {
+            "name": "bottom"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            88,
+            94
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImagePadForOutpaint"
+      },
+      "widgets_values": [
+        0,
+        48,
+        0,
+        48,
+        0
+      ]
+    },
+    {
+      "id": 29,
+      "type": "NewLayer",
+      "pos": [
+        3070,
+        633
+      ],
+      "size": {
+        "0": 210,
+        "1": 262
+      },
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "*",
+          "link": 54
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 58
+        },
+        {
+          "name": "layers",
+          "type": "LAYER",
+          "link": null
+        },
+        {
+          "name": "canvas",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 78,
+          "widget": {
+            "name": "width"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "layers",
+          "type": "LAYER",
+          "links": [
+            69
+          ],
+          "shape": 6,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "NewLayer"
+      },
+      "widgets_values": [
+        0,
+        0,
+        512,
+        512,
+        0,
+        "width",
+        ""
+      ]
+    },
+    {
+      "id": 32,
+      "type": "PreviewImage",
+      "pos": [
+        4405,
+        240
+      ],
+      "size": {
+        "0": 624.8650512695312,
+        "1": 379.8341064453125
+      },
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 51
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 41,
+      "type": "SwitchByIndex",
+      "pos": [
+        3999,
+        921
+      ],
+      "size": {
+        "0": 315,
+        "1": 102
+      },
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "A",
+          "type": "*",
+          "link": 76
+        },
+        {
+          "name": "B",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "list",
+          "type": "*",
+          "links": [
+            96
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SwitchByIndex"
+      },
+      "widgets_values": [
+        -1,
+        "on"
+      ]
+    },
+    {
+      "id": 31,
+      "type": "MergeLayers",
+      "pos": [
+        3973,
+        373
+      ],
+      "size": {
+        "0": 315,
+        "1": 78
+      },
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "layers",
+          "type": "LAYER",
+          "link": 70
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 95
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            51,
+            76
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MergeLayers"
+      },
+      "widgets_values": [
+        false
+      ]
+    },
+    {
+      "id": 25,
+      "type": "GetImageSize_",
+      "pos": [
+        2054,
+        1362
+      ],
+      "size": {
+        "0": 315,
+        "1": 118
+      },
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 64
+        }
+      ],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            65,
+            78,
+            79
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            71
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "min_width",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "min_height",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GetImageSize_"
+      },
+      "widgets_values": [
+        512
+      ]
+    },
+    {
+      "id": 53,
+      "type": "SwitchByIndex",
+      "pos": [
+        3074,
+        286
+      ],
+      "size": {
+        "0": 315,
+        "1": 102
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "A",
+          "type": "*",
+          "link": 94
+        },
+        {
+          "name": "B",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "list",
+          "type": "*",
+          "links": [
+            95
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SwitchByIndex"
+      },
+      "widgets_values": [
+        -1,
+        "on"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "KeyInput",
+      "pos": [
+        1604,
+        -138
+      ],
+      "size": {
+        "0": 315,
+        "1": 94
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "key",
+          "type": "STRING",
+          "links": [
+            28
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KeyInput"
+      },
+      "widgets_values": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": 10,
+      "type": "MiniCPM_VQA_Simple",
+      "pos": [
+        1074,
+        248
+      ],
+      "size": {
+        "0": 400,
+        "1": 200
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            24,
+            29
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniCPM_VQA_Simple"
+      },
+      "widgets_values": [
+        "请用一段话描述这个视频片段：【构图】【角度】【动作】【画面内容】。规则参考：\n\n电影的分镜头脚本主要描述了每个镜头的构图、角度、运动、时长以及对话和动作等细节。构图\n全景：展示整个场景，比如一个城市的鸟瞰图。\n中景：显示人物从腰部以上部分，适合对话场景。\n特写：聚焦于人物的脸部表情或物体的细节。\n角度\n俯视角：从高处向下拍摄，常用于表现人物的弱小。\n仰视角：从低处向上拍摄，常用于表现人物的强大。\n平视角：与人物眼睛平行，常用来保持观众的代入感。\n动作\n推镜头：镜头从远处拉近，逐渐聚焦于目标。\n拉镜头：镜头从近处拉远，逐渐展示更多场景。\n摇镜头：镜头左右或上下移动，追随人物或展示环境。\n跟拍：摄像机跟随人物移动，保持人物在画面中心。",
+        377,
+        "fixed",
+        0.7000000000000001,
+        true
+      ]
+    },
+    {
+      "id": 8,
+      "type": "ScenedetectNode_",
+      "pos": [
+        188,
+        -236
+      ],
+      "size": {
+        "0": 385.237060546875,
+        "1": 170
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "scenes_video",
+          "type": "SCENE_VIDEO",
+          "links": [],
+          "shape": 3
+        },
+        {
+          "name": "scenes",
+          "type": "SCENE_",
+          "links": [
+            121
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "scene_len",
+          "type": "INT",
+          "links": [
+            20
+          ],
+          "shape": 3,
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ScenedetectNode_"
+      },
+      "widgets_values": [
+        "玩具总动员.mp4",
+        48,
+        2.5,
+        3
+      ]
+    },
+    {
+      "id": 67,
+      "type": "SceneInfoNode",
+      "pos": [
+        -4,
+        59
+      ],
+      "size": {
+        "0": 315,
+        "1": 138
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "scenes",
+          "type": "SCENE_",
+          "link": 121
+        }
+      ],
+      "outputs": [
+        {
+          "name": "sample_frames",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "middle_frames",
+          "type": "IMAGE",
+          "links": [
+            122,
+            123,
+            124
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "start_frame",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "end_frame",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "scene_video",
+          "type": "SCENE_VIDEO",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SceneInfoNode"
+      },
+      "widgets_values": [
+        -1
+      ]
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        -8,
+        264
+      ],
+      "size": {
+        "0": 677.6260986328125,
+        "1": 508.5539855957031
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 124
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 66,
+      "type": "PreviewImage",
+      "pos": [
+        2508,
+        -136
+      ],
+      "size": {
+        "0": 542.634521484375,
+        "1": 261.7705993652344
+      },
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 120
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 15,
+      "type": "SiliconflowLLM",
+      "pos": [
+        2062,
+        -88
+      ],
+      "size": {
+        "0": 400,
+        "1": 266
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "api_key",
+          "type": "STRING",
+          "link": 28,
+          "widget": {
+            "name": "api_key"
+          },
+          "slot_index": 0
+        },
+        {
+          "name": "custom_model_name",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "custom_model_name"
+          }
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": 29,
+          "widget": {
+            "name": "prompt"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            30
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "messages",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "session_history",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SiliconflowLLM"
+      },
+      "widgets_values": [
+        "",
+        "",
+        "用一句话20-30字总结",
+        "THUDM/glm-4-9b-chat",
+        749241698706078,
+        "fixed",
+        1,
+        ""
+      ]
+    },
+    {
+      "id": 12,
+      "type": "ShowTextForGPT",
+      "pos": [
+        1550.9846744400347,
+        267.2804176155643
+      ],
+      "size": {
+        "0": 400,
+        "1": 1046
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 24,
+          "widget": {
+            "name": "text"
+          }
+        },
+        {
+          "name": "output_dir",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "output_dir"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ShowTextForGPT"
+      },
+      "widgets_values": [
+        "",
+        "",
+        "这个视频片段展示了一个宁静的街景，聚焦于一家自行车店。画面采用全景构图，展示了整个场景，包括建筑物、停放的汽车和周围的绿树。建筑物位于画面中心，有蓝色外墙和粉色遮阳篷，招牌上写着“自行车店”。几辆经典车停在路边，增添了怀旧氛围。前景中没有人物或明显的动作发生；焦点在于环境本身。照明表明是清晨或傍晚，给场景披上柔和的光芒。",
+        "这个视频片段展示了一个男人站在一个房间里，周围挂着自行车。构图是中景，显示了男人的上半身，背景包括多辆自行车和窗户。光线明亮，突出了男人的面部特征和周围的环境。角度是从正面拍摄，男人直视摄像头微笑。动作是静态的，男人没有移动。画面内容包括男人穿着蓝色衬衫，背景中的自行车，以及照亮场景的自然光。",
+        "这个视频片段展示了一个年轻男孩坐在桌子旁，手持一个黄色的玩具长颈鹿。他穿着红白相间的格子衬衫和蓝色工装裤。背景中可以看到另一个穿着白色上衣和深色裤子的人正在走动。场景似乎是一个车间或车库，因为背景中有自行车和其他机械零件。\n构图是中景镜头，显示了男孩从腰部以上部分。角度是平视角，与男孩的眼睛平行，保持观众的代入感。动作包括男孩握着玩具长颈鹿的手微微移动，并且背景中的另一个人在行走。没有明显的运动或推拉镜头；画面静止，聚焦于男孩和他的玩具。",
+        "这个视频片段展示了一个商店橱窗，里面陈列着各种自行车。窗户上有一个粉色的标签写着“镇上最佳”，暗示这家店提供高质量的自行车。自行车被整齐地排列在窗户内，从远处可以看到反射出的树木和天空。构图采用全景视角，展示了整个场景，重点放在自行车和商店的广告上。没有明显的运动或动作发生；焦点在于展示自行车和广告信息。画面内容简单，传达了店铺的专业性和对自行车的关注。",
+        "这个视频片段的构图是一个特写镜头，聚焦在木桌上摆放着的小玩具长颈鹿上。背景稍微模糊，可以看到一个孩子的头部，暗示着孩子可能正在睡觉或休息。孩子穿着格子衬衫和红色裤子，与木桌的自然色调形成对比。背景中的自行车增添了场景的乡村感。角度是平视的，捕捉到长颈鹿玩具和孩子的脸部表情的细节。动作包括孩子头部的轻微移动，表明他们可能在打哈欠或者刚刚醒来。整体氛围平静而宁静，玩具长颈鹿成为焦点。",
+        "这个视频片段展示了一个孩子俯身在桌子上，背景是蓝色的星空。孩子的表情充满了惊讶或兴奋，嘴巴张开，眼睛睁大。构图是中景，显示了孩子从腰部以上部分。角度是从平视角，与孩子的眼睛平行，营造出一种亲近感和代入感。画面内容侧重于孩子的面部表情，传达了一种情感反应。",
+        "这个视频片段的构图展示了一个从高处俯视的场景，主要聚焦于一只穿着棕色鞋子的脚。背景中有一个奇幻的玩具城，包括各种色彩鲜艳、形状各异的玩具房屋和车辆，如一个带有烟囱的红色房子和一辆黄色的小车。整个场景被一种神秘的光芒所笼罩，仿佛是在夜晚或黄昏时分，营造出一种魔法或幻想的感觉。\n角度是平视角，与人物的眼睛平行，让观众感觉像是在跟随那只脚的脚步。动作包括推镜头，因为这只脚似乎正在向观众走来，逐渐占据了画面的中心位置。画面内容暗示着一种冒险或探索的主题，可能是一个故事或动画中的开场镜头。",
+        "这个视频片段的构图是一个全景镜头，展示了一个人物从背后看向前方的场景。在这个人物面前，有一个奇幻、多彩的玩具世界，玩具们在空中漂浮并闪烁着星星。这个场景的背景是黑暗的夜空，突出了玩具们的明亮颜色和发光效果。\n画面中没有明显的运动，因为这个片段似乎是一张静止的图片，而不是一个移动的画面。画面内容包括各种各样的玩具，如汽车、飞机、火车和其他形状和颜色各异的物品。这些玩具被描绘成具有生命般地漂浮和发光，营造出一种神奇和幻想的感觉。\n这种构图和角度的选择创造了一个沉浸式和令人惊叹的视觉体验，将观众带入一个充满想象力的世界。",
+        "这个视频片段的构图是全景，展示了整个场景。它展示了一个夜晚的生动、奇幻的玩具店入口，色彩鲜艳，灯光闪烁。在前景中，有一个巨大的、发光的标志写着“玩具反斗城”，用大而多彩的字母展示出来。\n在动作方面，这个视频片段捕捉到了玩具和人物的动态运动。各种玩具角色，如泰迪熊、机器人和其他幻想生物，在空中跳跃和旋转，营造出一种节日气氛和活力。此外，还有动画人物参与其中，仿佛与玩具互动或引导观众进入场景。\n画面内容包括一个充满活力的环境，玩具角色似乎被赋予了生命，围绕着“玩具反斗城”的标志展开。背景中的灯光和烟雾增加了场景的神秘感，增强了玩具店入口的魔幻氛围。整体印象是一个充满乐趣和惊喜的地方，旨在吸引顾客并激发他们对玩具的兴趣。",
+        "这个视频片段展示了一个孩子站在一个玩具店里，抬头看着天花板上悬挂着各种玩具的场景。孩子的视角被用来捕捉他周围丰富多彩和充满活力的环境。构图是全景镜头，展示了整个场景，突出了玩具店的广阔性和孩子们的惊奇感。\n\n角度似乎是中景，显示了孩子的腰部以上部分，但不是特写，这表明意图是捕捉整体环境而不是特定表情或细节。动作包括孩子向上看的动作，以及玩具在天花板上的运动，营造出一种动感和活动的感觉。\n\n画面内容包括玩具店的各种玩具，如汽车、动物和儿童家具等，这些玩具都被布置得像是漂浮在天空中一样。颜色鲜艳，主要是蓝色、红色和黄色，增强了场景的愉快和吸引人的氛围。",
+        "这个视频片段展示了一个充满活力和多彩的场景，看起来是一个玩具店或收藏展示。构图是全景镜头，捕捉到多个架子上摆放着各种玩具和装饰品。这些物品从毛绒玩具、机器人模型到球形物体等都有，颜色鲜艳，设计各异。灯光明亮，白色的小灯串营造出节日气氛。没有明显的运动或动作发生；焦点在于展示的物品本身。整体氛围生动有趣，可能吸引儿童或收藏家的兴趣。",
+        "这个视频片段的构图是一个全景镜头，捕捉到了一个繁忙、多彩的室内场景。它似乎是一个玩具店或游乐场，头顶上悬挂着各种玩具和装饰品。天花板上布满了星星般的灯光，营造出一种梦幻般的效果。\n\n在这个场景中，一个人物背对着摄像机，站在那里仰望头顶的景象。这个人穿着一件格子衬衫和吊带裤，看起来像一个孩子或年轻的角色。在前景中，有一个卡通风格的长颈鹿形象，增添了这个场景的奇幻氛围。\n\n从这个角度无法确定人物的具体动作，但可以推测他们可能在观察或欣赏头顶上的景象。没有对话或显著的动作，焦点主要放在环境和氛围上。",
+        "这个视频片段的构图是一个特写镜头，聚焦在一个人物的脸部表情上。人物似乎正在开心地微笑，眼睛微微眯着，显示出一种快乐或兴奋的感觉。焦点在人物的脸上，背景模糊不清，表明这是为了突出人物的表情而有意为之。\n\n拍摄角度是平视角，与人物的眼睛平行，保持观众的代入感。这种角度让观众感觉就像站在那个人物身边一样，可以更深入地感受到他们的情感。\n\n画面内容显示了人物握着一个小物体，看起来像是一个红色玩具车。这个物体很小，但被放大以突出其重要性，可能是与人物的快乐或兴奋相关的道具。这个场景可能描绘了一个有趣或愉快的时刻，也许是在玩耍、庆祝某个事件或接收一份礼物时。",
+        "这个视频片段展示了一个特写镜头，聚焦在一个人和一个穿着拟人化动物服装的角色的脸上。该角色戴着一顶红色帽子，有一个大鼻子和宽阔的笑容。这个人似乎在微笑着与动物角色互动，表明这是一个友好而快乐的时刻。背景是纯色的，没有提供额外的背景信息。构图将焦点放在两个主体上，他们的脸占据了画面的大部分空间。没有明显的运动或动作，整体氛围轻松愉快。",
+        "这个视频片段展示了一个动画标志，上面写着“玩具反斗城”。背景是黑色的，文字颜色鲜艳多彩。标志设计有趣，字母有不同形状和颜色，比如蓝色、绿色、粉色和黄色，并且有一个带有星星的红色轮廓。标志在屏幕上缓慢淡入并淡出，暗示着一种介绍或过渡的感觉。没有人物动作或特定的角度变化；焦点完全放在标志本身上。",
+        "这个视频片段展示了一个大型充气长颈鹿玩偶，位于城市街道上。它似乎是为游行或公共活动而设置的，因为背景中有一辆装饰有彩灯的汽车和人群。场景的构图包括中景镜头，聚焦在长颈鹿玩偶上，背景是高楼大厦和商店标志。长颈鹿玩偶的动作是举起双手，可能作为庆祝或欢迎的手势。角度是平视的，与玩偶的眼睛水平，给人一种观众置身其中的感觉。没有明显的运动，因为画面静止不动，暗示这是一个瞬间的快照而不是动态序列。",
+        "这个视频片段的构图是全黑背景，中间有彩色文字显示“玩具反斗城 @ 梅西百货”，字体设计活泼多彩。画面中没有人物或物体的动作。时长很短，可能是几秒钟的广告或宣传片片段。在角度上，镜头保持静止不动，直接展示文本内容，没有使用任何特殊视角。由于缺乏动作和对话，这个片段似乎专注于品牌推广而不是故事情节。"
+      ]
+    },
+    {
+      "id": 68,
+      "type": "PreviewImage",
+      "pos": [
+        4401,
+        924
+      ],
+      "size": [
+        574.0177017408141,
+        374.0800537115256
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 125
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 13,
+      "type": "TextImage",
+      "pos": [
+        2059,
+        245
+      ],
+      "size": {
+        "0": 408.01312255859375,
+        "1": 294
+      },
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 30,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            40,
+            120
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            42
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TextImage"
+      },
+      "widgets_values": [
+        "龍馬精神迎新歲",
+        "有爱黑体ARHei.ttf",
+        140,
+        12,
+        12,
+        8,
+        "#FFFFFF",
+        false,
+        true,
+        36,
+        512
+      ]
+    },
+    {
+      "id": 26,
+      "type": "CompositeImages_",
+      "pos": [
+        4001,
+        1084
+      ],
+      "size": {
+        "0": 315,
+        "1": 146
+      },
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "foreground",
+          "type": "*",
+          "link": 40
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 42
+        },
+        {
+          "name": "background",
+          "type": "IMAGE",
+          "link": 96
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            125,
+            126
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CompositeImages_"
+      },
+      "widgets_values": [
+        true,
+        "center_bottom",
+        0.9
+      ]
+    },
+    {
+      "id": 69,
+      "type": "SaveImage",
+      "pos": [
+        4394,
+        1366
+      ],
+      "size": [
+        315,
+        269.9999523162842
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 126
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    }
+  ],
+  "links": [
+    [
+      3,
+      4,
+      0,
+      3,
+      0,
+      "STRING"
+    ],
+    [
+      20,
+      8,
+      2,
+      4,
+      0,
+      "*"
+    ],
+    [
+      23,
+      11,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      24,
+      10,
+      0,
+      12,
+      0,
+      "STRING"
+    ],
+    [
+      28,
+      18,
+      0,
+      15,
+      0,
+      "STRING"
+    ],
+    [
+      29,
+      10,
+      0,
+      15,
+      2,
+      "STRING"
+    ],
+    [
+      30,
+      15,
+      0,
+      13,
+      0,
+      "STRING"
+    ],
+    [
+      40,
+      13,
+      0,
+      26,
+      0,
+      "*"
+    ],
+    [
+      42,
+      13,
+      1,
+      26,
+      1,
+      "MASK"
+    ],
+    [
+      51,
+      31,
+      0,
+      32,
+      0,
+      "IMAGE"
+    ],
+    [
+      54,
+      33,
+      0,
+      29,
+      0,
+      "*"
+    ],
+    [
+      55,
+      33,
+      0,
+      34,
+      0,
+      "IMAGE"
+    ],
+    [
+      57,
+      34,
+      0,
+      35,
+      0,
+      "MASK"
+    ],
+    [
+      58,
+      35,
+      0,
+      29,
+      1,
+      "MASK"
+    ],
+    [
+      64,
+      36,
+      0,
+      25,
+      0,
+      "IMAGE"
+    ],
+    [
+      65,
+      25,
+      0,
+      33,
+      0,
+      "INT"
+    ],
+    [
+      66,
+      33,
+      0,
+      37,
+      0,
+      "*"
+    ],
+    [
+      67,
+      35,
+      0,
+      37,
+      1,
+      "MASK"
+    ],
+    [
+      69,
+      29,
+      0,
+      37,
+      2,
+      "LAYER"
+    ],
+    [
+      70,
+      37,
+      0,
+      31,
+      0,
+      "LAYER"
+    ],
+    [
+      71,
+      25,
+      1,
+      38,
+      0,
+      "*"
+    ],
+    [
+      72,
+      38,
+      1,
+      37,
+      4,
+      "INT"
+    ],
+    [
+      76,
+      31,
+      0,
+      41,
+      0,
+      "*"
+    ],
+    [
+      78,
+      25,
+      0,
+      29,
+      4,
+      "INT"
+    ],
+    [
+      79,
+      25,
+      0,
+      37,
+      5,
+      "INT"
+    ],
+    [
+      80,
+      42,
+      0,
+      45,
+      0,
+      "*"
+    ],
+    [
+      81,
+      45,
+      0,
+      38,
+      1,
+      "FLOAT"
+    ],
+    [
+      82,
+      42,
+      0,
+      33,
+      1,
+      "INT"
+    ],
+    [
+      83,
+      42,
+      0,
+      24,
+      1,
+      "INT"
+    ],
+    [
+      84,
+      42,
+      0,
+      24,
+      2,
+      "INT"
+    ],
+    [
+      86,
+      46,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      87,
+      46,
+      0,
+      36,
+      0,
+      "*"
+    ],
+    [
+      88,
+      24,
+      0,
+      47,
+      0,
+      "IMAGE"
+    ],
+    [
+      94,
+      24,
+      0,
+      53,
+      0,
+      "*"
+    ],
+    [
+      95,
+      53,
+      0,
+      31,
+      1,
+      "IMAGE"
+    ],
+    [
+      96,
+      41,
+      0,
+      26,
+      2,
+      "IMAGE"
+    ],
+    [
+      120,
+      13,
+      0,
+      66,
+      0,
+      "IMAGE"
+    ],
+    [
+      121,
+      8,
+      1,
+      67,
+      0,
+      "SCENE_"
+    ],
+    [
+      122,
+      67,
+      1,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      123,
+      67,
+      1,
+      46,
+      0,
+      "IMAGE"
+    ],
+    [
+      124,
+      67,
+      1,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      125,
+      26,
+      0,
+      68,
+      0,
+      "IMAGE"
+    ],
+    [
+      126,
+      26,
+      0,
+      69,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.061076460950014,
+      "offset": [
+        -3748.881520867848,
+        -1007.0664355540187
+      ]
+    }
+  },
+  "version": 0.4
+}

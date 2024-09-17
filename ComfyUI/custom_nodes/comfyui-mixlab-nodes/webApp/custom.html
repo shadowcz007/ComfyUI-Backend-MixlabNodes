@@ -2028,6 +2028,9 @@
             iframe.setAttribute('frameborder', '0')
             iframe.setAttribute('width', '500')
             iframe.setAttribute('height', '700')
+            iframe.setAttribute('allow',"clipboard-read; clipboard-write")
+           
+
             iframe.id = "result"
 
             output_card.appendChild(iframe);
@@ -3646,12 +3649,9 @@
                     window._layoutImgs = imgs;
                     window._layoutIndex = 0;
 
-
                     window._createLayouts()
 
                 }
-
-
 
 
             } else if (meshes) {
@@ -3712,7 +3712,7 @@
             if (!ui) return;
 
 
-            window._createLayouts = () => {
+            window._createLayouts = async () => {
 
                 const findAndReplaceObjectById = (data, targetId, newObject) => {
                     const traverseAndReplace = (objects, targetId, newObject) => {
@@ -3768,14 +3768,36 @@
                     }
                 }
 
+                async function convertImageToBase64(imageUrl) {
+                    try {
+                        // 使用 fetch 方法获取图片
+                        const response = await fetch(imageUrl);
+                        const blob = await response.blob(); // 将响应转换为 Blob 对象
 
-                let base64String = window._layoutImgs[window._layoutIndex];
+                        // 使用 FileReader 将 Blob 转换为 Base64
+                        const reader = new FileReader();
+                        return new Promise((resolve, reject) => {
+                            reader.onloadend = () => {
+                                const base64String = reader.result; // 获取 Base64 编码字符串
+                                resolve(base64String);
+                            };
+                            reader.onerror = reject; // 处理读取错误
+                            reader.readAsDataURL(blob); // 读取 Blob 数据并触发 onloadend 事件
+                        });
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
+
+                let base64String = await convertImageToBase64(window._layoutImgs[window._layoutIndex]);
 
                 var iframe = document.getElementById('result')
                 let texts = {
                     ...window._outputJSON,
                     "card_name_bottom": window._outputJSON['card_name']
                 }
+
+                texts.type = texts.type.slice(0, 1);
 
                 let json = { ..._cardJSON };
 
@@ -3795,6 +3817,8 @@
                     }
                     if (_json.objects) json = _json
                 }
+
+                delete texts.ability
 
                 iframe.contentWindow.postMessage(
                     {

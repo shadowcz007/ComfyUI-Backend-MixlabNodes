@@ -1,0 +1,668 @@
+{
+  "last_node_id": 23,
+  "last_link_id": 33,
+  "nodes": [
+    {
+      "id": 14,
+      "type": "LoadImage",
+      "pos": [
+        -213.52562841796853,
+        529.5285517089847
+      ],
+      "size": [
+        283.09947137490474,
+        409.8563969947413
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            15
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "pasted/image (3).png",
+        "image"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "ResizeImageMixlab",
+      "pos": [
+        112.4743715820313,
+        530.5285517089847
+      ],
+      "size": {
+        "0": 315,
+        "1": 214
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 15
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image list",
+          "type": "IMAGE",
+          "links": [
+            16,
+            31
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "average_image",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "average_hex",
+          "type": "STRING",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ResizeImageMixlab"
+      },
+      "widgets_values": [
+        769,
+        1025,
+        "center",
+        "off",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "FashionClothMask2",
+      "pos": [
+        470.4743715820311,
+        525.5285517089847
+      ],
+      "size": {
+        "0": 315,
+        "1": 346
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 16,
+          "slot_index": 0
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            17,
+            30
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "FashionClothMask2"
+      },
+      "widgets_values": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": 16,
+      "type": "PreviewMask_",
+      "pos": [
+        831.4743715820306,
+        530.5285517089847
+      ],
+      "size": [
+        210,
+        246
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 17
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewMask_"
+      }
+    },
+    {
+      "id": 12,
+      "type": "SiliconflowLLM",
+      "pos": [
+        -212.80828376953139,
+        122.84059653320317
+      ],
+      "size": [
+        309.4129664090632,
+        297.2018279188609
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "api_key",
+          "type": "STRING",
+          "link": 12,
+          "widget": {
+            "name": "api_key"
+          }
+        },
+        {
+          "name": "custom_model_name",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "custom_model_name"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            13
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "messages",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "session_history",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SiliconflowLLM"
+      },
+      "widgets_values": [
+        "",
+        "一张完整的衣服的产品图，主体是黄色的T恤，短袖，领子是黑色的条纹，背景是纯白色的",
+        "翻译成英文",
+        "Qwen/Qwen2-7B-Instruct",
+        10518817594248,
+        "fixed",
+        1,
+        512,
+        ""
+      ]
+    },
+    {
+      "id": 10,
+      "type": "SiliconflowTextToImageNode",
+      "pos": [
+        -200.80828376953139,
+        -145.1594034667967
+      ],
+      "size": [
+        295.3078664090632,
+        199.51095791886092
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "api_key",
+          "type": "STRING",
+          "link": 10,
+          "widget": {
+            "name": "api_key"
+          }
+        },
+        {
+          "name": "custom_model_name",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "custom_model_name"
+          }
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": 13,
+          "widget": {
+            "name": "prompt"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            33
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SiliconflowTextToImageNode"
+      },
+      "widgets_values": [
+        "",
+        "",
+        768,
+        1024,
+        "black-forest-labs/FLUX.1-schnell",
+        528163452856448,
+        "randomize",
+        ""
+      ]
+    },
+    {
+      "id": 1,
+      "type": "CatVTONNode",
+      "pos": [
+        127,
+        143
+      ],
+      "size": [
+        333.5041464090631,
+        273.687147918861
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 31
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 30,
+          "slot_index": 1
+        },
+        {
+          "name": "refer_image",
+          "type": "IMAGE",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            21
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CatVTONNode"
+      },
+      "widgets_values": [
+        25,
+        "bf16",
+        330745568256198,
+        "fixed",
+        17,
+        3.3000000000000003,
+        "mix",
+        "auto"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "ResizeImageMixlab",
+      "pos": [
+        132,
+        -350
+      ],
+      "size": [
+        290.96782640906315,
+        214
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 33
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image list",
+          "type": "IMAGE",
+          "links": [
+            29,
+            32
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "average_image",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "average_hex",
+          "type": "STRING",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ResizeImageMixlab"
+      },
+      "widgets_values": [
+        769,
+        1025,
+        "center",
+        "off",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "id": 23,
+      "type": "PreviewImage",
+      "pos": [
+        151,
+        -87
+      ],
+      "size": [
+        170.50569640906303,
+        172.07818791886098
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 29
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 9,
+      "type": "KeyInput",
+      "pos": [
+        -198,
+        -298
+      ],
+      "size": [
+        285.88591640906327,
+        94
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "key",
+          "type": "STRING",
+          "links": [
+            10,
+            12
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KeyInput"
+      },
+      "widgets_values": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": 17,
+      "type": "PreviewImage",
+      "pos": [
+        507,
+        -342
+      ],
+      "size": [
+        527.9616264090632,
+        774.948347918861
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 21
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    }
+  ],
+  "links": [
+    [
+      10,
+      9,
+      0,
+      10,
+      0,
+      "STRING"
+    ],
+    [
+      12,
+      9,
+      0,
+      12,
+      0,
+      "STRING"
+    ],
+    [
+      13,
+      12,
+      0,
+      10,
+      2,
+      "STRING"
+    ],
+    [
+      15,
+      14,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      15,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      13,
+      0,
+      16,
+      0,
+      "MASK"
+    ],
+    [
+      21,
+      1,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      29,
+      22,
+      0,
+      23,
+      0,
+      "IMAGE"
+    ],
+    [
+      30,
+      13,
+      0,
+      1,
+      1,
+      "MASK"
+    ],
+    [
+      31,
+      15,
+      0,
+      1,
+      0,
+      "IMAGE"
+    ],
+    [
+      32,
+      22,
+      0,
+      1,
+      2,
+      "IMAGE"
+    ],
+    [
+      33,
+      10,
+      0,
+      22,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "title": "Group",
+      "bounding": [
+        -223,
+        451,
+        1275,
+        498
+      ],
+      "color": "#A88",
+      "font_size": 24
+    },
+    {
+      "title": "Group",
+      "bounding": [
+        -223,
+        -372,
+        329,
+        802
+      ],
+      "color": "#8A8",
+      "font_size": 24
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6209213230591553,
+      "offset": [
+        681.680982590937,
+        469.90355808113895
+      ]
+    }
+  },
+  "version": 0.4
+}

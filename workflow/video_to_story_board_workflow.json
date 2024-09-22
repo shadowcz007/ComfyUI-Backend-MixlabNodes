@@ -1,6 +1,6 @@
 {
-  "last_node_id": 69,
-  "last_link_id": 126,
+  "last_node_id": 74,
+  "last_link_id": 135,
   "nodes": [
     {
       "id": 3,
@@ -741,133 +741,6 @@
       ]
     },
     {
-      "id": 32,
-      "type": "PreviewImage",
-      "pos": [
-        4405,
-        240
-      ],
-      "size": {
-        "0": 624.8650512695312,
-        "1": 379.8341064453125
-      },
-      "flags": {},
-      "order": 27,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 51
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
-      "id": 41,
-      "type": "SwitchByIndex",
-      "pos": [
-        3999,
-        921
-      ],
-      "size": {
-        "0": 315,
-        "1": 102
-      },
-      "flags": {},
-      "order": 28,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "A",
-          "type": "*",
-          "link": 76
-        },
-        {
-          "name": "B",
-          "type": "*",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "list",
-          "type": "*",
-          "links": [
-            96
-          ],
-          "shape": 6,
-          "slot_index": 0
-        },
-        {
-          "name": "count",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SwitchByIndex"
-      },
-      "widgets_values": [
-        -1,
-        "on"
-      ]
-    },
-    {
-      "id": 31,
-      "type": "MergeLayers",
-      "pos": [
-        3973,
-        373
-      ],
-      "size": {
-        "0": 315,
-        "1": 78
-      },
-      "flags": {},
-      "order": 26,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "layers",
-          "type": "LAYER",
-          "link": 70
-        },
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 95
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            51,
-            76
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "MergeLayers"
-      },
-      "widgets_values": [
-        false
-      ]
-    },
-    {
       "id": 25,
       "type": "GetImageSize_",
       "pos": [
@@ -927,57 +800,6 @@
       },
       "widgets_values": [
         512
-      ]
-    },
-    {
-      "id": 53,
-      "type": "SwitchByIndex",
-      "pos": [
-        3074,
-        286
-      ],
-      "size": {
-        "0": 315,
-        "1": 102
-      },
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "A",
-          "type": "*",
-          "link": 94
-        },
-        {
-          "name": "B",
-          "type": "*",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "list",
-          "type": "*",
-          "links": [
-            95
-          ],
-          "shape": 6,
-          "slot_index": 0
-        },
-        {
-          "name": "count",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SwitchByIndex"
-      },
-      "widgets_values": [
-        -1,
-        "on"
       ]
     },
     {
@@ -1258,7 +1080,6 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            40,
             120
           ],
           "shape": 3,
@@ -1267,9 +1088,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "links": [
-            42
-          ],
+          "links": [],
           "shape": 3,
           "slot_index": 1
         }
@@ -1289,84 +1108,6 @@
         true,
         36,
         512
-      ]
-    },
-    {
-      "id": 26,
-      "type": "CompositeImages_",
-      "pos": [
-        4001,
-        1084
-      ],
-      "size": {
-        "0": 315,
-        "1": 146
-      },
-      "flags": {},
-      "order": 29,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "foreground",
-          "type": "*",
-          "link": 40
-        },
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 42
-        },
-        {
-          "name": "background",
-          "type": "IMAGE",
-          "link": 96
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            125,
-            126
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CompositeImages_"
-      },
-      "widgets_values": [
-        true,
-        "center_bottom",
-        0.9
-      ]
-    },
-    {
-      "id": 69,
-      "type": "SaveImage",
-      "pos": [
-        4394,
-        1366
-      ],
-      "size": [
-        315,
-        270
-      ],
-      "flags": {},
-      "order": 31,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 126
-        }
-      ],
-      "properties": {},
-      "widgets_values": [
-        "ComfyUI"
       ]
     },
     {
@@ -1470,6 +1211,82 @@
       }
     },
     {
+      "id": 32,
+      "type": "PreviewImage",
+      "pos": [
+        4387,
+        152
+      ],
+      "size": {
+        "0": 624.8650512695312,
+        "1": 379.8341064453125
+      },
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 51
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 53,
+      "type": "SwitchByIndex",
+      "pos": [
+        3074,
+        286
+      ],
+      "size": {
+        "0": 315,
+        "1": 102
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "A",
+          "type": "*",
+          "link": 94
+        },
+        {
+          "name": "B",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "list",
+          "type": "*",
+          "links": [
+            95
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SwitchByIndex"
+      },
+      "widgets_values": [
+        -1,
+        "on"
+      ]
+    },
+    {
       "id": 15,
       "type": "SiliconflowLLM",
       "pos": [
@@ -1515,7 +1332,8 @@
           "name": "text",
           "type": "STRING",
           "links": [
-            30
+            30,
+            133
           ],
           "shape": 3,
           "slot_index": 0
@@ -1549,29 +1367,406 @@
       ]
     },
     {
-      "id": 68,
-      "type": "PreviewImage",
+      "id": 31,
+      "type": "MergeLayers",
       "pos": [
-        4401,
-        924
+        3932,
+        244
       ],
       "size": {
-        "0": 574.0177001953125,
-        "1": 374.0800476074219
+        "0": 315,
+        "1": 78
       },
       "flags": {},
-      "order": 30,
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "layers",
+          "type": "LAYER",
+          "link": 70
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 95
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            51,
+            134
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MergeLayers"
+      },
+      "widgets_values": [
+        false
+      ]
+    },
+    {
+      "id": 73,
+      "type": "ImageBatchToList_",
+      "pos": [
+        3940,
+        408
+      ],
+      "size": {
+        "0": 279.5999755859375,
+        "1": 26
+      },
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_batch",
+          "type": "IMAGE",
+          "link": 134
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image_list",
+          "type": "IMAGE",
+          "links": [
+            135
+          ],
+          "shape": 6,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageBatchToList_"
+      }
+    },
+    {
+      "id": 71,
+      "type": "PromptImage",
+      "pos": [
+        3941,
+        598
+      ],
+      "size": [
+        400,
+        2485.6731517509725
+      ],
+      "flags": {},
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 125
+          "link": 135
+        },
+        {
+          "name": "prompts",
+          "type": "STRING",
+          "link": 133,
+          "widget": {
+            "name": "prompts"
+          }
         }
       ],
       "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
+        "Node name for S&R": "PromptImage"
+      },
+      "widgets_values": [
+        "",
+        "enable",
+        {
+          "_images": [
+            [
+              {
+                "filename": "mixlab_PromptImage_0_00001_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_1_00002_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_2_00003_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_3_00004_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_4_00005_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_5_00006_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_6_00007_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_7_00008_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_8_00009_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_9_00010_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_10_00011_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_11_00012_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_12_00013_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_13_00014_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_14_00015_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_15_00016_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_16_00017_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_17_00018_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_18_00019_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_19_00020_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_20_00021_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_21_00022_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_22_00023_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_23_00024_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_24_00025_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_25_00026_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_26_00027_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_27_00028_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_28_00029_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_29_00030_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_30_00031_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_31_00032_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_32_00033_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ],
+            [
+              {
+                "filename": "mixlab_PromptImage_33_00034_.png",
+                "subfolder": "",
+                "type": "output"
+              }
+            ]
+          ],
+          "prompts": [
+            "\n\n视频捕捉了一家昏暗杂货店内可口可乐标志下的日常场景，顾客与员工在复古氛围中活动。",
+            "\n视频捕捉了昏暗漫画店内，穿着个性T恤的店主专注处理漫画书，背景货架满载漫画封面，氛围亲密，视角共情。",
+            "\n特写镜头捕捉人物闭眼沉思，柔和灯光背景模糊，平视视角展现个性表情，传达情感深度。",
+            "\n\n该视频片段通过俯视视角展现肌肉男冲向扭曲城市，传递力量与动态，强化角色威慑与场景紧张氛围。",
+            "\n视频展示巨大红色生物平视穿行城市，体型与环境对比，动态行走中显威严。",
+            "\n动画中超级英雄般的角色在城市街道上动态侧拍推镜头，展现力量与速度。",
+            "\n动画电影片段中，肌肉男英雄静立繁华城景前，红色战袍彰显力量，静态姿势蓄势待发。",
+            "\n视频展现宁静书店全景，自然光照，书籍环绕，一人静读，温馨静谧。",
+            "\n俯视视角下的《DAREDEVIL》漫画书静置，色彩鲜明，光影交错，营造静谧的阅读空间。",
+            "\n视频捕捉红衣人物侧面奔跑瞬间，雨中模糊背景，聚焦主体动作与服装细节，营造紧迫行动氛围。",
+            "\n紫色霓虹映照下，侧拍人物轮廓，光影摇曳，模糊背景营造神秘活力的画面氛围。",
+            "\n中景推镜头聚焦城市街头跌倒人物，光影戏剧化，凸显荒废地段的氛围。",
+            "\n视频以俯视角度捕捉图书馆或书店，聚焦在天花板荧光灯管上，创造明暗对比，营造宁静学术氛围。",
+            "\n特写红色小物，空中悬浮移动，模糊室内背景，中景构图展现细节色彩。",
+            "\n中景室内镜头，模糊人物手势对话，背景昏暗光影，营造对话情感氛围。",
+            "\n俯视视角聚焦冰箱，人物红衣选饮可口可乐，强调品牌，营造凉爽诱人氛围。",
+            "\n视频特写静态展示冰箱内多个饮料瓶，平视角聚焦品牌标签，光线凸显细节，营造静谧的品牌展示氛围。",
+            "\n特写科幻/奇幻盔甲雕像，静显细节，背景模糊，展现店内展示静美氛围。",
+            "\n视频特写可口可乐瓶静置冰箱中，色彩鲜艳，标签清晰，品牌辨识度强。",
+            "\n视频展示静止冰箱中排列整齐的瓶装汽水和果汁，通过静态特写镜头细致呈现标签和色彩，无人物动作，强调饮料细节和选择。",
+            "\n这段视频捕捉了两位超级英雄般人物在昏暗光线中的激烈战斗，通过动态姿势和表情传达紧张对抗氛围。",
+            "\n这个动画片段以平视角展现了一位红银盔甲角色小心翼翼地从高处下来，动作和表情细节突显谨慎与犹豫。",
+            "\n\n这个视频片段展现了一个现代商业空间，通过俯视视角和明亮的荧光灯光，静态捕捉了展示区中漫画角色广告牌和周边商品的静态画面。",
+            "\n视频特写展示红黑海报，中心是跳跃的黑寡妇形象，背景有漫威字样，静态捕捉室内货架，海报占据中心，平视角度增强代入感。",
+            "\n视频捕捉黑发英雄在昏暗室内跳跃，背景海报暗示超级英雄故事，气氛神秘紧张。",
+            "\n室内俯视工业仓库，昏暗灯光下吊扇旋转，背景红光映衬神秘氛围。",
+            "\n视频展现一位戴着角饰面具的英雄/反英雄，手握爆米花，于屋顶平视城市，闲适中透露神秘存在感。",
+            "\n特写镜头静止捕捉人物专注工作，白色衬衫男子桌前俯瞰个人空间，物品散落间透出静谧与神秘。",
+            "\n特写镜头平视聚焦人物专注脸庞，手持可乐瓶，背景模糊，推镜头强调情绪，画面静谧亲密。",
+            "\n大型蜘蛛侠动画角色在城市天际线背景下动态俯视，色彩鲜明，展现力量与运动，营造戏剧动感氛围。",
+            "\n特写推镜头捕捉人物平视喝可口可乐，柔和光线温暖色调展现亲密感，聚焦表情与衣着细节。",
+            "\n城市街道全景中，自信的超级英雄与旁观者互动，背景人物穿梭，展现都市活力和平视视角。",
+            "\n视频以平视角中景捕捉咖啡馆内两人互动，通过推镜头强调对话，营造温馨舒适的室内氛围。",
+            "\n这段视频描绘了三位角色在工业背景下的科幻对决，红发女战士、红披风英雄和机械义肢战士形成紧张三角对立。"
+          ]
+        }
+      ]
     }
   ],
   "links": [
@@ -1630,22 +1825,6 @@
       13,
       0,
       "STRING"
-    ],
-    [
-      40,
-      13,
-      0,
-      26,
-      0,
-      "*"
-    ],
-    [
-      42,
-      13,
-      1,
-      26,
-      1,
-      "MASK"
     ],
     [
       51,
@@ -1752,14 +1931,6 @@
       "INT"
     ],
     [
-      76,
-      31,
-      0,
-      41,
-      0,
-      "*"
-    ],
-    [
       78,
       25,
       0,
@@ -1856,14 +2027,6 @@
       "IMAGE"
     ],
     [
-      96,
-      41,
-      0,
-      26,
-      2,
-      "IMAGE"
-    ],
-    [
       120,
       13,
       0,
@@ -1904,18 +2067,26 @@
       "IMAGE"
     ],
     [
-      125,
-      26,
+      133,
+      15,
       0,
-      68,
+      71,
+      1,
+      "STRING"
+    ],
+    [
+      134,
+      31,
+      0,
+      73,
       0,
       "IMAGE"
     ],
     [
-      126,
-      26,
+      135,
+      73,
       0,
-      69,
+      71,
       0,
       "IMAGE"
     ]
@@ -1924,10 +2095,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.7088742511245987,
+      "scale": 1.1671841070450213,
       "offset": [
-        -2362.1210329251776,
-        270.8286587499897
+        -3310.149068352126,
+        -236.87907588482454
       ]
     }
   },

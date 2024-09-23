@@ -93,7 +93,7 @@
         -430
       ],
       "size": {
-        "0": 210,
+        "0": 235.1999969482422,
         "1": 26
       },
       "flags": {},
@@ -244,7 +244,7 @@
         -693
       ],
       "size": {
-        "0": 210,
+        "0": 235.1999969482422,
         "1": 26
       },
       "flags": {},
@@ -633,7 +633,7 @@
         -140
       ],
       "size": {
-        "0": 210,
+        "0": 235.1999969482422,
         "1": 26
       },
       "flags": {},
@@ -975,7 +975,7 @@
         64
       ],
       "size": {
-        "0": 210,
+        "0": 235.1999969482422,
         "1": 26
       },
       "flags": {},
@@ -1344,7 +1344,7 @@
         false,
         false,
         false,
-        "/view?filename=Comfyui_00002_.mp4&subfolder=&type=temp&format=video%2Fh265-mp4"
+        "/view?filename=Comfyui_00001_.mp4&subfolder=&type=temp&format=video%2Fh265-mp4"
       ]
     },
     {
@@ -1385,7 +1385,7 @@
         "Node name for S&R": "CombineAudioVideo"
       },
       "widgets_values": [
-        "/view?filename=video_final_00005.mp4&subfolder=&type=output&format=video%2Fmp4"
+        "/view?filename=video_final_00001.mp4&subfolder=&type=output&format=video%2Fmp4"
       ]
     },
     {
@@ -1397,7 +1397,7 @@
       ],
       "size": {
         "0": 400,
-        "1": 344
+        "1": 368
       },
       "flags": {},
       "order": 16,
@@ -1422,7 +1422,40 @@
         "https://",
         "muse_talk",
         "disable",
-        26
+        26,
+        1
+      ]
+    },
+    {
+      "id": 4,
+      "type": "VAELoader",
+      "pos": [
+        -506,
+        -500
+      ],
+      "size": {
+        "0": 379.3569641113281,
+        "1": 58.21699523925781
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            279
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "sd-vae-ft-mse.safetensors"
       ]
     },
     {
@@ -1437,7 +1470,7 @@
         "1": 294
       },
       "flags": {},
-      "order": 3,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
@@ -1481,43 +1514,11 @@
       "widgets_values": [
         "C:\\Users\\38957\\Documents\\GitHub\\mix_her\\avatar001",
         "disable",
-        "disable",
+        "file_name",
         -1,
         "disable",
         null,
         null
-      ]
-    },
-    {
-      "id": 4,
-      "type": "VAELoader",
-      "pos": [
-        -506,
-        -500
-      ],
-      "size": {
-        "0": 379.3569641113281,
-        "1": 58.21699523925781
-      },
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            279
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAELoader"
-      },
-      "widgets_values": [
-        "sd-vae-ft-mse.safetensors"
       ]
     }
   ],
@@ -1875,10 +1876,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.167184107045007,
+      "scale": 1.1671841070450024,
       "offset": {
-        "0": 3755.2597670618215,
-        "1": 1668.10638931098
+        "0": 4216.759844430846,
+        "1": 1177.293559158733
       }
     }
   },

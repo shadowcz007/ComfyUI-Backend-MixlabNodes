@@ -82,3 +82,5 @@ flash-attn
 
 tensorrt>=10.0.1
 onnx
+
+git+https://github.com/shadowcz007/SenseVoice-python.git

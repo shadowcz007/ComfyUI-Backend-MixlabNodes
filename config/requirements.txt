@@ -24,7 +24,7 @@ watchdog
 opencv-python-headless
 matplotlib
 openai
-# simple-lama-inpainting
+#simple-lama-inpainting
 clip-interrogator==0.6.0
 transformers>=4.36.0
 diffusers>=0.27.0
@@ -92,3 +92,5 @@ scenedetect[opencv-headless]
 hydra-core>=1.3.2
 loralib>=0.1.2
 natsort>=8.4.0
+
+git+https://github.com/shadowcz007/SenseVoice-python.git

@@ -43,3 +43,4 @@ comfyui:
   catvton: models/catvton/
   segformer: models/segformer/
   fish_speech: models/fish_speech/
+  sense_voice: models/sense_voice/

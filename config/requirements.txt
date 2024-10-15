@@ -94,3 +94,5 @@ loralib>=0.1.2
 natsort>=8.4.0
 
 git+https://github.com/shadowcz007/SenseVoice-python.git
+
+git+https://github.com/openai/swarm.git
